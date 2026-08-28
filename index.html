@@ -130,7 +130,7 @@
   .tbl-wrap {
     background: var(--bg); border: 1px solid var(--border);
     box-shadow: var(--shadow-sm); margin-bottom: 16px; overflow-x: auto;
-    border-radius: var(--radius-lg); overflow: hidden;
+    border-radius: var(--radius-lg);
   }
   table { width: 100%; border-collapse: collapse; min-width: 900px; }
   thead tr { background: var(--bg2); border-bottom: 1px solid var(--border); }
@@ -157,7 +157,7 @@
   }
   .rank-badge.top3 { background: var(--text); }
   .co-name { font-weight: 500; font-size: 12px; color: var(--text); }
-  .hiive-rank { font-size: 9px; color: var(--text4); font-family: var(--mono); }
+  .p1-rank { font-size: 9px; color: var(--text4); font-family: var(--mono); }
   .sec-tag {
     font-size: 9px; padding: 2px 7px; border: 1px solid;
     letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
@@ -316,7 +316,7 @@
     <div class="hdr-left">
       <div>
         <div class="hdr-title">Perennial — Top 30 Pre-IPO</div>
-        <div class="hdr-sub">Top 30 constituents · Hiive &amp; Forge verified prices · 17 Apr 2026 · simulated live feed</div>
+        <div class="hdr-sub">Top 30 constituents · Hiive, Forge &amp; Augment prices refreshed 7 Aug 2026 · movement below is a simulation, not a live feed</div>
       </div>
     </div>
     <div class="hdr-right">
@@ -328,7 +328,7 @@
   <div class="src-row">
     <div class="src-chip"><div class="src-dot" style="background:#0c8c5e;"></div>Hiive verified</div>
     <div class="src-chip"><div class="src-dot" style="background:#1a6bb5;"></div>Forge verified</div>
-    <div class="src-chip"><div class="src-dot" style="background:#5b3ea6;"></div>Augment (Power 20)</div>
+    <div class="src-chip"><div class="src-dot" style="background:#5b3ea6;"></div>Augment (quarterly)</div>
     <div class="src-chip"><div class="src-dot" style="background:#adb5bd;"></div>Simulated estimate</div>
     <div class="src-chip" style="border-style:dashed;color:#adb5bd;"><div class="src-dot" style="background:#c4b0f0;"></div>EquityZen — login gated</div>
   </div>
@@ -346,7 +346,7 @@
     <select id="sort-sel" onchange="renderTable()">
       <option value="val">Valuation</option>
       <option value="chg">24h change</option>
-      <option value="hiive-rank">Hiive rank</option>
+      <option value="p1-rank">Hiive rank</option>
       <option value="price">Share price</option>
       <option value="spread">Platform spread</option>
       <option value="orders">Live orders</option>
@@ -364,12 +364,12 @@
     <span class="ctrl-label">Detail</span>
     <div class="tabs" id="dtabs">
       <button class="tab active" onclick="setDpSrc('all',this)">All</button>
-      <button class="tab" onclick="setDpSrc('hiive',this)">Hiive</button>
-      <button class="tab" onclick="setDpSrc('forge',this)">Forge</button>
-      <button class="tab" onclick="setDpSrc('aug',this)">Augment</button>
+      <button class="tab" onclick="setDpSrc('p1',this)">Hiive</button>
+      <button class="tab" onclick="setDpSrc('p2',this)">Forge</button>
+      <button class="tab" onclick="setDpSrc('p3',this)">Augment</button>
     </div>
     <div class="ctrl-sep"></div>
-    <button class="al-btn" id="import-btn" onclick="promptHiiveImport()" title="Paste scraped Hiive JSON to update live prices">Import Hiive</button>
+    <button class="al-btn" id="import-btn" onclick="promptP1Import()" title="Paste scraped Hiive JSON to update live prices">Import Hiive</button>
     <span id="import-status" style="font-size:10px;color:var(--green);display:none;"></span>
   </div>
 
@@ -379,9 +379,9 @@
         <th style="width:32px;">#</th>
         <th style="width:150px;">Company</th>
         <th style="width:36px;">H50</th>
-        <th style="width:95px;" class="col-b1">Hiive</th>
-        <th style="width:95px;" class="col-b2">Forge</th>
-        <th style="width:95px;" class="col-b3">Augment</th>
+        <th style="width:95px;" class="col-p1">Hiive</th>
+        <th style="width:95px;" class="col-p2">Forge</th>
+        <th style="width:95px;" class="col-p3">Augment</th>
         <th style="width:65px;">24h chg</th>
         <th style="width:90px;" class="col-sp">Hiive/Forge spread</th>
         <th style="width:78px;">Trend</th>
@@ -435,7 +435,7 @@
       <div class="al-list" id="al-list"><div class="al-empty">No alerts yet — set one below or watch for auto-alerts on significant moves</div></div>
       <div class="al-form">
         <select id="al-co"><option value="">Company...</option></select>
-        <select id="al-src"><option value="hiive">Hiive</option><option value="forge">Forge</option><option value="blended">Blended</option></select>
+        <select id="al-src"><option value="p1">Hiive</option><option value="p2">Forge</option><option value="blended">Blended</option></select>
         <select id="al-cond"><option value="above">Above</option><option value="below">Below</option></select>
         <input type="number" id="al-price" placeholder="$ target" step="0.5" min="0"/>
         <button class="al-btn" onclick="addAlert()">Set alert</button>
@@ -444,49 +444,61 @@
   </div>
 
   <div class="footer">
-    <b>Hiive verified (30 Mar 2026):</b> SpaceX $852.26 · OpenAI $608.06 · Anthropic $474.49 · Canva $1,447.61 · Discord $105.70 · Anduril $67.96 · Rippling $54.13 · Kraken $37.08 · Perplexity $47.50 · Cerebras $112.96 · Ramp $113.49 · Lambda $45.17 · Apptronik $40.60 · Fanatics $38.16 · Shield AI $140.41 · Figure AI $137.93 · Replit $134.43 · PsiQuantum $31.17 · Lightmatter $55.62 · Groq $35.06<br>
-    <b>Forge verified (30 Mar 2026):</b> SpaceX $601.27 · OpenAI $729.13 · Anthropic $259.14 · Stripe $72.45 · Databricks $196.38 · Revolut $1,315.53 · Perplexity $69.54 · Ripple $109.24 · Kraken $32.34 · Cerebras $102.62 · Discord $31.36 · Shield AI $153.22 · Replit $268.12 · Ramp $92.03 · PsiQuantum $34.00 · Lightmatter $55.20<br>
-    Note: xAI was acquired by SpaceX on 3 Feb 2026 and is no longer independently traded. EquityZen prices login-gated (SPV model). Not financial advice. For accredited investors only.
+    <b>Hiive Price, verified 7 Aug 2026 12:05 GMT+10:</b> Anthropic $1,013.86 · OpenAI $693.33 · Kalshi $647.25 · Databricks $259.22 · Replit $232.43 · Crusoe $216.09 · Figure AI $184.83 · Polymarket $139.57 · Ripple $102.43 · Lightmatter $89.15 · Stripe $72.49 · Tenstorrent $63.79 · Perplexity $63.09 · Saronic $48.10 · Apptronik $40.51 · Lambda $39.15 · Kraken $28.60 · PsiQuantum $27.31<br>
+    <b>Forge Price, verified 7 Aug 2026:</b> Revolut $2,200.00 · OpenAI $721.85 · Replit $256.70 · Databricks $242.04 · Anduril $140.00 · Ramp $125.55 · Ripple $105.56 · Stripe $72.45 · Rippling $58.62 · Fanatics $53.50 · Lambda $42.06 · Apptronik $36.97 · Discord $31.31 · Kraken $29.41 · PsiQuantum $28.54 · Tanium $4.71<br>
+    <b>Augment — Power 20 ranking as at 30 Jun 2026:</b> Anthropic $847.02 · OpenAI $725.55 · Kalshi $625.49 · Neuralink $297.65 · Databricks $215.05 · Crusoe $204.73 · Shield AI $161.51 · Canva $1,636.84 · Revolut $1,952.95 · Polymarket $136.22 · Ramp $115.57 · Stripe $65.51 · Perplexity $62.82 · Rippling $50.81 · Saronic $40.21 · Replit $271.84 · Anduril $118.35<br>
+    <b>Removed this update — no longer pre-IPO:</b> SpaceX (IPO 12 Jun 2026, NASDAQ: SPCX, $75B raised at $1.75T) · Cerebras (IPO 14 May 2026, NASDAQ: CBRS, $5.55B at $56.43B) · Groq (acquired by NVIDIA) · Chime (completed IPO). Added in their place: Polymarket, Kalshi, Tenstorrent, Saronic.<br>
+    <b>Read this before using any number here.</b> Prices marked <b>~</b> are last-known estimates carried forward, not current quotes — only <b>✓</b> values were verified on the date shown. Augment figures are end-of-quarter (30 Jun), so they lag Hiive and Forge by five weeks. Implied market caps are derived from back-solved share counts and are approximations only. The ticking prices and all chart history on this page are <b>randomly simulated from these seed values</b> and do not represent real trading. Not financial advice. For accredited investors only.
   </div>
 
 </div>
 
 <script>
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA REFRESHED 7 Aug 2026 from three sources:
+//   p1 = Hiive Price   (the Hiive platform, Hiive50 index board, 7 Aug 12:05 GMT+10)
+//   p2 = Forge Price   (the Forge platform public company pages, 7 Aug 2026)
+//   p3   = Augment Price (the Augment platform Power 20 ranking, end-of-quarter 30 Jun 2026)
+// p1V/p2V/p3V = price came verified from that source. false = last-known estimate,
+// shown with "~" in the table. Do not read "~" values as current market prices.
+// Share counts are back-solved from Augment's stated market caps where given,
+// so IMPLIED CAP is an approximation, not a reported figure.
+// ─────────────────────────────────────────────────────────────────────────────
 const COS = [
-  // Hiive50 ranked + major unicorns. h50=Hiive50 rank, liveOrders=Hiive live orders
-  { id:'spacex',     name:'SpaceX',       sec:'Space',   sc:'sp', shares:2390e6, col:'#1a6bb5', hiive:662.51, forge:600.45,  aug:463.10, hV:true,  fV:true,  aV:true,  struct:'SPV',   rofr:'Very high', h50:3,  liveOrders:81  },
-  { id:'openai',     name:'OpenAI',       sec:'AI',      sc:'ai', shares:1000e6, col:'#5b3ea6', hiive:608.06, forge:728.2,   aug:881.57, hV:true,  fV:true,  aV:true,  struct:'Mixed', rofr:'High',      h50:null,liveOrders:0  },
-  { id:'anth',       name:'Anthropic',    sec:'AI',      sc:'ai', shares:1470e6, col:'#8b5cf6', hiive:525.37, forge:259.14,  aug:277.00, hV:true,  fV:true,  aV:true,  struct:'SPV',   rofr:'Very high', h50:null,liveOrders:0  },
-  { id:'canva',      name:'Canva',        sec:'Design',  sc:'da', shares:30e6,   col:'#7a5c00', hiive:1447.61,forge:1200,    aug:2071.82,hV:true,  fV:false, aV:true,  struct:'Mixed', rofr:'Moderate',  h50:null,liveOrders:4  },
-  { id:'revolut',    name:'Revolut',      sec:'Fintech', sc:'fin',shares:54e6,   col:'#0c8c5e', hiive:1390,   forge:1315.53, aug:1559.17,hV:false, fV:true,  aV:true,  struct:'Direct',rofr:'Moderate',  h50:null,liveOrders:8  },
-  { id:'stripe',     name:'Stripe',       sec:'Fintech', sc:'fin',shares:430e6,  col:'#1d9e75', hiive:69.20,  forge:72.45,   aug:52.20,  hV:true,  fV:true,  aV:true,  struct:'Mixed', rofr:'Moderate',  h50:null,liveOrders:21 },
-  { id:'databricks', name:'Databricks',   sec:'Data',    sc:'da', shares:680e6,  col:'#9a6c00', hiive:216.49, forge:196.31,  aug:201.31, hV:true,  fV:true,  aV:true,  struct:'Mixed', rofr:'Moderate',  h50:null,liveOrders:57 },
-  { id:'ripple',     name:'Ripple',       sec:'Crypto',  sc:'cr', shares:50e6,   col:'#2d6e8c', hiive:121.42, forge:109.24,  aug:null,   hV:true,  fV:true,  aV:false, struct:'Mixed', rofr:'Moderate',  h50:5,  liveOrders:141 },
-  { id:'kraken',     name:'Kraken',       sec:'Crypto',  sc:'cr', shares:390e6,  col:'#2980d9', hiive:33.66,  forge:32.34,   aug:null,   hV:true,  fV:true,  aV:false, struct:'Direct',rofr:'Low',        h50:1,  liveOrders:104 },
-  { id:'perp',       name:'Perplexity',   sec:'AI',      sc:'ai', shares:300e6,  col:'#8b5cf6', hiive:62.21,  forge:69.54,   aug:65.14,  hV:true,  fV:true,  aV:true,  struct:'SPV',   rofr:'High',      h50:2,  liveOrders:35  },
-  { id:'cerebras',   name:'Cerebras',     sec:'AI',      sc:'ai', shares:210e6,  col:'#7c6fe0', hiive:133.58, forge:102.62,  aug:38.74,  hV:true,  fV:true,  aV:true,  struct:'Mixed', rofr:'High',      h50:4,  liveOrders:92 },
-  { id:'discord',    name:'Discord',      sec:'Social',  sc:'ro', shares:490e6,  col:'#7a5c00', hiive:48.61,  forge:31.36,   aug:null,   hV:true,  fV:true,  aV:false, struct:'Mixed', rofr:'Moderate',  h50:null,liveOrders:27 },
-  { id:'anduril',    name:'Anduril',      sec:'Defense', sc:'cy', shares:780e6,  col:'#c0392b', hiive:67.96,  forge:74,      aug:97.35,  hV:true,  fV:false, aV:true,  struct:'Mixed', rofr:'High',      h50:null,liveOrders:0  },
-  { id:'ramp',       name:'Ramp',         sec:'Fintech', sc:'fin',shares:85e6,   col:'#0c8c5e', hiive:116.08, forge:92.03,   aug:94.50,  hV:true,  fV:true,  aV:true,  struct:'Mixed', rofr:'Moderate',  h50:null,liveOrders:4  },
-  { id:'shieldai',   name:'Shield AI',    sec:'Defense', sc:'cy', shares:320e6,  col:'#c0392b', hiive:159.23, forge:153.22,  aug:97.32,  hV:true,  fV:true,  aV:true,  struct:'Mixed', rofr:'High',      h50:13, liveOrders:30  },
-  { id:'figureai',   name:'Figure AI',    sec:'Robotics',sc:'sp', shares:210e6,  col:'#1a6bb5', hiive:189.45, forge:130,     aug:null,   hV:true,  fV:false, aV:false, struct:'SPV',   rofr:'High',      h50:10, liveOrders:34  },
-  { id:'replit',     name:'Replit',       sec:'AI',      sc:'ai', shares:65e6,   col:'#5b3ea6', hiive:247.16, forge:268.12,  aug:null,   hV:true,  fV:true,  aV:false, struct:'Mixed', rofr:'High',      h50:15, liveOrders:17  },
-  { id:'lightmatter',name:'Lightmatter',  sec:'AI',      sc:'ai', shares:50e6,   col:'#7c6fe0', hiive:61.99,  forge:55.2,    aug:null,   hV:true,  fV:true,  aV:false, struct:'Mixed', rofr:'Moderate',  h50:12, liveOrders:16  },
-  { id:'rippling',   name:'Rippling',     sec:'Fintech', sc:'fin',shares:670e6,  col:'#1d9e75', hiive:51.94,  forge:48,      aug:58.37,  hV:true,  fV:false, aV:true,  struct:'Mixed', rofr:'Moderate',  h50:null,liveOrders:6  },
-  { id:'apptronik',  name:'Apptronik',    sec:'Robotics',sc:'sp', shares:85e6,   col:'#1a6bb5', hiive:40.26,  forge:38,      aug:null,   hV:true,  fV:false, aV:false, struct:'Mixed', rofr:'Moderate',  h50:6,  liveOrders:17  },
-  { id:'psiquantum', name:'PsiQuantum',   sec:'Quantum', sc:'sp', shares:280e6,  col:'#2980d9', hiive:29.31,  forge:34.0,    aug:null,   hV:true,  fV:true,  aV:false, struct:'Mixed', rofr:'Moderate',  h50:11, liveOrders:38  },
-  { id:'lambda',     name:'Lambda',       sec:'AI',      sc:'ai', shares:120e6,  col:'#5b3ea6', hiive:40.91,  forge:42,      aug:null,   hV:true,  fV:false, aV:false, struct:'Mixed', rofr:'Moderate',  h50:7,  liveOrders:49  },
-  { id:'groq',       name:'Groq',         sec:'AI',      sc:'ai', shares:310e6,  col:'#8b5cf6', hiive:34.27,   forge:32,      aug:null,  hV:true,  fV:false, aV:false, struct:'SPV',   rofr:'High',      h50:9,  liveOrders:1   },
-  { id:'fanatics',   name:'Fanatics',     sec:'Sports',  sc:'ro', shares:595e6,  col:'#7a5c00', hiive:38.14,   forge:35,      aug:null,  hV:true,  fV:false, aV:false, struct:'Mixed', rofr:'Moderate',  h50:null,liveOrders:7  },
-  { id:'plaid',      name:'Plaid',        sec:'Fintech', sc:'fin',shares:340e6,  col:'#0c8c5e', hiive:28,      forge:24,      aug:null,  hV:false, fV:false, aV:false, struct:'Direct',rofr:'Low',        h50:null,liveOrders:10 },
-  { id:'chime',      name:'Chime',        sec:'Fintech', sc:'fin',shares:480e6,  col:'#1d9e75', hiive:22.5,    forge:20,      aug:null,  hV:false, fV:false, aV:false, struct:'Mixed', rofr:'Moderate',  h50:null,liveOrders:8  },
-  { id:'crusoe',     name:'Crusoe',       sec:'Energy',  sc:'en', shares:180e6,  col:'#4a6741', hiive:128.48, forge:38,      aug:117.50, hV:true,  fV:false, aV:true,  struct:'Mixed', rofr:'Moderate',  h50:14, liveOrders:8   },
-  { id:'waymo',      name:'Waymo',        sec:'AI',      sc:'ai', shares:2200e6, col:'#5b3ea6', hiive:289.74, forge:15,      aug:null,   hV:true,  fV:false, aV:false, struct:'SPV',   rofr:'Very high', h50:null,liveOrders:12  },
-  { id:'tanium',     name:'Tanium',       sec:'Cyber',   sc:'cy', shares:290e6,  col:'#c0392b', hiive:4.14,   forge:16,      aug:null,   hV:true,  fV:false, aV:false, struct:'Direct',rofr:'Low',        h50:null,liveOrders:11  },
-  { id:'neuralink',  name:'Neuralink',    sec:'BCI',     sc:'cy', shares:180e6,  col:'#c0392b', hiive:83.05,  forge:75,      aug:84.17,  hV:true,  fV:false, aV:true,  struct:'SPV',   rofr:'High',      h50:null,liveOrders:57  },
+  // Hiive50 ranked + major unicorns. p1rank=Hiive50 rank, liveOrders=Hiive live orders
+  { id:'anth',       name:'Anthropic',    sec:'AI',      sc:'ai', shares:1641e6, col:'#8b5cf6', p1:1013.86,p2:900,     p3:847.02, p1V:true,  p2V:false, p3V:true,  struct:'SPV',   rofr:'Very high', p1rank:6,  liveOrders:0   },
+  { id:'openai',     name:'OpenAI',       sec:'AI',      sc:'ai', shares:1239e6, col:'#5b3ea6', p1:693.33, p2:721.85,  p3:725.55, p1V:true,  p2V:true,  p3V:true,  struct:'Mixed', rofr:'High',      p1rank:13, liveOrders:0   },
+  { id:'databricks', name:'Databricks',   sec:'Data',    sc:'da', shares:705e6,  col:'#9a6c00', p1:259.22, p2:242.04,  p3:215.05, p1V:true,  p2V:true,  p3V:true,  struct:'Mixed', rofr:'Moderate',  p1rank:2,  liveOrders:61  },
+  { id:'stripe',     name:'Stripe',       sec:'Fintech', sc:'fin',shares:2577e6, col:'#1d9e75', p1:72.49,  p2:72.45,   p3:65.51,  p1V:true,  p2V:true,  p3V:true,  struct:'Mixed', rofr:'Moderate',  p1rank:22, liveOrders:29  },
+  { id:'anduril',    name:'Anduril',      sec:'Defense', sc:'cy', shares:746e6,  col:'#c0392b', p1:130,    p2:140.00,  p3:118.35, p1V:false, p2V:true,  p3V:true,  struct:'Mixed', rofr:'High',      p1rank:null,liveOrders:0  },
+  { id:'revolut',    name:'Revolut',      sec:'Fintech', sc:'fin',shares:54e6,   col:'#0c8c5e', p1:2050,   p2:2200.00, p3:1952.95,p1V:false, p2V:true,  p3V:true,  struct:'Direct',rofr:'Moderate',  p1rank:null,liveOrders:0  },
+  { id:'neuralink',  name:'Neuralink',    sec:'BCI',     sc:'cy', shares:190e6,  col:'#c0392b', p1:290,    p2:295,     p3:297.65, p1V:false, p2V:false, p3V:true,  struct:'SPV',   rofr:'High',      p1rank:null,liveOrders:0  },
+  { id:'ramp',       name:'Ramp',         sec:'Fintech', sc:'fin',shares:367e6,  col:'#0c8c5e', p1:120,    p2:125.55,  p3:115.57, p1V:false, p2V:true,  p3V:true,  struct:'Mixed', rofr:'Moderate',  p1rank:null,liveOrders:0  },
+  { id:'shieldai',   name:'Shield AI',    sec:'Defense', sc:'cy', shares:68e6,   col:'#c0392b', p1:160,    p2:158,     p3:161.51, p1V:false, p2V:false, p3V:true,  struct:'Mixed', rofr:'High',      p1rank:null,liveOrders:0  },
+  { id:'crusoe',     name:'Crusoe',       sec:'Energy',  sc:'en', shares:120e6,  col:'#4a6741', p1:216.09, p2:210,     p3:204.73, p1V:true,  p2V:false, p3V:true,  struct:'Mixed', rofr:'Moderate',  p1rank:29, liveOrders:14  },
+  { id:'canva',      name:'Canva',        sec:'Design',  sc:'da', shares:26e6,   col:'#7a5c00', p1:1600,   p2:1620,    p3:1636.84,p1V:false, p2V:false, p3V:true,  struct:'Mixed', rofr:'Moderate',  p1rank:null,liveOrders:0  },
+  { id:'rippling',   name:'Rippling',     sec:'Fintech', sc:'fin',shares:323e6,  col:'#1d9e75', p1:54,     p2:58.62,   p3:50.81,  p1V:false, p2V:true,  p3V:true,  struct:'Mixed', rofr:'Moderate',  p1rank:null,liveOrders:0  },
+  { id:'replit',     name:'Replit',       sec:'AI',      sc:'ai', shares:36e6,   col:'#5b3ea6', p1:232.43, p2:256.70,  p3:271.84, p1V:true,  p2V:true,  p3V:true,  struct:'Mixed', rofr:'High',      p1rank:16, liveOrders:4   },
+  { id:'perp',       name:'Perplexity',   sec:'AI',      sc:'ai', shares:288e6,  col:'#8b5cf6', p1:63.09,  p2:66,      p3:62.82,  p1V:true,  p2V:false, p3V:true,  struct:'SPV',   rofr:'High',      p1rank:8,  liveOrders:41  },
+  { id:'kalshi',     name:'Kalshi',       sec:'Prediction',sc:'cr',shares:36.5e6,col:'#2980d9', p1:647.25, p2:635,     p3:625.49, p1V:true,  p2V:false, p3V:true,  struct:'Mixed', rofr:'Moderate',  p1rank:9,  liveOrders:26  },
+  { id:'polymarket', name:'Polymarket',   sec:'Prediction',sc:'cr',shares:104e6, col:'#2d6e8c', p1:139.57, p2:138,     p3:136.22, p1V:true,  p2V:false, p3V:true,  struct:'Mixed', rofr:'Moderate',  p1rank:1,  liveOrders:12  },
+  { id:'ripple',     name:'Ripple',       sec:'Crypto',  sc:'cr', shares:50e6,   col:'#2d6e8c', p1:102.43, p2:105.56,  p3:null,   p1V:true,  p2V:true,  p3V:false, struct:'Mixed', rofr:'Moderate',  p1rank:5,  liveOrders:121 },
+  { id:'kraken',     name:'Kraken',       sec:'Crypto',  sc:'cr', shares:390e6,  col:'#2980d9', p1:28.60,  p2:29.41,   p3:null,   p1V:true,  p2V:true,  p3V:false, struct:'Direct',rofr:'Low',        p1rank:7,  liveOrders:73 },
+  { id:'figureai',   name:'Figure AI',    sec:'Robotics',sc:'sp', shares:210e6,  col:'#1a6bb5', p1:184.83, p2:180,     p3:null,   p1V:true,  p2V:false, p3V:false, struct:'SPV',   rofr:'High',      p1rank:24, liveOrders:27  },
+  { id:'saronic',    name:'Saronic',      sec:'Defense', sc:'cy', shares:338e6,  col:'#c0392b', p1:48.10,  p2:44,      p3:40.21,  p1V:true,  p2V:false, p3V:true,  struct:'Mixed', rofr:'High',      p1rank:25, liveOrders:19  },
+  { id:'lightmatter',name:'Lightmatter',  sec:'AI',      sc:'ai', shares:50e6,   col:'#7c6fe0', p1:89.15,  p2:85,      p3:null,   p1V:true,  p2V:false, p3V:false, struct:'Mixed', rofr:'Moderate',  p1rank:12, liveOrders:49  },
+  { id:'tenstorrent',name:'Tenstorrent',  sec:'AI',      sc:'ai', shares:41e6,   col:'#7c6fe0', p1:63.79,  p2:62,      p3:null,   p1V:true,  p2V:false, p3V:false, struct:'Mixed', rofr:'Moderate',  p1rank:4,  liveOrders:18  },
+  { id:'apptronik',  name:'Apptronik',    sec:'Robotics',sc:'sp', shares:85e6,   col:'#1a6bb5', p1:40.51,  p2:36.97,   p3:null,   p1V:true,  p2V:true,  p3V:false, struct:'Mixed', rofr:'Moderate',  p1rank:11, liveOrders:21  },
+  { id:'lambda',     name:'Lambda',       sec:'AI',      sc:'ai', shares:120e6,  col:'#5b3ea6', p1:39.15,  p2:42.06,   p3:null,   p1V:true,  p2V:true,  p3V:false, struct:'Mixed', rofr:'Moderate',  p1rank:3,  liveOrders:47  },
+  { id:'psiquantum', name:'PsiQuantum',   sec:'Quantum', sc:'sp', shares:280e6,  col:'#2980d9', p1:27.31,  p2:28.54,   p3:null,   p1V:true,  p2V:true,  p3V:false, struct:'Mixed', rofr:'Moderate',  p1rank:17, liveOrders:34  },
+  { id:'fanatics',   name:'Fanatics',     sec:'Sports',  sc:'ro', shares:595e6,  col:'#7a5c00', p1:52,     p2:53.50,   p3:null,   p1V:false, p2V:true,  p3V:false, struct:'Mixed', rofr:'Moderate',  p1rank:null,liveOrders:0  },
+  { id:'discord',    name:'Discord',      sec:'Social',  sc:'ro', shares:490e6,  col:'#7a5c00', p1:32,     p2:31.31,   p3:null,   p1V:false, p2V:true,  p3V:false, struct:'Mixed', rofr:'Moderate',  p1rank:null,liveOrders:0  },
+  { id:'tanium',     name:'Tanium',       sec:'Cyber',   sc:'cy', shares:290e6,  col:'#c0392b', p1:4.60,   p2:4.71,    p3:null,   p1V:false, p2V:true,  p3V:false, struct:'Direct',rofr:'Low',        p1rank:null,liveOrders:0  },
+  { id:'waymo',      name:'Waymo',        sec:'AI',      sc:'ai', shares:2200e6, col:'#5b3ea6', p1:289.74, p2:290,     p3:null,   p1V:false, p2V:false, p3V:false, struct:'SPV',   rofr:'Very high', p1rank:null,liveOrders:0  },
+  { id:'plaid',      name:'Plaid',        sec:'Fintech', sc:'fin',shares:340e6,  col:'#0c8c5e', p1:28,     p2:24,      p3:null,   p1V:false, p2V:false, p3V:false, struct:'Direct',rofr:'Low',        p1rank:null,liveOrders:0 },
 ];
 
-let ST={}, hLen=48, hVol=0.4, curRange='1D', selCo='spacex', dpSrc='all';
+let ST={}, hLen=48, hVol=0.4, curRange='1D', selCo='anth', dpSrc='all';
 let detChart=null, sparkC={}, aLog=[], uAlerts=[];
 
 const r2=(n,d=2)=>parseFloat(n.toFixed(d));
@@ -499,9 +511,9 @@ const fB=(n)=>{
 };
 const now=()=>new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 
-function blended(c){ let s=ST[c.id], p=[s.hiive,s.forge]; if(c.aug) p.push(c.aug); return p.reduce((a,b)=>a+b,0)/p.length; }
-function spread(c){ return Math.abs(ST[c.id].hiive-ST[c.id].forge); }
-function chgPct(c){ let b=blended(c),base=(c.hiive+c.forge)/2; return(b-base)/base*100; }
+function blended(c){ let s=ST[c.id], p=[s.p1,s.p2]; if(c.p3) p.push(c.p3); return p.reduce((a,b)=>a+b,0)/p.length; }
+function spread(c){ return Math.abs(ST[c.id].p1-ST[c.id].p2); }
+function chgPct(c){ let b=blended(c),base=(c.p1+c.p2)/2; return(b-base)/base*100; }
 
 function randHist(base,n,vol){
   let a=[base*(0.93+Math.random()*0.04)];
@@ -513,12 +525,12 @@ function vp(r){ return r==='1D'?{n:48,v:0.5}:r==='1W'?{n:60,v:1.2}:r==='1M'?{n:6
 function initState(){
   let {n,v}=vp(curRange); hLen=n; hVol=v;
   COS.forEach(c=>{
-    let sc=Math.max(c.hiive,1)/50;
-    if(!ST[c.id]) ST[c.id]={hiive:c.hiive,forge:c.forge,liveOrders:c.liveOrders};
-    ST[c.id].hiiveH=randHist(c.hiive,n,v*sc);
-    ST[c.id].forgeH=randHist(c.forge,n,v*(Math.max(c.forge,1)/50));
-    ST[c.id].hiive=ST[c.id].hiiveH[n-1];
-    ST[c.id].forge=ST[c.id].forgeH[n-1];
+    let sc=Math.max(c.p1,1)/50;
+    if(!ST[c.id]) ST[c.id]={p1:c.p1,p2:c.p2,liveOrders:c.liveOrders};
+    ST[c.id].p1H=randHist(c.p1,n,v*sc);
+    ST[c.id].p2H=randHist(c.p2,n,v*(Math.max(c.p2,1)/50));
+    ST[c.id].p1=ST[c.id].p1H[n-1];
+    ST[c.id].p2=ST[c.id].p2H[n-1];
     ST[c.id].liveOrders=c.liveOrders;
   });
 }
@@ -528,11 +540,11 @@ function getRows(){
   let rows=COS.map(c=>({...c,_b:blended(c),_chg:chgPct(c),_sp:spread(c)}));
   if(s==='val') rows.sort((a,b)=>b._b*b.shares-a._b*a.shares);
   else if(s==='chg') rows.sort((a,b)=>b._chg-a._chg);
-  else if(s==='hiive-rank') rows.sort((a,b)=>{
-    if(a.h50===null&&b.h50===null) return 0;
-    if(a.h50===null) return 1;
-    if(b.h50===null) return -1;
-    return a.h50-b.h50;
+  else if(s==='p1-rank') rows.sort((a,b)=>{
+    if(a.p1rank===null&&b.p1rank===null) return 0;
+    if(a.p1rank===null) return 1;
+    if(b.p1rank===null) return -1;
+    return a.p1rank-b.p1rank;
   });
   else if(s==='price') rows.sort((a,b)=>b._b-a._b);
   else if(s==='spread') rows.sort((a,b)=>b._sp-a._sp);
@@ -545,24 +557,24 @@ function renderTable(){
   let rows=getRows(), tb=document.getElementById('tbody');
   tb.innerHTML='';
   rows.forEach((c,i)=>{
-    let s=ST[c.id], h=s.hiive, fg=s.forge;
+    let s=ST[c.id], h=s.p1, fg=s.p2;
     let chg=chgPct(c), sp=Math.abs(h-fg), spPct=sp/((h+fg)/2)*100;
     let val=blended(c)*c.shares;
-    let hB=c.hV?'<span class="badge bh">H✓</span>':'<span class="badge best">H~</span>';
-    let fB2=c.fV?'<span class="badge bf">F✓</span>':'<span class="badge best">F~</span>';
+    let hB=c.p1V?'<span class="badge bh">H✓</span>':'<span class="badge best">H~</span>';
+    let fB2=c.p2V?'<span class="badge bf">F✓</span>':'<span class="badge best">F~</span>';
     let spCls=spPct>30?'sprd-hi':spPct>12?'sprd-med':'sprd-ok';
     let strCls=c.struct==='Direct'?'st-dir':c.struct==='SPV'?'st-spv':'st-mix';
-    let h50Cell=c.h50?`<span style="font-family:var(--mono);font-size:10px;color:var(--text3);">${c.h50}</span>`:`<span style="color:var(--border2);">—</span>`;
+    let p1rankCell=c.p1rank?`<span style="font-family:var(--mono);font-size:10px;color:var(--text3);">${c.p1rank}</span>`:`<span style="color:var(--border2);">—</span>`;
     let rankBadgeCls=i<3?'rank-badge top3':'rank-badge';
     let tr=document.createElement('tr');
     if(c.id===selCo) tr.classList.add('sel');
     tr.innerHTML=`
       <td><span class="${rankBadgeCls}">${i+1}</span></td>
       <td><div class="co-name">${c.name}</div><span class="sec-tag tag-${c.sc}">${c.sec}</span></td>
-      <td>${h50Cell}</td>
-      <td class="col-b1"><span class="pcol" style="color:var(--green)">${f$(h)}</span>${hB}</td>
-      <td class="col-b2"><span class="pcol" style="color:var(--blue)">${f$(fg)}</span>${fB2}</td>
-      <td class="col-b3">${c.aug?'<span class="pcol" style="color:var(--purple)">'+f$(c.aug)+'</span>'+(c.aV?'<span class="badge" style="background:var(--purple-bg);color:var(--purple);border-color:#c4b0f0;">A✓</span>':'<span class="badge best">A~</span>'):'<span style="color:var(--border2);">—</span>'}</td>
+      <td>${p1rankCell}</td>
+      <td class="col-p1"><span class="pcol" style="color:var(--green)">${f$(h)}</span>${hB}</td>
+      <td class="col-p2"><span class="pcol" style="color:var(--blue)">${f$(fg)}</span>${fB2}</td>
+      <td class="col-p3">${c.p3?'<span class="pcol" style="color:var(--purple)">'+f$(c.p3)+'</span>'+(c.p3V?'<span class="badge" style="background:var(--purple-bg);color:var(--purple);border-color:#c4b0f0;">A✓</span>':'<span class="badge best">A~</span>'):'<span style="color:var(--border2);">—</span>'}</td>
       <td><span class="chg ${chg>=0?'up':'dn'}">${fpct(chg)}</span></td>
       <td class="col-sp"><span class="sprd ${spCls}">${f$(sp)} <span style="opacity:.6;font-size:10px;">(${r2(spPct,0)}%)</span></span></td>
       <td><div class="spark-w"><canvas id="sp-${c.id}"></canvas></div></td>
@@ -572,7 +584,7 @@ function renderTable(){
       <td><button class="det-btn ${OB[c.id]?'det-btn-'+c.sc:''}" onclick="selCo_('${c.id}')">Detail →</button></td>
     `;
     tb.appendChild(tr);
-    setTimeout(()=>buildSpark(c.id,s.hiiveH,c.col),0);
+    setTimeout(()=>buildSpark(c.id,s.p1H,c.col),0);
   });
   applyColVis();
   updateMets();
@@ -592,7 +604,7 @@ function buildSpark(id,data,col){
 function updateMets(){
   let cap=COS.reduce((s,c)=>s+blended(c)*c.shares,0);
   let g=COS.filter(c=>chgPct(c)>=0).length;
-  let avgSp=COS.reduce((s,c)=>s+spread(c)/((ST[c.id].hiive+ST[c.id].forge)/2)*100,0)/COS.length;
+  let avgSp=COS.reduce((s,c)=>s+spread(c)/((ST[c.id].p1+ST[c.id].p2)/2)*100,0)/COS.length;
   let totalOrders=COS.reduce((s,c)=>s+ST[c.id].liveOrders,0);
   document.getElementById('m-cap').textContent=fB(cap);
   document.getElementById('m-g').textContent=g;
@@ -615,9 +627,9 @@ function selCo_(id){
 
 function applyColVis(){
   let s=dpSrc;
-  document.querySelectorAll('.col-b1').forEach(el=>el.style.display=(s==='forge'||s==='aug'?'none':''));
-  document.querySelectorAll('.col-b2').forEach(el=>el.style.display=(s==='hiive'||s==='aug'?'none':''));
-  document.querySelectorAll('.col-b3').forEach(el=>el.style.display=(s==='hiive'||s==='forge'?'none':''));
+  document.querySelectorAll('.col-p1').forEach(el=>el.style.display=(s==='p2'||s==='p3'?'none':''));
+  document.querySelectorAll('.col-p2').forEach(el=>el.style.display=(s==='p1'||s==='p3'?'none':''));
+  document.querySelectorAll('.col-p3').forEach(el=>el.style.display=(s==='p1'||s==='p2'?'none':''));
   document.querySelectorAll('.col-sp').forEach(el=>el.style.display=(s==='all'?'':'none'));
 }
 function setDpSrc(src,btn){
@@ -631,17 +643,17 @@ function setDpSrc(src,btn){
 
 function renderDetail(){
   let c=COS.find(x=>x.id===selCo), s=ST[c.id];
-  let sp=Math.abs(s.hiive-s.forge), spPct=sp/((s.hiive+s.forge)/2)*100;
+  let sp=Math.abs(s.p1-s.p2), spPct=sp/((s.p1+s.p2)/2)*100;
   let b=blended(c), chg=chgPct(c);
   document.getElementById('det-name').textContent=c.name+' — secondary market detail';
-  let vNote=(c.hV||c.fV)?' · verified 17 Apr 2026':' · simulated estimate';
-  document.getElementById('det-meta').textContent=c.sec+' · ~'+(c.shares/1e6).toFixed(0)+'M shares · '+fB(b*c.shares)+' implied cap'+vNote+(c.h50?' · Hiive #'+c.h50:'');
+  let vNote=(c.p1V||c.p2V||c.p3V)?' · verified 7 Aug 2026':' · last-known estimate';
+  document.getElementById('det-meta').textContent=c.sec+' · ~'+(c.shares/1e6).toFixed(0)+'M shares · '+fB(b*c.shares)+' implied cap'+vNote+(c.p1rank?' · Hiive #'+c.p1rank:'');
 
-  let augCard=c.aug?`<div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--purple-mid);flex-shrink:0;"></div>Augment</div><div class="sc-price" style="color:var(--purple)">${f$(c.aug)}</div><div class="sc-note">${c.aV?'Power 20 est.':'Estimated'}</div></div>`:'';
+  let augCard=c.p3?`<div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--purple-mid);flex-shrink:0;"></div>Augment</div><div class="sc-price" style="color:var(--purple)">${f$(c.p3)}</div><div class="sc-note">${c.p3V?'Augment ranking est.':'Estimated'}</div></div>`:'';
   let chgHtml=chg>=0?`<span class="up">${fpct(chg)}</span>`:`<span class="dn">${fpct(chg)}</span>`;
   document.getElementById('src-cards').innerHTML=`
-    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>Hiive</div><div class="sc-price" style="color:var(--green)">${f$(s.hiive)}</div><div class="sc-note">${c.hV?'Verified 17 Apr':'Estimated'}</div></div>
-    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;"></div>Forge</div><div class="sc-price" style="color:var(--blue)">${f$(s.forge)}</div><div class="sc-note">${c.fV?'Verified 17 Apr':'Estimated'}</div></div>
+    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>Hiive</div><div class="sc-price" style="color:var(--green)">${f$(s.p1)}</div><div class="sc-note">${c.p1V?'Verified 17 Apr':'Estimated'}</div></div>
+    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;"></div>Forge</div><div class="sc-price" style="color:var(--blue)">${f$(s.p2)}</div><div class="sc-note">${c.p2V?'Verified 17 Apr':'Estimated'}</div></div>
     ${augCard}
     <div class="sc gated"><div class="sc-lbl" style="color:#c4b0f0;"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:#c4b0f0;flex-shrink:0;"></div>EquityZen</div><div class="sc-price" style="font-size:13px;color:var(--text4);">Login required</div><div class="sc-note">SPV model — no public price</div></div>
     <div class="sc"><div class="sc-lbl">Blended mid</div><div class="sc-price">${f$(b)}</div><div class="sc-note">${chgHtml} vs open</div></div>
@@ -649,8 +661,8 @@ function renderDetail(){
 
   let barCol=spPct>30?'var(--red)':spPct>12?'var(--amber)':'var(--green)';
   let barW=Math.min(spPct/60*100,100);
-  let lo=Math.min(s.hiive,s.forge), hi=Math.max(s.hiive,s.forge);
-  let loSrc=s.forge<=s.hiive?'Forge':'Hiive', hiSrc=s.hiive>=s.forge?'Hiive':'Forge';
+  let lo=Math.min(s.p1,s.p2), hi=Math.max(s.p1,s.p2);
+  let loSrc=s.p2<=s.p1?'Forge':'Hiive', hiSrc=s.p1>=s.p2?'Hiive':'Forge';
   document.getElementById('spread-wrap').innerHTML=`
     <div class="spread-lbl">Hiive / Forge spread: <b style="color:var(--text)">${f$(sp)}</b> (${r2(spPct,1)}%) — ${spPct>30?'wide · low liquidity':spPct>12?'moderate spread':'tight spread'}</div>
     <div class="spread-track"><div class="spread-fill" style="width:${barW}%;background:${barCol};"></div></div>
@@ -662,22 +674,22 @@ function renderDetail(){
   document.getElementById('str-row').innerHTML=`
     <div class="str-item">Structure: <b style="color:${strCol}">${c.struct}</b></div>
     <div class="str-item">ROFR: <b>${c.rofr}</b></div>
-    <div class="str-item">Hiive rank: <b>${c.h50?'#'+c.h50:'Not in index'}</b></div>
+    <div class="str-item">Hiive rank: <b>${c.p1rank?'#'+c.p1rank:'Not in index'}</b></div>
     <div class="str-item">Live orders: <b>${s.liveOrders||'—'}</b></div>
     <div class="str-item">Approval wait: <b>${wait}</b></div>
   `;
 
   let datasets=[], leg='';
-  if(dpSrc==='all'||dpSrc==='hiive'){
-    datasets.push({label:'Hiive',data:[...s.hiiveH],borderColor:'#1db87c',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
+  if(dpSrc==='all'||dpSrc==='p1'){
+    datasets.push({label:'Hiive',data:[...s.p1H],borderColor:'#1db87c',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
     leg+=`<div class="leg-item"><div class="leg-sq" style="background:#1db87c;"></div>Hiive</div>`;
   }
-  if(dpSrc==='all'||dpSrc==='forge'){
-    datasets.push({label:'Forge',data:[...s.forgeH],borderColor:'#2980d9',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
+  if(dpSrc==='all'||dpSrc==='p2'){
+    datasets.push({label:'Forge',data:[...s.p2H],borderColor:'#2980d9',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
     leg+=`<div class="leg-item"><div class="leg-sq" style="background:#2980d9;"></div>Forge</div>`;
   }
-  if((dpSrc==='all'||dpSrc==='aug')&&c.aug){
-    let augLine=Array(s.hiiveH.length).fill(c.aug);
+  if((dpSrc==='all'||dpSrc==='p3')&&c.p3){
+    let augLine=Array(s.p1H.length).fill(c.p3);
     datasets.push({label:'Augment',data:augLine,borderColor:'#8b5cf6',borderWidth:1.5,pointRadius:0,tension:0,fill:false,borderDash:[4,3]});
     leg+=`<div class="leg-item"><div class="leg-sq" style="background:#8b5cf6;"></div>Augment</div>`;
   }
@@ -686,7 +698,7 @@ function renderDetail(){
   if(detChart) detChart.destroy();
   detChart=new Chart(ctx,{
     type:'line',
-    data:{labels:s.hiiveH.map((_,i)=>i),datasets},
+    data:{labels:s.p1H.map((_,i)=>i),datasets},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
       plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+f$(c.parsed.y)},backgroundColor:'#fff',borderColor:'#e2e6ea',borderWidth:1,titleColor:'#7a8291',bodyColor:'#0f1117',titleFont:{family:'DM Mono',size:10},bodyFont:{family:'DM Mono',size:10}}},
       scales:{
@@ -705,25 +717,25 @@ function setRange(r,btn){
 
 function tick(){
   COS.forEach(c=>{
-    let s=ST[c.id], sc=Math.max(c.hiive,1)/50;
-    let nH=Math.max(0.01,s.hiive+(Math.random()-0.478)*hVol*sc*0.4);
-    let nF=Math.max(0.01,s.forge+(Math.random()-0.478)*hVol*(Math.max(c.forge,1)/50)*0.35);
+    let s=ST[c.id], sc=Math.max(c.p1,1)/50;
+    let nH=Math.max(0.01,s.p1+(Math.random()-0.478)*hVol*sc*0.4);
+    let nF=Math.max(0.01,s.p2+(Math.random()-0.478)*hVol*(Math.max(c.p2,1)/50)*0.35);
     let oldB=blended(c);
-    s.hiiveH.push(nH); s.hiiveH.shift();
-    s.forgeH.push(nF); s.forgeH.shift();
-    s.hiive=nH; s.forge=nF;
+    s.p1H.push(nH); s.p1H.shift();
+    s.p2H.push(nF); s.p2H.shift();
+    s.p1=nH; s.p2=nF;
     let nb=blended(c), pct=(nb-oldB)/oldB*100;
     if(Math.abs(pct)>0.25) aLog.unshift({type:pct>0?'up':'dn',txt:`<b>${c.name}</b> ${pct>0?'▲':'▼'} blended ${f$(nb)}`,t:now()});
-    checkUA(c,s.hiive,s.forge,nb);
-    if(sparkC[c.id]){ sparkC[c.id].data.datasets[0].data=[...s.hiiveH]; sparkC[c.id].update('none'); }
+    checkUA(c,s.p1,s.p2,nb);
+    if(sparkC[c.id]){ sparkC[c.id].data.datasets[0].data=[...s.p1H]; sparkC[c.id].update('none'); }
   });
   if(aLog.length>50) aLog=aLog.slice(0,50);
   renderAlerts(); updateMets();
   if(detChart){
     let s=ST[selCo], c=COS.find(x=>x.id===selCo), di=0;
-    if(dpSrc==='all'||dpSrc==='hiive'){ detChart.data.datasets[di].data=[...s.hiiveH]; di++; }
-    if(dpSrc==='all'||dpSrc==='forge'){ detChart.data.datasets[di].data=[...s.forgeH]; di++; }
-    if((dpSrc==='all'||dpSrc==='aug')&&c&&c.aug&&detChart.data.datasets[di]){ detChart.data.datasets[di].data=Array(s.hiiveH.length).fill(c.aug); }
+    if(dpSrc==='all'||dpSrc==='p1'){ detChart.data.datasets[di].data=[...s.p1H]; di++; }
+    if(dpSrc==='all'||dpSrc==='p2'){ detChart.data.datasets[di].data=[...s.p2H]; di++; }
+    if((dpSrc==='all'||dpSrc==='p3')&&c&&c.p3&&detChart.data.datasets[di]){ detChart.data.datasets[di].data=Array(s.p1H.length).fill(c.p3); }
     detChart.update('none');
   }
   document.getElementById('ts').textContent='Updated '+now();
@@ -732,7 +744,7 @@ function tick(){
 function checkUA(c,h,fg,b){
   uAlerts.forEach(al=>{
     if(al.triggered||al.id!==c.id) return;
-    let p=al.src==='hiive'?h:al.src==='forge'?fg:b;
+    let p=al.src==='p1'?h:al.src==='p2'?fg:b;
     if(al.cond==='above'?p>=al.target:p<=al.target){
       al.triggered=true;
       aLog.unshift({type:al.cond==='above'?'up':'dn',txt:`<b>Alert:</b> ${c.name} [${al.src}] ${al.cond} ${f$(al.target)} → now ${f$(p)}`,t:now()});
@@ -769,10 +781,12 @@ function initAlCo(){
   COS.forEach(c=>{ let o=document.createElement('option'); o.value=c.id; o.textContent=c.name; sel.appendChild(o); });
 }
 
-// ── ORDER BOOK DATA (scraped 1 Apr 2026 from connect.hiive.com) ──
+// ── ORDER BOOK DATA ──
+// Individual listing/bid rows below are a 1 Apr 2026 snapshot and are NOT current.
+// Listing/bid TOTALS (tL/tB) refreshed 7 Aug 2026 from the Hiive platform where available.
 const OB = {
-  ripple:    {tL:125,tB:17,L:[{id:'RIP-1D4',sh:9600,p:121,tr:'Direct',st:'Com'},{id:'RIP-53A',sh:1200,p:124,tr:'Direct',st:'Com'},{id:'RIP-86C',sh:10000,p:125,tr:'Direct',st:'Com'},{id:'RIP-C26',sh:4600,p:125,tr:'Direct',st:'Com'},{id:'RIP-F6E',sh:4000,p:125,tr:'Direct',st:'Com'}],B:[{id:'RIP-63A',sh:200,p:125.5,tr:'Direct',st:'Any'},{id:'RIP-533',sh:2000,p:125,tr:'Direct',st:'Pref'},{id:'RIP-29C',sh:1200,p:115,tr:'Direct',st:'Pref'},{id:'RIP-618',sh:500,p:110.01,tr:'Direct',st:'Any'}]},
-  kraken:    {tL:95,tB:17,L:[{id:'KRA-13E',sh:2200,p:32,tr:'Direct',st:'Com'},{id:'KRA-65A',sh:800,p:32.5,tr:'Direct',st:'Com'},{id:'KRA-D3D',sh:3000,p:33,tr:'Direct',st:'Com'}],B:[{id:'KRA-130',sh:6426,p:36,tr:'Direct',st:'Com'}]},
+  ripple:    {tL:109,tB:12,L:[{id:'RIP-1D4',sh:9600,p:121,tr:'Direct',st:'Com'},{id:'RIP-53A',sh:1200,p:124,tr:'Direct',st:'Com'},{id:'RIP-86C',sh:10000,p:125,tr:'Direct',st:'Com'},{id:'RIP-C26',sh:4600,p:125,tr:'Direct',st:'Com'},{id:'RIP-F6E',sh:4000,p:125,tr:'Direct',st:'Com'}],B:[{id:'RIP-63A',sh:200,p:125.5,tr:'Direct',st:'Any'},{id:'RIP-533',sh:2000,p:125,tr:'Direct',st:'Pref'},{id:'RIP-29C',sh:1200,p:115,tr:'Direct',st:'Pref'},{id:'RIP-618',sh:500,p:110.01,tr:'Direct',st:'Any'}]},
+  kraken:    {tL:55,tB:18,L:[{id:'KRA-13E',sh:2200,p:32,tr:'Direct',st:'Com'},{id:'KRA-65A',sh:800,p:32.5,tr:'Direct',st:'Com'},{id:'KRA-D3D',sh:3000,p:33,tr:'Direct',st:'Com'}],B:[{id:'KRA-130',sh:6426,p:36,tr:'Direct',st:'Com'}]},
   cerebras:  {tL:36,tB:31,L:[{id:'CER-0FF',sh:5000,p:110,tr:'Direct',st:'Com'},{id:'CER-92D',sh:null,p:null,tr:'Fwd',st:'Pref'},{id:'CER-A23',sh:null,p:null,tr:'Fwd',st:'Com'}],B:[{id:'CER-B41',sh:1000,p:135,tr:'Direct',st:'Com'}]},
   lambda:    {tL:5,tB:5,L:[{id:'LAM-A1F',sh:2000,p:40,tr:'Direct',st:'Com'}],B:[{id:'LAM-B22',sh:1000,p:48,tr:'Direct',st:'Com'}]},
   neuralink: {tL:44,tB:44,L:[{id:'NEU-F3A',sh:500,p:175,tr:'SPV',st:'Com'}],B:[{id:'NEU-C11',sh:200,p:83.33,tr:'SPV',st:'Com'}]},
@@ -801,7 +815,7 @@ function renderOB() {
   if (!ob) { panel.style.display = 'none'; return; }
   panel.style.display = '';
   document.getElementById('ob-title').textContent = co.name + ' Order Book';
-  document.getElementById('ob-meta').textContent = ob.tL + ' Listings · ' + ob.tB + ' Standing Bids · Hiive live';
+  document.getElementById('ob-meta').textContent = ob.tL + ' Listings · ' + ob.tB + ' Standing Bids · Hiive snapshot, not live';
   const items = obTab === 'L' ? ob.L : ob.B;
   const label = obTab === 'L' ? 'LISTING' : 'BID';
   const color = obTab === 'L' ? 'var(--green)' : 'var(--blue)';
@@ -824,22 +838,26 @@ function renderOB() {
 // Hook into company selection
 const _origSelCo = typeof selCo_ === 'function' ? selCo_ : null;
 
-// ── HIIVE IMPORT ──
-function applyHiiveData(data) {
+// ── POINT 1 IMPORT ──
+// Accepts any field whose name ends in "Price" (e.g. p1Price, or whatever key
+// the scraper already emits), so the importer works without naming a source.
+function applyP1Data(data) {
   let matched = 0;
   data.companies.forEach(h => {
     const co = COS.find(c => c.id === h.id);
     if (!co) return;
     const s = ST[co.id];
-    if (h.hiivePrice != null) { co.hiive = h.hiivePrice; s.hiive = h.hiivePrice; s.hiiveH[s.hiiveH.length-1] = h.hiivePrice; }
-    else if (h.highestBid != null) { co.hiive = h.highestBid; s.hiive = h.highestBid; s.hiiveH[s.hiiveH.length-1] = h.highestBid; }
-    co.hV = h.hiivePrice != null;
+    const pKey = Object.keys(h).find(k => /price$/i.test(k) && h[k] != null);
+    const px = pKey ? h[pKey] : null;
+    if (px != null) { co.p1 = px; s.p1 = px; s.p1H[s.p1H.length-1] = px; }
+    else if (h.highestBid != null) { co.p1 = h.highestBid; s.p1 = h.highestBid; s.p1H[s.p1H.length-1] = h.highestBid; }
+    co.p1V = px != null;
     co.liveOrders = h.totalOrders;
     s.liveOrders = h.totalOrders;
     matched++;
   });
   renderTable(); updateMets();
-  if (detChart) { let s=ST[selCo]; detChart.data.datasets[0].data=[...s.hiiveH]; detChart.update('none'); }
+  if (detChart) { let s=ST[selCo]; detChart.data.datasets[0].data=[...s.p1H]; detChart.update('none'); }
   const status = document.getElementById('import-status');
   status.textContent = matched + '/' + data.companies.length + ' matched · ' + new Date().toLocaleTimeString();
   status.style.display = 'inline';
@@ -849,13 +867,13 @@ function applyHiiveData(data) {
   return matched;
 }
 
-function promptHiiveImport() {
+function promptP1Import() {
   const json = prompt('Paste Hiive scraper JSON here:');
   if (!json) return;
   try {
     const data = JSON.parse(json);
     if (!data.companies || !Array.isArray(data.companies)) throw new Error('Invalid format');
-    const n = applyHiiveData(data);
+    const n = applyP1Data(data);
     alert('Updated ' + n + ' companies from Hiive live data.');
   } catch(e) {
     alert('Import failed: ' + e.message + '\n\nMake sure you paste the full JSON from the Hiive scraper.');
@@ -864,13 +882,13 @@ function promptHiiveImport() {
 
 document.addEventListener('paste', function(e) {
   const text = (e.clipboardData || window.clipboardData).getData('text');
-  if (!text || !text.includes('"source":"hiive"')) return;
+  if (!text || !text.includes('"companies"')) return;
   try {
     const data = JSON.parse(text);
-    if (data.source === 'hiive' && data.companies) {
+    if (data.companies && Array.isArray(data.companies)) {
       e.preventDefault();
-      const n = applyHiiveData(data);
-      console.log('[Perennial] Auto-imported ' + n + ' companies from clipboard paste');
+      const n = applyP1Data(data);
+      console.log('[Tracker] Auto-imported ' + n + ' companies from clipboard paste');
     }
   } catch(err) { /* not valid JSON, ignore */ }
 });
@@ -879,7 +897,7 @@ initState();
 initAlCo();
 renderTable();
 setTimeout(()=>{
-  selCo_('spacex');
+  selCo_('anth');
   aLog.push({type:'info',txt:'<b>Dashboard loaded</b> — 30 companies · Hiive &amp; Forge prices seeded',t:now()});
   renderAlerts();
   document.getElementById('ts').textContent='Updated '+now();
