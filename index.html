@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FloatX — Top 30 Pre-IPO</title>
+<title>Perennial — Top 30 Pre-IPO</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -315,8 +315,8 @@
   <header class="hdr">
     <div class="hdr-left">
       <div>
-        <div class="hdr-title">Top 30 Pre-IPO</div>
-        <div class="hdr-sub">Top 30 constituents · Broker 1 &amp; Broker 2 verified prices · 17 Apr 2026 · simulated live feed</div>
+        <div class="hdr-title">Perennial — Top 30 Pre-IPO</div>
+        <div class="hdr-sub">Top 30 constituents · Hiive &amp; Forge verified prices · 17 Apr 2026 · simulated live feed</div>
       </div>
     </div>
     <div class="hdr-right">
@@ -326,9 +326,9 @@
   </header>
 
   <div class="src-row">
-    <div class="src-chip"><div class="src-dot" style="background:#0c8c5e;"></div>Broker 1 verified</div>
-    <div class="src-chip"><div class="src-dot" style="background:#1a6bb5;"></div>Broker 2 verified</div>
-    <div class="src-chip"><div class="src-dot" style="background:#5b3ea6;"></div>Broker 3 (Augment Power 20)</div>
+    <div class="src-chip"><div class="src-dot" style="background:#0c8c5e;"></div>Hiive verified</div>
+    <div class="src-chip"><div class="src-dot" style="background:#1a6bb5;"></div>Forge verified</div>
+    <div class="src-chip"><div class="src-dot" style="background:#5b3ea6;"></div>Augment (Power 20)</div>
     <div class="src-chip"><div class="src-dot" style="background:#adb5bd;"></div>Simulated estimate</div>
     <div class="src-chip" style="border-style:dashed;color:#adb5bd;"><div class="src-dot" style="background:#c4b0f0;"></div>EquityZen — login gated</div>
   </div>
@@ -346,7 +346,7 @@
     <select id="sort-sel" onchange="renderTable()">
       <option value="val">Valuation</option>
       <option value="chg">24h change</option>
-      <option value="hiive-rank">B1 rank</option>
+      <option value="hiive-rank">Hiive rank</option>
       <option value="price">Share price</option>
       <option value="spread">Platform spread</option>
       <option value="orders">Live orders</option>
@@ -364,12 +364,12 @@
     <span class="ctrl-label">Detail</span>
     <div class="tabs" id="dtabs">
       <button class="tab active" onclick="setDpSrc('all',this)">All</button>
-      <button class="tab" onclick="setDpSrc('hiive',this)">Broker 1</button>
-      <button class="tab" onclick="setDpSrc('forge',this)">Broker 2</button>
-      <button class="tab" onclick="setDpSrc('aug',this)">Broker 3</button>
+      <button class="tab" onclick="setDpSrc('hiive',this)">Hiive</button>
+      <button class="tab" onclick="setDpSrc('forge',this)">Forge</button>
+      <button class="tab" onclick="setDpSrc('aug',this)">Augment</button>
     </div>
     <div class="ctrl-sep"></div>
-    <button class="al-btn" id="import-btn" onclick="promptHiiveImport()" title="Paste scraped Broker 1 JSON to update live prices">Import B1</button>
+    <button class="al-btn" id="import-btn" onclick="promptHiiveImport()" title="Paste scraped Hiive JSON to update live prices">Import Hiive</button>
     <span id="import-status" style="font-size:10px;color:var(--green);display:none;"></span>
   </div>
 
@@ -379,11 +379,11 @@
         <th style="width:32px;">#</th>
         <th style="width:150px;">Company</th>
         <th style="width:36px;">H50</th>
-        <th style="width:95px;" class="col-b1">Broker 1</th>
-        <th style="width:95px;" class="col-b2">Broker 2</th>
-        <th style="width:95px;" class="col-b3">Broker 3</th>
+        <th style="width:95px;" class="col-b1">Hiive</th>
+        <th style="width:95px;" class="col-b2">Forge</th>
+        <th style="width:95px;" class="col-b3">Augment</th>
         <th style="width:65px;">24h chg</th>
-        <th style="width:90px;" class="col-sp">B1/B2 spread</th>
+        <th style="width:90px;" class="col-sp">Hiive/Forge spread</th>
         <th style="width:78px;">Trend</th>
         <th style="width:76px;">Implied cap</th>
         <th style="width:55px;">Orders</th>
@@ -408,7 +408,7 @@
       <div class="str-row" id="str-row">
         <div class="str-item">Structure: <b>—</b></div>
         <div class="str-item">ROFR: <b>—</b></div>
-        <div class="str-item">B1 rank: <b>—</b></div>
+        <div class="str-item">Hiive rank: <b>—</b></div>
         <div class="str-item">Live orders: <b>—</b></div>
       </div>
       <div class="chart-leg" id="det-leg"></div>
@@ -418,7 +418,7 @@
 
   <div class="det" id="ob-panel" style="display:none;">
     <div class="det-hdr">
-      <div><div class="det-title" id="ob-title">Order Book</div><div class="det-meta" id="ob-meta">Listings &amp; Standing Bids from Broker 1</div></div>
+      <div><div class="det-title" id="ob-title">Order Book</div><div class="det-meta" id="ob-meta">Listings &amp; Standing Bids from Hiive</div></div>
     </div>
     <div class="det-body">
       <div style="display:flex;gap:8px;margin-bottom:12px;">
@@ -435,7 +435,7 @@
       <div class="al-list" id="al-list"><div class="al-empty">No alerts yet — set one below or watch for auto-alerts on significant moves</div></div>
       <div class="al-form">
         <select id="al-co"><option value="">Company...</option></select>
-        <select id="al-src"><option value="hiive">Broker 1</option><option value="forge">Broker 2</option><option value="blended">Blended</option></select>
+        <select id="al-src"><option value="hiive">Hiive</option><option value="forge">Forge</option><option value="blended">Blended</option></select>
         <select id="al-cond"><option value="above">Above</option><option value="below">Below</option></select>
         <input type="number" id="al-price" placeholder="$ target" step="0.5" min="0"/>
         <button class="al-btn" onclick="addAlert()">Set alert</button>
@@ -444,8 +444,8 @@
   </div>
 
   <div class="footer">
-    <b>Broker 1 verified (30 Mar 2026):</b> SpaceX $852.26 · OpenAI $608.06 · Anthropic $474.49 · Canva $1,447.61 · Discord $105.70 · Anduril $67.96 · Rippling $54.13 · Kraken $37.08 · Perplexity $47.50 · Cerebras $112.96 · Ramp $113.49 · Lambda $45.17 · Apptronik $40.60 · Fanatics $38.16 · Shield AI $140.41 · Figure AI $137.93 · Replit $134.43 · PsiQuantum $31.17 · Lightmatter $55.62 · Groq $35.06<br>
-    <b>Broker 2 verified (30 Mar 2026):</b> SpaceX $601.27 · OpenAI $729.13 · Anthropic $259.14 · Stripe $72.45 · Databricks $196.38 · Revolut $1,315.53 · Perplexity $69.54 · Ripple $109.24 · Kraken $32.34 · Cerebras $102.62 · Discord $31.36 · Shield AI $153.22 · Replit $268.12 · Ramp $92.03 · PsiQuantum $34.00 · Lightmatter $55.20<br>
+    <b>Hiive verified (30 Mar 2026):</b> SpaceX $852.26 · OpenAI $608.06 · Anthropic $474.49 · Canva $1,447.61 · Discord $105.70 · Anduril $67.96 · Rippling $54.13 · Kraken $37.08 · Perplexity $47.50 · Cerebras $112.96 · Ramp $113.49 · Lambda $45.17 · Apptronik $40.60 · Fanatics $38.16 · Shield AI $140.41 · Figure AI $137.93 · Replit $134.43 · PsiQuantum $31.17 · Lightmatter $55.62 · Groq $35.06<br>
+    <b>Forge verified (30 Mar 2026):</b> SpaceX $601.27 · OpenAI $729.13 · Anthropic $259.14 · Stripe $72.45 · Databricks $196.38 · Revolut $1,315.53 · Perplexity $69.54 · Ripple $109.24 · Kraken $32.34 · Cerebras $102.62 · Discord $31.36 · Shield AI $153.22 · Replit $268.12 · Ramp $92.03 · PsiQuantum $34.00 · Lightmatter $55.20<br>
     Note: xAI was acquired by SpaceX on 3 Feb 2026 and is no longer independently traded. EquityZen prices login-gated (SPV model). Not financial advice. For accredited investors only.
   </div>
 
@@ -635,13 +635,13 @@ function renderDetail(){
   let b=blended(c), chg=chgPct(c);
   document.getElementById('det-name').textContent=c.name+' — secondary market detail';
   let vNote=(c.hV||c.fV)?' · verified 17 Apr 2026':' · simulated estimate';
-  document.getElementById('det-meta').textContent=c.sec+' · ~'+(c.shares/1e6).toFixed(0)+'M shares · '+fB(b*c.shares)+' implied cap'+vNote+(c.h50?' · B1 #'+c.h50:'');
+  document.getElementById('det-meta').textContent=c.sec+' · ~'+(c.shares/1e6).toFixed(0)+'M shares · '+fB(b*c.shares)+' implied cap'+vNote+(c.h50?' · Hiive #'+c.h50:'');
 
-  let augCard=c.aug?`<div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--purple-mid);flex-shrink:0;"></div>Broker 3</div><div class="sc-price" style="color:var(--purple)">${f$(c.aug)}</div><div class="sc-note">${c.aV?'Power 20 est.':'Estimated'}</div></div>`:'';
+  let augCard=c.aug?`<div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--purple-mid);flex-shrink:0;"></div>Augment</div><div class="sc-price" style="color:var(--purple)">${f$(c.aug)}</div><div class="sc-note">${c.aV?'Power 20 est.':'Estimated'}</div></div>`:'';
   let chgHtml=chg>=0?`<span class="up">${fpct(chg)}</span>`:`<span class="dn">${fpct(chg)}</span>`;
   document.getElementById('src-cards').innerHTML=`
-    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>Broker 1</div><div class="sc-price" style="color:var(--green)">${f$(s.hiive)}</div><div class="sc-note">${c.hV?'Verified 17 Apr':'Estimated'}</div></div>
-    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;"></div>Broker 2</div><div class="sc-price" style="color:var(--blue)">${f$(s.forge)}</div><div class="sc-note">${c.fV?'Verified 17 Apr':'Estimated'}</div></div>
+    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>Hiive</div><div class="sc-price" style="color:var(--green)">${f$(s.hiive)}</div><div class="sc-note">${c.hV?'Verified 17 Apr':'Estimated'}</div></div>
+    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;"></div>Forge</div><div class="sc-price" style="color:var(--blue)">${f$(s.forge)}</div><div class="sc-note">${c.fV?'Verified 17 Apr':'Estimated'}</div></div>
     ${augCard}
     <div class="sc gated"><div class="sc-lbl" style="color:#c4b0f0;"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:#c4b0f0;flex-shrink:0;"></div>EquityZen</div><div class="sc-price" style="font-size:13px;color:var(--text4);">Login required</div><div class="sc-note">SPV model — no public price</div></div>
     <div class="sc"><div class="sc-lbl">Blended mid</div><div class="sc-price">${f$(b)}</div><div class="sc-note">${chgHtml} vs open</div></div>
@@ -650,9 +650,9 @@ function renderDetail(){
   let barCol=spPct>30?'var(--red)':spPct>12?'var(--amber)':'var(--green)';
   let barW=Math.min(spPct/60*100,100);
   let lo=Math.min(s.hiive,s.forge), hi=Math.max(s.hiive,s.forge);
-  let loSrc=s.forge<=s.hiive?'Broker 2':'Broker 1', hiSrc=s.hiive>=s.forge?'Broker 1':'Broker 2';
+  let loSrc=s.forge<=s.hiive?'Forge':'Hiive', hiSrc=s.hiive>=s.forge?'Hiive':'Forge';
   document.getElementById('spread-wrap').innerHTML=`
-    <div class="spread-lbl">Broker 1 / Broker 2 spread: <b style="color:var(--text)">${f$(sp)}</b> (${r2(spPct,1)}%) — ${spPct>30?'wide · low liquidity':spPct>12?'moderate spread':'tight spread'}</div>
+    <div class="spread-lbl">Hiive / Forge spread: <b style="color:var(--text)">${f$(sp)}</b> (${r2(spPct,1)}%) — ${spPct>30?'wide · low liquidity':spPct>12?'moderate spread':'tight spread'}</div>
     <div class="spread-track"><div class="spread-fill" style="width:${barW}%;background:${barCol};"></div></div>
     <div class="spread-ticks"><span>${f$(lo)} ${loSrc}</span><span>${f$(hi)} ${hiSrc}</span></div>
   `;
@@ -662,24 +662,24 @@ function renderDetail(){
   document.getElementById('str-row').innerHTML=`
     <div class="str-item">Structure: <b style="color:${strCol}">${c.struct}</b></div>
     <div class="str-item">ROFR: <b>${c.rofr}</b></div>
-    <div class="str-item">B1 rank: <b>${c.h50?'#'+c.h50:'Not in index'}</b></div>
+    <div class="str-item">Hiive rank: <b>${c.h50?'#'+c.h50:'Not in index'}</b></div>
     <div class="str-item">Live orders: <b>${s.liveOrders||'—'}</b></div>
     <div class="str-item">Approval wait: <b>${wait}</b></div>
   `;
 
   let datasets=[], leg='';
   if(dpSrc==='all'||dpSrc==='hiive'){
-    datasets.push({label:'Broker 1',data:[...s.hiiveH],borderColor:'#1db87c',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
-    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#1db87c;"></div>Broker 1</div>`;
+    datasets.push({label:'Hiive',data:[...s.hiiveH],borderColor:'#1db87c',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
+    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#1db87c;"></div>Hiive</div>`;
   }
   if(dpSrc==='all'||dpSrc==='forge'){
-    datasets.push({label:'Broker 2',data:[...s.forgeH],borderColor:'#2980d9',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
-    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#2980d9;"></div>Broker 2</div>`;
+    datasets.push({label:'Forge',data:[...s.forgeH],borderColor:'#2980d9',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
+    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#2980d9;"></div>Forge</div>`;
   }
   if((dpSrc==='all'||dpSrc==='aug')&&c.aug){
     let augLine=Array(s.hiiveH.length).fill(c.aug);
-    datasets.push({label:'Broker 3',data:augLine,borderColor:'#8b5cf6',borderWidth:1.5,pointRadius:0,tension:0,fill:false,borderDash:[4,3]});
-    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#8b5cf6;"></div>Broker 3</div>`;
+    datasets.push({label:'Augment',data:augLine,borderColor:'#8b5cf6',borderWidth:1.5,pointRadius:0,tension:0,fill:false,borderDash:[4,3]});
+    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#8b5cf6;"></div>Augment</div>`;
   }
   document.getElementById('det-leg').innerHTML=leg;
   let ctx=document.getElementById('detChart').getContext('2d');
@@ -801,12 +801,12 @@ function renderOB() {
   if (!ob) { panel.style.display = 'none'; return; }
   panel.style.display = '';
   document.getElementById('ob-title').textContent = co.name + ' Order Book';
-  document.getElementById('ob-meta').textContent = ob.tL + ' Listings · ' + ob.tB + ' Standing Bids · Broker 1 live';
+  document.getElementById('ob-meta').textContent = ob.tL + ' Listings · ' + ob.tB + ' Standing Bids · Hiive live';
   const items = obTab === 'L' ? ob.L : ob.B;
   const label = obTab === 'L' ? 'LISTING' : 'BID';
   const color = obTab === 'L' ? 'var(--green)' : 'var(--blue)';
   if (!items.length) {
-    document.getElementById('ob-list').innerHTML = '<div style="font-size:11px;color:var(--text4);padding:12px;">No visible orders — check Broker 1 for full depth</div>';
+    document.getElementById('ob-list').innerHTML = '<div style="font-size:11px;color:var(--text4);padding:12px;">No visible orders — check Hiive for full depth</div>';
     return;
   }
   document.getElementById('ob-list').innerHTML = items.map(o =>
@@ -818,7 +818,7 @@ function renderOB() {
       <span class="sec-tag ${o.tr==='Direct'?'tag-fin':o.tr==='SPV'?'tag-ai':'tag-da'}">${o.tr}</span>
       <span style="font-size:10px;color:var(--text4);">${o.st}</span>
     </div>`
-  ).join('') + `<div style="font-size:10px;color:var(--text4);padding:8px 10px;border-top:1px solid var(--border);">Showing ${items.length} of ${obTab==='L'?ob.tL:ob.tB} · View full depth on Broker 1</div>`;
+  ).join('') + `<div style="font-size:10px;color:var(--text4);padding:8px 10px;border-top:1px solid var(--border);">Showing ${items.length} of ${obTab==='L'?ob.tL:ob.tB} · View full depth on Hiive</div>`;
 }
 
 // Hook into company selection
@@ -843,22 +843,22 @@ function applyHiiveData(data) {
   const status = document.getElementById('import-status');
   status.textContent = matched + '/' + data.companies.length + ' matched · ' + new Date().toLocaleTimeString();
   status.style.display = 'inline';
-  aLog.unshift({type:'info', txt:'<b>B1 import:</b> ' + matched + ' companies updated from live scrape', t:now()});
+  aLog.unshift({type:'info', txt:'<b>Hiive import:</b> ' + matched + ' companies updated from live scrape', t:now()});
   renderAlerts();
-  document.getElementById('ts').textContent = 'Updated ' + now() + ' (B1 live)';
+  document.getElementById('ts').textContent = 'Updated ' + now() + ' (Hiive live)';
   return matched;
 }
 
 function promptHiiveImport() {
-  const json = prompt('Paste Broker 1 scraper JSON here:');
+  const json = prompt('Paste Hiive scraper JSON here:');
   if (!json) return;
   try {
     const data = JSON.parse(json);
     if (!data.companies || !Array.isArray(data.companies)) throw new Error('Invalid format');
     const n = applyHiiveData(data);
-    alert('Updated ' + n + ' companies from Broker 1 live data.');
+    alert('Updated ' + n + ' companies from Hiive live data.');
   } catch(e) {
-    alert('Import failed: ' + e.message + '\n\nMake sure you paste the full JSON from the Broker 1 scraper.');
+    alert('Import failed: ' + e.message + '\n\nMake sure you paste the full JSON from the Hiive scraper.');
   }
 }
 
@@ -870,7 +870,7 @@ document.addEventListener('paste', function(e) {
     if (data.source === 'hiive' && data.companies) {
       e.preventDefault();
       const n = applyHiiveData(data);
-      console.log('[FloatX] Auto-imported ' + n + ' companies from clipboard paste');
+      console.log('[Perennial] Auto-imported ' + n + ' companies from clipboard paste');
     }
   } catch(err) { /* not valid JSON, ignore */ }
 });
@@ -880,7 +880,7 @@ initAlCo();
 renderTable();
 setTimeout(()=>{
   selCo_('spacex');
-  aLog.push({type:'info',txt:'<b>Dashboard loaded</b> — 30 companies · Broker 1 &amp; Broker 2 prices seeded',t:now()});
+  aLog.push({type:'info',txt:'<b>Dashboard loaded</b> — 30 companies · Hiive &amp; Forge prices seeded',t:now()});
   renderAlerts();
   document.getElementById('ts').textContent='Updated '+now();
   setInterval(tick,2500);
