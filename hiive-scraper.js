@@ -1,4 +1,4 @@
-// FloatX Hiive Scraper — run on connect.hiive.com/companies/browse while logged in
+// Perennial Hiive Scraper — run on connect.hiive.com/companies/browse while logged in
 // Copies JSON to clipboard with live bid/ask/price + order depth for your Top 30 dashboard
 //
 // Usage: paste into browser console on the Browse Companies page, or save as a bookmarklet:
@@ -120,7 +120,7 @@
 
   // Copy to clipboard
   navigator.clipboard.writeText(json).then(() => {
-    console.log('%c[FloatX Scraper] Copied ' + results.length + ' companies to clipboard', 'color: #0c8c5e; font-weight: bold; font-size: 14px');
+    console.log('%c[Perennial Scraper] Copied ' + results.length + ' companies to clipboard', 'color: #0c8c5e; font-weight: bold; font-size: 14px');
     console.table(results.map(r => ({
       Name: r.name,
       'Highest Bid': r.highestBid ? '$' + r.highestBid : '—',
@@ -128,9 +128,9 @@
       'Hiive Price': r.hiivePrice ? '$' + r.hiivePrice : '—',
       Orders: r.totalOrders
     })));
-    alert('FloatX Scraper: ' + results.length + ' companies copied to clipboard as JSON!\n\nPaste into your dashboard to update.');
+    alert('Perennial Scraper: ' + results.length + ' companies copied to clipboard as JSON!\n\nPaste into your dashboard to update.');
   }).catch(err => {
-    console.error('[FloatX Scraper] Clipboard failed:', err);
+    console.error('[Perennial Scraper] Clipboard failed:', err);
     // Fallback: open in new tab
     const blob = new Blob([json], { type: 'application/json' });
     window.open(URL.createObjectURL(blob));
