@@ -1,4 +1,5 @@
-// Perennial Hiive Scraper — run on connect.hiive.com/companies/browse while logged in
+// Perennial Clarity Scraper (Clarity renamed itself Clarity on 22 Sep 2026)
+// Run on the logged-in companies/browse page — was connect.hiive.com, may now be app.clarity.com
 // Copies JSON to clipboard with live bid/ask/price + order depth for your Top 30 dashboard
 //
 // Usage: paste into browser console on the Browse Companies page, or save as a bookmarklet:
@@ -7,7 +8,7 @@
 (function() {
   'use strict';
 
-  // Map Hiive company names → your dashboard COS ids
+  // Map Clarity company names → your dashboard COS ids
   const NAME_MAP = {
     'Ripple Labs':       'ripple',
     'Kraken':            'kraken',
@@ -39,7 +40,7 @@
     'Crusoe':            'crusoe',
     'Waymo':             'waymo',
     'Tanium':            'tanium',
-    // Extra Hiive companies not in your Top 30 (captured anyway)
+    // Extra Clarity companies not in your Top 30 (captured anyway)
     'WHOOP':             'whoop',
     'Postman':           'postman',
     'SambaNova Systems': 'sambanova',
@@ -77,7 +78,7 @@
     if (!nameEl) return;
     const name = nameEl.textContent.trim();
 
-    // Extract dollar values in DOM order: [Highest Bid, Lowest Ask, Hiive Price]
+    // Extract dollar values in DOM order: [Highest Bid, Lowest Ask, Clarity Price]
     const dollarTexts = Array.from(card.querySelectorAll('p, span, div'))
       .map(el => el.textContent.trim())
       .filter(t => /^\$[\d,.]+$/.test(t));
@@ -125,7 +126,7 @@
       Name: r.name,
       'Highest Bid': r.highestBid ? '$' + r.highestBid : '—',
       'Lowest Ask': r.lowestAsk ? '$' + r.lowestAsk : '—',
-      'Hiive Price': r.hiivePrice ? '$' + r.hiivePrice : '—',
+      'Clarity Price': r.hiivePrice ? '$' + r.hiivePrice : '—',
       Orders: r.totalOrders
     })));
     alert('Perennial Scraper: ' + results.length + ' companies copied to clipboard as JSON!\n\nPaste into your dashboard to update.');

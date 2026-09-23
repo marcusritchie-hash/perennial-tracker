@@ -316,7 +316,7 @@
     <div class="hdr-left">
       <div>
         <div class="hdr-title">Perennial — Top 30 Pre-IPO</div>
-        <div class="hdr-sub">Top 30 constituents · Hiive, Forge &amp; Augment prices refreshed 7 Aug 2026 · movement below is a simulation, not a live feed</div>
+        <div class="hdr-sub">Top 30 constituents · Clarity (formerly Hiive), Forge &amp; Augment prices refreshed 7 Aug 2026 · movement below is a simulation, not a live feed</div>
       </div>
     </div>
     <div class="hdr-right">
@@ -326,7 +326,7 @@
   </header>
 
   <div class="src-row">
-    <div class="src-chip"><div class="src-dot" style="background:#0c8c5e;"></div>Hiive verified</div>
+    <div class="src-chip"><div class="src-dot" style="background:#0c8c5e;"></div>Clarity verified</div>
     <div class="src-chip"><div class="src-dot" style="background:#1a6bb5;"></div>Forge verified</div>
     <div class="src-chip"><div class="src-dot" style="background:#5b3ea6;"></div>Augment (quarterly)</div>
     <div class="src-chip"><div class="src-dot" style="background:#adb5bd;"></div>Simulated estimate</div>
@@ -346,7 +346,7 @@
     <select id="sort-sel" onchange="renderTable()">
       <option value="val">Valuation</option>
       <option value="chg">24h change</option>
-      <option value="p1-rank">Hiive rank</option>
+      <option value="p1-rank">Clarity rank</option>
       <option value="price">Share price</option>
       <option value="spread">Platform spread</option>
       <option value="orders">Live orders</option>
@@ -364,12 +364,12 @@
     <span class="ctrl-label">Detail</span>
     <div class="tabs" id="dtabs">
       <button class="tab active" onclick="setDpSrc('all',this)">All</button>
-      <button class="tab" onclick="setDpSrc('p1',this)">Hiive</button>
+      <button class="tab" onclick="setDpSrc('p1',this)">Clarity</button>
       <button class="tab" onclick="setDpSrc('p2',this)">Forge</button>
       <button class="tab" onclick="setDpSrc('p3',this)">Augment</button>
     </div>
     <div class="ctrl-sep"></div>
-    <button class="al-btn" id="import-btn" onclick="promptP1Import()" title="Paste scraped Hiive JSON to update live prices">Import Hiive</button>
+    <button class="al-btn" id="import-btn" onclick="promptP1Import()" title="Paste scraped Clarity JSON to update live prices">Import Clarity</button>
     <span id="import-status" style="font-size:10px;color:var(--green);display:none;"></span>
   </div>
 
@@ -378,12 +378,12 @@
       <thead><tr>
         <th style="width:32px;">#</th>
         <th style="width:150px;">Company</th>
-        <th style="width:36px;">H50</th>
-        <th style="width:95px;" class="col-p1">Hiive</th>
+        <th style="width:36px;">CLI</th>
+        <th style="width:95px;" class="col-p1">Clarity</th>
         <th style="width:95px;" class="col-p2">Forge</th>
         <th style="width:95px;" class="col-p3">Augment</th>
         <th style="width:65px;">24h chg</th>
-        <th style="width:90px;" class="col-sp">Hiive/Forge spread</th>
+        <th style="width:90px;" class="col-sp">Clarity/Forge spread</th>
         <th style="width:78px;">Trend</th>
         <th style="width:76px;">Implied cap</th>
         <th style="width:55px;">Orders</th>
@@ -408,7 +408,7 @@
       <div class="str-row" id="str-row">
         <div class="str-item">Structure: <b>—</b></div>
         <div class="str-item">ROFR: <b>—</b></div>
-        <div class="str-item">Hiive rank: <b>—</b></div>
+        <div class="str-item">Clarity rank: <b>—</b></div>
         <div class="str-item">Live orders: <b>—</b></div>
       </div>
       <div class="chart-leg" id="det-leg"></div>
@@ -418,7 +418,7 @@
 
   <div class="det" id="ob-panel" style="display:none;">
     <div class="det-hdr">
-      <div><div class="det-title" id="ob-title">Order Book</div><div class="det-meta" id="ob-meta">Listings &amp; Standing Bids from Hiive</div></div>
+      <div><div class="det-title" id="ob-title">Order Book</div><div class="det-meta" id="ob-meta">Listings &amp; Standing Bids from Clarity</div></div>
     </div>
     <div class="det-body">
       <div style="display:flex;gap:8px;margin-bottom:12px;">
@@ -435,7 +435,7 @@
       <div class="al-list" id="al-list"><div class="al-empty">No alerts yet — set one below or watch for auto-alerts on significant moves</div></div>
       <div class="al-form">
         <select id="al-co"><option value="">Company...</option></select>
-        <select id="al-src"><option value="p1">Hiive</option><option value="p2">Forge</option><option value="blended">Blended</option></select>
+        <select id="al-src"><option value="p1">Clarity</option><option value="p2">Forge</option><option value="blended">Blended</option></select>
         <select id="al-cond"><option value="above">Above</option><option value="below">Below</option></select>
         <input type="number" id="al-price" placeholder="$ target" step="0.5" min="0"/>
         <button class="al-btn" onclick="addAlert()">Set alert</button>
@@ -444,11 +444,11 @@
   </div>
 
   <div class="footer">
-    <b>Hiive Price, verified 7 Aug 2026 12:05 GMT+10:</b> Anthropic $1,013.86 · OpenAI $693.33 · Kalshi $647.25 · Databricks $259.22 · Replit $232.43 · Crusoe $216.09 · Figure AI $184.83 · Polymarket $139.57 · Ripple $102.43 · Lightmatter $89.15 · Stripe $72.49 · Tenstorrent $63.79 · Perplexity $63.09 · Saronic $48.10 · Apptronik $40.51 · Lambda $39.15 · Kraken $28.60 · PsiQuantum $27.31<br>
+    <b>Clarity Price (formerly Hiive — renamed 22 Sep 2026), verified 7 Aug 2026 12:05 GMT+10:</b> Anthropic $1,013.86 · OpenAI $693.33 · Kalshi $647.25 · Databricks $259.22 · Replit $232.43 · Crusoe $216.09 · Figure AI $184.83 · Polymarket $139.57 · Ripple $102.43 · Lightmatter $89.15 · Stripe $72.49 · Tenstorrent $63.79 · Perplexity $63.09 · Saronic $48.10 · Apptronik $40.51 · Lambda $39.15 · Kraken $28.60 · PsiQuantum $27.31<br>
     <b>Forge Price, verified 7 Aug 2026:</b> Revolut $2,200.00 · OpenAI $721.85 · Replit $256.70 · Databricks $242.04 · Anduril $140.00 · Ramp $125.55 · Ripple $105.56 · Stripe $72.45 · Rippling $58.62 · Fanatics $53.50 · Lambda $42.06 · Apptronik $36.97 · Discord $31.31 · Kraken $29.41 · PsiQuantum $28.54 · Tanium $4.71<br>
     <b>Augment — Power 20 ranking as at 30 Jun 2026:</b> Anthropic $847.02 · OpenAI $725.55 · Kalshi $625.49 · Neuralink $297.65 · Databricks $215.05 · Crusoe $204.73 · Shield AI $161.51 · Canva $1,636.84 · Revolut $1,952.95 · Polymarket $136.22 · Ramp $115.57 · Stripe $65.51 · Perplexity $62.82 · Rippling $50.81 · Saronic $40.21 · Replit $271.84 · Anduril $118.35<br>
     <b>Removed this update — no longer pre-IPO:</b> SpaceX (IPO 12 Jun 2026, NASDAQ: SPCX, $75B raised at $1.75T) · Cerebras (IPO 14 May 2026, NASDAQ: CBRS, $5.55B at $56.43B) · Groq (acquired by NVIDIA) · Chime (completed IPO). Added in their place: Polymarket, Kalshi, Tenstorrent, Saronic.<br>
-    <b>Read this before using any number here.</b> Prices marked <b>~</b> are last-known estimates carried forward, not current quotes — only <b>✓</b> values were verified on the date shown. Augment figures are end-of-quarter (30 Jun), so they lag Hiive and Forge by five weeks. Implied market caps are derived from back-solved share counts and are approximations only. The ticking prices and all chart history on this page are <b>randomly simulated from these seed values</b> and do not represent real trading. Not financial advice. For accredited investors only.
+    <b>Read this before using any number here.</b> Prices marked <b>~</b> are last-known estimates carried forward, not current quotes — only <b>✓</b> values were verified on the date shown. Augment figures are end-of-quarter (30 Jun), so they lag Clarity and Forge by five weeks. Implied market caps are derived from back-solved share counts and are approximations only. The ticking prices and all chart history on this page are <b>randomly simulated from these seed values</b> and do not represent real trading. Not financial advice. For accredited investors only.
   </div>
 
 </div>
@@ -456,7 +456,7 @@
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
 // DATA REFRESHED 7 Aug 2026 from three sources:
-//   p1 = Hiive Price   (the Hiive platform, Hiive50 index board, 7 Aug 12:05 GMT+10)
+//   p1 = Clarity Price   (the Clarity platform, Clarity Liquidity Index index board, 7 Aug 12:05 GMT+10)
 //   p2 = Forge Price   (the Forge platform public company pages, 7 Aug 2026)
 //   p3   = Augment Price (the Augment platform Power 20 ranking, end-of-quarter 30 Jun 2026)
 // p1V/p2V/p3V = price came verified from that source. false = last-known estimate,
@@ -465,7 +465,7 @@
 // so IMPLIED CAP is an approximation, not a reported figure.
 // ─────────────────────────────────────────────────────────────────────────────
 const COS = [
-  // Hiive50 ranked + major unicorns. p1rank=Hiive50 rank, liveOrders=Hiive live orders
+  // Clarity Liquidity Index ranked + major unicorns. p1rank=Clarity Liquidity Index rank, liveOrders=Clarity live orders
   { id:'anth',       name:'Anthropic',    sec:'AI',      sc:'ai', shares:1641e6, col:'#8b5cf6', p1:1013.86,p2:900,     p3:847.02, p1V:true,  p2V:false, p3V:true,  struct:'SPV',   rofr:'Very high', p1rank:6,  liveOrders:0   },
   { id:'openai',     name:'OpenAI',       sec:'AI',      sc:'ai', shares:1239e6, col:'#5b3ea6', p1:693.33, p2:721.85,  p3:725.55, p1V:true,  p2V:true,  p3V:true,  struct:'Mixed', rofr:'High',      p1rank:13, liveOrders:0   },
   { id:'databricks', name:'Databricks',   sec:'Data',    sc:'da', shares:705e6,  col:'#9a6c00', p1:259.22, p2:242.04,  p3:215.05, p1V:true,  p2V:true,  p3V:true,  struct:'Mixed', rofr:'Moderate',  p1rank:2,  liveOrders:61  },
@@ -647,12 +647,12 @@ function renderDetail(){
   let b=blended(c), chg=chgPct(c);
   document.getElementById('det-name').textContent=c.name+' — secondary market detail';
   let vNote=(c.p1V||c.p2V||c.p3V)?' · verified 7 Aug 2026':' · last-known estimate';
-  document.getElementById('det-meta').textContent=c.sec+' · ~'+(c.shares/1e6).toFixed(0)+'M shares · '+fB(b*c.shares)+' implied cap'+vNote+(c.p1rank?' · Hiive #'+c.p1rank:'');
+  document.getElementById('det-meta').textContent=c.sec+' · ~'+(c.shares/1e6).toFixed(0)+'M shares · '+fB(b*c.shares)+' implied cap'+vNote+(c.p1rank?' · Clarity #'+c.p1rank:'');
 
   let augCard=c.p3?`<div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--purple-mid);flex-shrink:0;"></div>Augment</div><div class="sc-price" style="color:var(--purple)">${f$(c.p3)}</div><div class="sc-note">${c.p3V?'Augment ranking est.':'Estimated'}</div></div>`:'';
   let chgHtml=chg>=0?`<span class="up">${fpct(chg)}</span>`:`<span class="dn">${fpct(chg)}</span>`;
   document.getElementById('src-cards').innerHTML=`
-    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>Hiive</div><div class="sc-price" style="color:var(--green)">${f$(s.p1)}</div><div class="sc-note">${c.p1V?'Verified 17 Apr':'Estimated'}</div></div>
+    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>Clarity</div><div class="sc-price" style="color:var(--green)">${f$(s.p1)}</div><div class="sc-note">${c.p1V?'Verified 17 Apr':'Estimated'}</div></div>
     <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;"></div>Forge</div><div class="sc-price" style="color:var(--blue)">${f$(s.p2)}</div><div class="sc-note">${c.p2V?'Verified 17 Apr':'Estimated'}</div></div>
     ${augCard}
     <div class="sc gated"><div class="sc-lbl" style="color:#c4b0f0;"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:#c4b0f0;flex-shrink:0;"></div>EquityZen</div><div class="sc-price" style="font-size:13px;color:var(--text4);">Login required</div><div class="sc-note">SPV model — no public price</div></div>
@@ -662,9 +662,9 @@ function renderDetail(){
   let barCol=spPct>30?'var(--red)':spPct>12?'var(--amber)':'var(--green)';
   let barW=Math.min(spPct/60*100,100);
   let lo=Math.min(s.p1,s.p2), hi=Math.max(s.p1,s.p2);
-  let loSrc=s.p2<=s.p1?'Forge':'Hiive', hiSrc=s.p1>=s.p2?'Hiive':'Forge';
+  let loSrc=s.p2<=s.p1?'Forge':'Clarity', hiSrc=s.p1>=s.p2?'Clarity':'Forge';
   document.getElementById('spread-wrap').innerHTML=`
-    <div class="spread-lbl">Hiive / Forge spread: <b style="color:var(--text)">${f$(sp)}</b> (${r2(spPct,1)}%) — ${spPct>30?'wide · low liquidity':spPct>12?'moderate spread':'tight spread'}</div>
+    <div class="spread-lbl">Clarity / Forge spread: <b style="color:var(--text)">${f$(sp)}</b> (${r2(spPct,1)}%) — ${spPct>30?'wide · low liquidity':spPct>12?'moderate spread':'tight spread'}</div>
     <div class="spread-track"><div class="spread-fill" style="width:${barW}%;background:${barCol};"></div></div>
     <div class="spread-ticks"><span>${f$(lo)} ${loSrc}</span><span>${f$(hi)} ${hiSrc}</span></div>
   `;
@@ -674,15 +674,15 @@ function renderDetail(){
   document.getElementById('str-row').innerHTML=`
     <div class="str-item">Structure: <b style="color:${strCol}">${c.struct}</b></div>
     <div class="str-item">ROFR: <b>${c.rofr}</b></div>
-    <div class="str-item">Hiive rank: <b>${c.p1rank?'#'+c.p1rank:'Not in index'}</b></div>
+    <div class="str-item">Clarity rank: <b>${c.p1rank?'#'+c.p1rank:'Not in index'}</b></div>
     <div class="str-item">Live orders: <b>${s.liveOrders||'—'}</b></div>
     <div class="str-item">Approval wait: <b>${wait}</b></div>
   `;
 
   let datasets=[], leg='';
   if(dpSrc==='all'||dpSrc==='p1'){
-    datasets.push({label:'Hiive',data:[...s.p1H],borderColor:'#1db87c',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
-    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#1db87c;"></div>Hiive</div>`;
+    datasets.push({label:'Clarity',data:[...s.p1H],borderColor:'#1db87c',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
+    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#1db87c;"></div>Clarity</div>`;
   }
   if(dpSrc==='all'||dpSrc==='p2'){
     datasets.push({label:'Forge',data:[...s.p2H],borderColor:'#2980d9',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
@@ -783,7 +783,7 @@ function initAlCo(){
 
 // ── ORDER BOOK DATA ──
 // Individual listing/bid rows below are a 1 Apr 2026 snapshot and are NOT current.
-// Listing/bid TOTALS (tL/tB) refreshed 7 Aug 2026 from the Hiive platform where available.
+// Listing/bid TOTALS (tL/tB) refreshed 7 Aug 2026 from the Clarity platform where available.
 const OB = {
   ripple:    {tL:109,tB:12,L:[{id:'RIP-1D4',sh:9600,p:121,tr:'Direct',st:'Com'},{id:'RIP-53A',sh:1200,p:124,tr:'Direct',st:'Com'},{id:'RIP-86C',sh:10000,p:125,tr:'Direct',st:'Com'},{id:'RIP-C26',sh:4600,p:125,tr:'Direct',st:'Com'},{id:'RIP-F6E',sh:4000,p:125,tr:'Direct',st:'Com'}],B:[{id:'RIP-63A',sh:200,p:125.5,tr:'Direct',st:'Any'},{id:'RIP-533',sh:2000,p:125,tr:'Direct',st:'Pref'},{id:'RIP-29C',sh:1200,p:115,tr:'Direct',st:'Pref'},{id:'RIP-618',sh:500,p:110.01,tr:'Direct',st:'Any'}]},
   kraken:    {tL:55,tB:18,L:[{id:'KRA-13E',sh:2200,p:32,tr:'Direct',st:'Com'},{id:'KRA-65A',sh:800,p:32.5,tr:'Direct',st:'Com'},{id:'KRA-D3D',sh:3000,p:33,tr:'Direct',st:'Com'}],B:[{id:'KRA-130',sh:6426,p:36,tr:'Direct',st:'Com'}]},
@@ -815,12 +815,12 @@ function renderOB() {
   if (!ob) { panel.style.display = 'none'; return; }
   panel.style.display = '';
   document.getElementById('ob-title').textContent = co.name + ' Order Book';
-  document.getElementById('ob-meta').textContent = ob.tL + ' Listings · ' + ob.tB + ' Standing Bids · Hiive snapshot, not live';
+  document.getElementById('ob-meta').textContent = ob.tL + ' Listings · ' + ob.tB + ' Standing Bids · Clarity snapshot, not live';
   const items = obTab === 'L' ? ob.L : ob.B;
   const label = obTab === 'L' ? 'LISTING' : 'BID';
   const color = obTab === 'L' ? 'var(--green)' : 'var(--blue)';
   if (!items.length) {
-    document.getElementById('ob-list').innerHTML = '<div style="font-size:11px;color:var(--text4);padding:12px;">No visible orders — check Hiive for full depth</div>';
+    document.getElementById('ob-list').innerHTML = '<div style="font-size:11px;color:var(--text4);padding:12px;">No visible orders — check Clarity for full depth</div>';
     return;
   }
   document.getElementById('ob-list').innerHTML = items.map(o =>
@@ -832,7 +832,7 @@ function renderOB() {
       <span class="sec-tag ${o.tr==='Direct'?'tag-fin':o.tr==='SPV'?'tag-ai':'tag-da'}">${o.tr}</span>
       <span style="font-size:10px;color:var(--text4);">${o.st}</span>
     </div>`
-  ).join('') + `<div style="font-size:10px;color:var(--text4);padding:8px 10px;border-top:1px solid var(--border);">Showing ${items.length} of ${obTab==='L'?ob.tL:ob.tB} · View full depth on Hiive</div>`;
+  ).join('') + `<div style="font-size:10px;color:var(--text4);padding:8px 10px;border-top:1px solid var(--border);">Showing ${items.length} of ${obTab==='L'?ob.tL:ob.tB} · View full depth on Clarity</div>`;
 }
 
 // Hook into company selection
@@ -861,22 +861,22 @@ function applyP1Data(data) {
   const status = document.getElementById('import-status');
   status.textContent = matched + '/' + data.companies.length + ' matched · ' + new Date().toLocaleTimeString();
   status.style.display = 'inline';
-  aLog.unshift({type:'info', txt:'<b>Hiive import:</b> ' + matched + ' companies updated from live scrape', t:now()});
+  aLog.unshift({type:'info', txt:'<b>Clarity import:</b> ' + matched + ' companies updated from live scrape', t:now()});
   renderAlerts();
-  document.getElementById('ts').textContent = 'Updated ' + now() + ' (Hiive live)';
+  document.getElementById('ts').textContent = 'Updated ' + now() + ' (Clarity live)';
   return matched;
 }
 
 function promptP1Import() {
-  const json = prompt('Paste Hiive scraper JSON here:');
+  const json = prompt('Paste Clarity scraper JSON here:');
   if (!json) return;
   try {
     const data = JSON.parse(json);
     if (!data.companies || !Array.isArray(data.companies)) throw new Error('Invalid format');
     const n = applyP1Data(data);
-    alert('Updated ' + n + ' companies from Hiive live data.');
+    alert('Updated ' + n + ' companies from Clarity live data.');
   } catch(e) {
-    alert('Import failed: ' + e.message + '\n\nMake sure you paste the full JSON from the Hiive scraper.');
+    alert('Import failed: ' + e.message + '\n\nMake sure you paste the full JSON from the Clarity scraper.');
   }
 }
 
@@ -898,7 +898,7 @@ initAlCo();
 renderTable();
 setTimeout(()=>{
   selCo_('anth');
-  aLog.push({type:'info',txt:'<b>Dashboard loaded</b> — 30 companies · Hiive &amp; Forge prices seeded',t:now()});
+  aLog.push({type:'info',txt:'<b>Dashboard loaded</b> — 30 companies · Clarity &amp; Forge prices seeded',t:now()});
   renderAlerts();
   document.getElementById('ts').textContent='Updated '+now();
   setInterval(tick,2500);
