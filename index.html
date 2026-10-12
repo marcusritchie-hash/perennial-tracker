@@ -442,7 +442,7 @@
   <div class="footer">
     <div id="src-lists"></div>
     <b>Changed this update (12 Oct 2026):</b> the list grew from 30 to the top 50 pre-IPO companies by Augment valuation. Joined: ByteDance, Cognition AI, Prometheus, ElevenLabs, Skild AI, Harvey, Zipline, Helion Energy, Mercor, Sierra, Deel, Lovable, Physical Intelligence, Cohere, Gusto, Epic Games, Higgsfield, Whoop, Glean, Flock Safety, Abridge, Mercury, Redwood Materials. Left: Tanium, Lightmatter, Tenstorrent (below the top 50). Not included for lack of a second source on the same share basis: Thinking Machines, Shein, VAST Data, Mistral AI, Etched, Reflection AI, Brex, Notion, Relativity Space, Character.ai.<br>
-    <b>Read this before using any number here.</b> Every price shown was read from its platform on 12 Oct 2026; a dash means that platform has no price, or quotes a different share basis and is left out. Each company needs Augment plus one other source, except Anthropic (Clarity no longer shows it), Waymo (Clarity only) and Neuralink (Augment only), which are flagged <b>1 source</b>. Implied market caps use share counts back-solved from Augment valuations and are approximations only. The ticking prices are <b>randomly simulated from these seed values</b> and do not represent real trading. Charts and Trend show only verified prices from each refresh (Augment 30 Jun is its end-of-quarter figure). Not financial advice. For accredited investors only.
+    <b>Read this before using any number here.</b> Every price shown was read from its platform on 12 Oct 2026; a dash means that platform has no price, or quotes a different share basis and is left out. Each company needs Augment plus one other source, except Anthropic (Clarity no longer shows it), Waymo (Clarity only) and Neuralink (Augment only), which are noted as single-source in their detail panel. Implied market caps use share counts back-solved from Augment valuations and are approximations only. The ticking prices are <b>randomly simulated from these seed values</b> and do not represent real trading. Charts and Trend show only verified prices from each refresh (Augment 30 Jun is its end-of-quarter figure). Not financial advice. For accredited investors only.
   </div>
 
 </div>
@@ -670,7 +670,7 @@ function renderTable(){
     let p1Cell=h==null?NA:`<span class="pcol" style="color:var(--green)">${f$(h)}</span><span class="badge bh">C✓</span>`;
     let p2Cell=fg==null?NA:`<span class="pcol" style="color:var(--blue)">${f$(fg)}</span><span class="badge bf">F✓</span>`;
     let p3Cell=c.p3==null?NA:`<span class="pcol" style="color:var(--purple)">${f$(c.p3)}</span><span class="badge" style="background:var(--purple-bg);color:var(--purple);border-color:#c4b0f0;">A✓</span>`;
-    let oneSrc=srcCount(c)<2?' <span class="badge best" title="Only one platform currently prices this company">1 source</span>':'';
+    let oneSrc=srcCount(c)<2?' title="Only one platform currently prices this company"':'';
     let spCls=!si?'':si.pct>30?'sprd-hi':si.pct>12?'sprd-med':'sprd-ok';
     let strCls=c.struct==='Direct'?'st-dir':c.struct==='SPV'?'st-spv':'st-mix';
     let rankBadgeCls=i<3?'rank-badge top3':'rank-badge';
@@ -678,7 +678,7 @@ function renderTable(){
     if(c.id===selCo) tr.classList.add('sel');
     tr.innerHTML=`
       <td><span class="${rankBadgeCls}">${i+1}</span></td>
-      <td><div class="co-name">${c.name}</div><span class="sec-tag tag-${c.sc}">${c.sec}</span>${oneSrc}</td>
+      <td><div class="co-name"${oneSrc}>${c.name}</div><span class="sec-tag tag-${c.sc}">${c.sec}</span></td>
       <td class="vcol">${fB(val)}</td>
       <td class="col-p1">${p1Cell}</td>
       <td class="col-p3">${p3Cell}</td>
