@@ -375,13 +375,13 @@
       <thead><tr>
         <th style="width:32px;">#</th>
         <th style="width:150px;">Company</th>
+        <th style="width:76px;" title="Blended price × shares (shares back-solved from Augment valuation)">Implied cap</th>
         <th style="width:95px;" class="col-p1">Clarity</th>
         <th style="width:95px;" class="col-p3">Augment</th>
         <th style="width:95px;" class="col-p2">Forge</th>
         <th style="width:65px;" title="Change in blended verified price between the last two data pulls">Chg since last pull</th>
         <th style="width:90px;" class="col-sp">Clarity/Augment spread</th>
         <th style="width:78px;" title="Blended price at each verified refresh (Aug–Oct 2026)">Trend</th>
-        <th style="width:76px;">Implied cap</th>
         <th style="width:55px;" title="Clarity listings + bids, as at the last refresh">Clarity orders</th>
         <th style="width:60px;">Structure</th>
         <th></th>
@@ -679,13 +679,13 @@ function renderTable(){
     tr.innerHTML=`
       <td><span class="${rankBadgeCls}">${i+1}</span></td>
       <td><div class="co-name">${c.name}</div><span class="sec-tag tag-${c.sc}">${c.sec}</span>${oneSrc}</td>
+      <td class="vcol">${fB(val)}</td>
       <td class="col-p1">${p1Cell}</td>
       <td class="col-p3">${p3Cell}</td>
       <td class="col-p2">${p2Cell}</td>
       <td>${rc?`<span class="chg ${Math.abs(rc.pct)<0.05?'':rc.pct>0?'up':'dn'}" style="${Math.abs(rc.pct)<0.05?'color:var(--text4)':''}" title="Blended price ${fDay(rc.from)} → ${fDay(rc.to)}">${fpct(rc.pct)}</span>`:'<span style="color:var(--border2);" title="First data pull — nothing to compare yet">—</span>'}</td>
       <td class="col-sp">${si?`<span class="sprd ${spCls}">${f$(si.abs)} <span style="opacity:.6;font-size:10px;">(${r2(si.pct,0)}%)</span></span>`:'<span style="color:var(--border2);">—</span>'}</td>
       <td><div class="spark-w"><canvas id="sp-${c.id}"></canvas></div></td>
-      <td class="vcol">${fB(val)}</td>
       <td class="orders">${s.liveOrders>0?s.liveOrders:'—'}</td>
       <td><span class="str-tag ${strCls}">${c.struct}</span></td>
       <td><button class="det-btn ${OB[c.id]?'det-btn-'+c.sc:''}" onclick="selCo_('${c.id}')">Detail →</button></td>
