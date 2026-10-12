@@ -302,6 +302,13 @@
   }
   .footer b { color: var(--text3); }
 
+  .rank-note {
+    font-size: 12px; color: var(--text3); line-height: 1.5;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 12px; margin-bottom: 12px;
+  }
+  .rank-note b { color: var(--text2); }
+
   /* scrollbar */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg2); }
@@ -325,6 +332,8 @@
     </div>
   </header>
 
+  <div class="rank-note"><b>How the list is ranked:</b> by implied valuation, highest first: the average of the Clarity, Forge and Augment prices × shares outstanding. Use <b>Sort by</b> to re-order.</div>
+
   <div class="src-row">
     <div class="src-chip"><div class="src-dot" style="background:#0c8c5e;"></div>Clarity verified</div>
     <div class="src-chip"><div class="src-dot" style="background:#1a6bb5;"></div>Forge verified</div>
@@ -338,7 +347,7 @@
     <div class="met"><div class="met-label">Gainers</div><div class="met-val up" id="m-g">—</div><div class="met-sub">of 30 tracked</div></div>
     <div class="met"><div class="met-label">Losers</div><div class="met-val dn" id="m-l">—</div><div class="met-sub">of 30 tracked</div></div>
     <div class="met"><div class="met-label">Avg H/F spread</div><div class="met-val neu" id="m-sp">—</div><div class="met-sub">cross-platform gap</div></div>
-    <div class="met"><div class="met-label">Live orders (total)</div><div class="met-val neu" id="m-ord">—</div><div class="met-sub">across 30 names</div></div>
+    <div class="met"><div class="met-label">Clarity orders (total)</div><div class="met-val neu" id="m-ord">—</div><div class="met-sub">listings + bids · as at last refresh</div></div>
   </div>
 
   <div class="controls">
@@ -349,17 +358,9 @@
       <option value="p1-rank">Clarity rank</option>
       <option value="price">Share price</option>
       <option value="spread">Platform spread</option>
-      <option value="orders">Live orders</option>
+      <option value="orders">Clarity orders</option>
       <option value="name">Name A–Z</option>
     </select>
-    <div class="ctrl-sep"></div>
-    <span class="ctrl-label">History</span>
-    <div class="tabs" id="rtabs">
-      <button class="tab active" onclick="setRange('1D',this)">1D</button>
-      <button class="tab" onclick="setRange('1W',this)">1W</button>
-      <button class="tab" onclick="setRange('1M',this)">1M</button>
-      <button class="tab" onclick="setRange('3M',this)">3M</button>
-    </div>
     <div class="ctrl-sep"></div>
     <span class="ctrl-label">Detail</span>
     <div class="tabs" id="dtabs">
@@ -368,9 +369,6 @@
       <button class="tab" onclick="setDpSrc('p2',this)">Forge</button>
       <button class="tab" onclick="setDpSrc('p3',this)">Augment</button>
     </div>
-    <div class="ctrl-sep"></div>
-    <button class="al-btn" id="import-btn" onclick="promptP1Import()" title="Paste scraped Clarity JSON to update live prices">Import Clarity</button>
-    <span id="import-status" style="font-size:10px;color:var(--green);display:none;"></span>
   </div>
 
   <div class="tbl-wrap">
@@ -378,15 +376,14 @@
       <thead><tr>
         <th style="width:32px;">#</th>
         <th style="width:150px;">Company</th>
-        <th style="width:36px;">CLI</th>
         <th style="width:95px;" class="col-p1">Clarity</th>
         <th style="width:95px;" class="col-p2">Forge</th>
         <th style="width:95px;" class="col-p3">Augment</th>
         <th style="width:65px;">24h chg</th>
         <th style="width:90px;" class="col-sp">Clarity/Forge spread</th>
-        <th style="width:78px;">Trend</th>
+        <th style="width:78px;" title="Blended price at each verified refresh (Aug–Oct 2026)">Trend</th>
         <th style="width:76px;">Implied cap</th>
-        <th style="width:55px;">Orders</th>
+        <th style="width:55px;" title="Clarity listings + bids, as at the last refresh">Clarity orders</th>
         <th style="width:60px;">Structure</th>
         <th></th>
       </tr></thead>
@@ -409,7 +406,7 @@
         <div class="str-item">Structure: <b>—</b></div>
         <div class="str-item">ROFR: <b>—</b></div>
         <div class="str-item">Clarity rank: <b>—</b></div>
-        <div class="str-item">Live orders: <b>—</b></div>
+        <div class="str-item">Clarity orders: <b>—</b></div>
       </div>
       <div class="chart-leg" id="det-leg"></div>
       <div class="chart-w"><canvas id="detChart"></canvas></div>
@@ -448,7 +445,7 @@
     <b>Forge Price, verified 7 Oct 2026:</b> Revolut $2,125.00 · Kalshi $962.36 · OpenAI $954.70 · Databricks $268.50 · Replit $259.43 · Crusoe $223.51 · Figure AI $174.00 · Shield AI $172.04 · Polymarket $137.70 · Anduril $132.12 · Ramp $125.54 · Ripple $90.39 · Stripe $72.45 · Perplexity $60.00 · Lambda $56.86 · Fanatics $56.75 · Rippling $47.28 · Apptronik $36.97 · Discord $36.79 · Saronic $34.25 · Kraken $31.54 · PsiQuantum $27.01 · Tanium $4.71<br>
     <b>Augment Price (company pages, data by Caplight), verified 7 Oct 2026:</b> Revolut $2,154.92 · Canva $1,252.27 · Anthropic $1,001.64 · Kalshi $829.73 · OpenAI $826.26 · Neuralink $286.64 · Databricks $258.98 · Replit $245.98 · Plaid $235.18 · Crusoe $217.06 · Shield AI $158.93 · Ramp $150.36 · Figure AI $147.21 · Polymarket $141.62 · Anduril $130.58 · Ripple $111.65 · Tenstorrent $96.72 · Lightmatter $72.56 · Stripe $71.34 · Perplexity $64.30 · Lambda $51.67 · Fanatics $47.28 · Rippling $44.05 · Apptronik $38.36 · Saronic $32.48 · PsiQuantum $29.47 · Discord $28.93 · Kraken $25.33. Not shown for Tanium (different share basis) or Waymo (no price)<br>
     <b>Removed this update — no longer pre-IPO:</b> SpaceX (IPO 12 Jun 2026, NASDAQ: SPCX, $75B raised at $1.75T) · Cerebras (IPO 14 May 2026, NASDAQ: CBRS, $5.55B at $56.43B) · Groq (acquired by NVIDIA) · Chime (completed IPO). Added in their place: Polymarket, Kalshi, Tenstorrent, Saronic.<br>
-    <b>Read this before using any number here.</b> Prices marked <b>~</b> are last-known estimates carried forward, not current quotes — only <b>✓</b> values were verified on the date shown. All three sources were read on 7 Oct 2026. Implied market caps are derived from back-solved share counts and are approximations only. The ticking prices and all chart history on this page are <b>randomly simulated from these seed values</b> and do not represent real trading. Not financial advice. For accredited investors only.
+    <b>Read this before using any number here.</b> Prices marked <b>~</b> are last-known estimates carried forward, not current quotes — only <b>✓</b> values were verified on the date shown. All three sources were read on 7 Oct 2026. Implied market caps are derived from back-solved share counts and are approximations only. The ticking prices are <b>randomly simulated from these seed values</b> and do not represent real trading. Charts and Trend show only verified prices from each refresh (Augment 30 Jun is its end-of-quarter figure). Not financial advice. For accredited investors only.
   </div>
 
 </div>
@@ -498,7 +495,45 @@ const COS = [
   { id:'plaid',      name:'Plaid',        sec:'Fintech', sc:'fin',shares:65e6,  col:'#0c8c5e', p1:188.92,     p2:212.05,      p3:235.18,   p1V:true, p2V:false, p3V:true, struct:'Direct',rofr:'Low',        p1rank:null,liveOrders:0 },
 ];
 
-let ST={}, hLen=48, hVol=0.4, curRange='1D', selCo='anth', dpSrc='all';
+// ── PRICE HISTORY ──
+// Verified prices only, one point per source per refresh, taken from this
+// repo's own refresh commits. Carried-forward "~" estimates are left out.
+// Augment's 30 Jun point is its end-of-quarter figure (read 7 Aug).
+// On each refresh, append ['YYYY-MM-DD', price] for every verified price.
+const HIST = {
+  anth:        { p1:[['2026-08-07',1013.86],['2026-10-07',1056.11]], p2:[], p3:[['2026-06-30',847.02],['2026-09-23',967.04],['2026-10-07',1001.64]] },
+  openai:      { p1:[['2026-08-07',693.33],['2026-10-07',783.27]], p2:[['2026-08-07',721.85],['2026-09-23',721.85],['2026-10-07',954.70]], p3:[['2026-06-30',725.55],['2026-09-23',827.89],['2026-10-07',826.26]] },
+  databricks:  { p1:[['2026-08-07',259.22],['2026-10-07',293.29]], p2:[['2026-08-07',242.04],['2026-09-23',268.50],['2026-10-07',268.50]], p3:[['2026-06-30',215.05],['2026-09-23',265.49],['2026-10-07',258.98]] },
+  stripe:      { p1:[['2026-08-07',72.49],['2026-10-07',70.27]], p2:[['2026-08-07',72.45],['2026-09-23',72.45],['2026-10-07',72.45]], p3:[['2026-06-30',65.51],['2026-09-23',71.36],['2026-10-07',71.34]] },
+  anduril:     { p1:[['2026-10-07',139.87]], p2:[['2026-08-07',140.00],['2026-09-23',129.01],['2026-10-07',132.12]], p3:[['2026-06-30',118.35],['2026-09-23',133.32],['2026-10-07',130.58]] },
+  revolut:     { p1:[], p2:[['2026-08-07',2200.00],['2026-09-23',2125.00],['2026-10-07',2125.00]], p3:[['2026-06-30',1952.95],['2026-09-23',2129.62],['2026-10-07',2154.92]] },
+  neuralink:   { p1:[], p2:[], p3:[['2026-06-30',297.65],['2026-09-23',286.85],['2026-10-07',286.64]] },
+  ramp:        { p1:[['2026-10-07',153.49]], p2:[['2026-08-07',125.55],['2026-09-23',125.54],['2026-10-07',125.54]], p3:[['2026-06-30',115.57],['2026-09-23',141.01],['2026-10-07',150.36]] },
+  shieldai:    { p1:[['2026-10-07',189.93]], p2:[['2026-09-23',172.04],['2026-10-07',172.04]], p3:[['2026-06-30',161.51],['2026-09-23',158.72],['2026-10-07',158.93]] },
+  crusoe:      { p1:[['2026-08-07',216.09],['2026-10-07',230.53]], p2:[['2026-09-23',224.54],['2026-10-07',223.51]], p3:[['2026-06-30',204.73],['2026-09-23',212.71],['2026-10-07',217.06]] },
+  canva:       { p1:[['2026-10-07',1300.00]], p2:[], p3:[['2026-06-30',1636.84],['2026-09-23',1196.94],['2026-10-07',1252.27]] },
+  rippling:    { p1:[['2026-10-07',46.19]], p2:[['2026-08-07',58.62],['2026-09-23',47.28],['2026-10-07',47.28]], p3:[['2026-06-30',50.81],['2026-09-23',44.57],['2026-10-07',44.05]] },
+  replit:      { p1:[['2026-08-07',232.43],['2026-10-07',240.34]], p2:[['2026-08-07',256.70],['2026-09-23',257.29],['2026-10-07',259.43]], p3:[['2026-06-30',271.84],['2026-09-23',233.32],['2026-10-07',245.98]] },
+  perp:        { p1:[['2026-08-07',63.09],['2026-10-07',81.86]], p2:[['2026-09-23',69.50],['2026-10-07',60.00]], p3:[['2026-06-30',62.82],['2026-09-23',61.25],['2026-10-07',64.30]] },
+  kalshi:      { p1:[['2026-08-07',647.25],['2026-10-07',963.07]], p2:[['2026-09-23',962.36],['2026-10-07',962.36]], p3:[['2026-06-30',625.49],['2026-09-23',735.97],['2026-10-07',829.73]] },
+  polymarket:  { p1:[['2026-08-07',139.57],['2026-10-07',121.62]], p2:[['2026-09-23',137.70],['2026-10-07',137.70]], p3:[['2026-06-30',136.22],['2026-09-23',146.15],['2026-10-07',141.62]] },
+  ripple:      { p1:[['2026-08-07',102.43],['2026-10-07',95.63]], p2:[['2026-08-07',105.56],['2026-09-23',92.80],['2026-10-07',90.39]], p3:[['2026-09-23',94.85],['2026-10-07',111.65]] },
+  kraken:      { p1:[['2026-08-07',28.60],['2026-10-07',28.25]], p2:[['2026-08-07',29.41],['2026-09-23',30.30],['2026-10-07',31.54]], p3:[['2026-09-23',26.40],['2026-10-07',25.33]] },
+  figureai:    { p1:[['2026-08-07',184.83],['2026-10-07',203.98]], p2:[['2026-09-23',174.00],['2026-10-07',174.00]], p3:[['2026-09-23',152.47],['2026-10-07',147.21]] },
+  saronic:     { p1:[['2026-08-07',48.10]], p2:[['2026-09-23',33.76],['2026-10-07',34.25]], p3:[['2026-06-30',40.21],['2026-09-23',32.98],['2026-10-07',32.48]] },
+  lightmatter: { p1:[['2026-08-07',89.15],['2026-10-07',92.99]], p2:[], p3:[['2026-09-23',82.80],['2026-10-07',72.56]] },
+  tenstorrent: { p1:[['2026-08-07',63.79],['2026-10-07',108.51]], p2:[], p3:[['2026-09-23',95.47],['2026-10-07',96.72]] },
+  apptronik:   { p1:[['2026-08-07',40.51],['2026-10-07',41.18]], p2:[['2026-08-07',36.97],['2026-09-23',36.97],['2026-10-07',36.97]], p3:[['2026-09-23',38.86],['2026-10-07',38.36]] },
+  lambda:      { p1:[['2026-08-07',39.15],['2026-10-07',55.31]], p2:[['2026-08-07',42.06],['2026-09-23',51.17],['2026-10-07',56.86]], p3:[['2026-09-23',54.13],['2026-10-07',51.67]] },
+  psiquantum:  { p1:[['2026-08-07',27.31],['2026-10-07',27.83]], p2:[['2026-08-07',28.54],['2026-09-23',27.35],['2026-10-07',27.01]], p3:[['2026-09-23',28.30],['2026-10-07',29.47]] },
+  fanatics:    { p1:[['2026-10-07',39.43]], p2:[['2026-08-07',53.50],['2026-09-23',56.75],['2026-10-07',56.75]], p3:[['2026-09-23',47.40],['2026-10-07',47.28]] },
+  discord:     { p1:[['2026-10-07',38.07]], p2:[['2026-08-07',31.31],['2026-09-23',36.79],['2026-10-07',36.79]], p3:[['2026-09-23',29.52],['2026-10-07',28.93]] },
+  tanium:      { p1:[['2026-10-07',2.71]], p2:[['2026-08-07',4.71],['2026-09-23',4.71],['2026-10-07',4.71]], p3:[] },
+  waymo:       { p1:[['2026-10-07',411.75]], p2:[], p3:[] },
+  plaid:       { p1:[['2026-10-07',188.92]], p2:[], p3:[['2026-10-07',235.18]] },
+};
+
+let ST={}, hVol=0.5, selCo='anth', dpSrc='all';
 let detChart=null, sparkC={}, aLog=[], uAlerts=[];
 
 const r2=(n,d=2)=>parseFloat(n.toFixed(d));
@@ -515,24 +550,38 @@ function blended(c){ let s=ST[c.id], p=[s.p1,s.p2]; if(c.p3) p.push(c.p3); retur
 function spread(c){ return Math.abs(ST[c.id].p1-ST[c.id].p2); }
 function chgPct(c){ let b=blended(c),base=(c.p1+c.p2)/2; return(b-base)/base*100; }
 
-function randHist(base,n,vol){
-  let a=[base*(0.93+Math.random()*0.04)];
-  for(let i=1;i<n;i++) a.push(Math.max(0.01,a[i-1]+(Math.random()-0.478)*vol));
-  a[a.length-1]=base; return a;
+const fDateMs=(ms)=>new Date(ms).toLocaleDateString('en-AU',{day:'numeric',month:'short'});
+
+// Every date on which any of the given sources has a verified price, oldest first.
+function histDates(id,srcs){
+  let ds=new Set();
+  srcs.forEach(k=>HIST[id][k].forEach(([d])=>ds.add(d)));
+  return [...ds].sort();
 }
-function vp(r){ return r==='1D'?{n:48,v:0.5}:r==='1W'?{n:60,v:1.2}:r==='1M'?{n:60,v:2.5}:{n:90,v:5}; }
+
+// Blended price at each refresh: average of each source's latest verified price
+// as of that date. Uses the set of sources that gives the longest history (ties
+// go to more sources), so a source that only joined recently is left out rather
+// than showing up as a price jump.
+function blendedHist(id){
+  let h=HIST[id], avail=['p1','p2','p3'].filter(k=>h[k].length);
+  if(!avail.length) return [];
+  let best=null;
+  for(let m=1;m<1<<avail.length;m++){
+    let set=avail.filter((_,i)=>m&1<<i);
+    let start=set.map(k=>h[k][0][0]).sort().pop();
+    let n=histDates(id,set).filter(d=>d>=start).length;
+    if(!best||n>best.n||(n===best.n&&set.length>best.set.length)) best={set,start,n};
+  }
+  let srcs=best.set, start=best.start;
+  return histDates(id,srcs).filter(d=>d>=start).map(d=>{
+    let vals=srcs.map(k=>h[k].filter(([pd])=>pd<=d).pop()[1]);
+    return {d,v:vals.reduce((a,b)=>a+b,0)/vals.length};
+  });
+}
 
 function initState(){
-  let {n,v}=vp(curRange); hLen=n; hVol=v;
-  COS.forEach(c=>{
-    let sc=Math.max(c.p1,1)/50;
-    if(!ST[c.id]) ST[c.id]={p1:c.p1,p2:c.p2,liveOrders:c.liveOrders};
-    ST[c.id].p1H=randHist(c.p1,n,v*sc);
-    ST[c.id].p2H=randHist(c.p2,n,v*(Math.max(c.p2,1)/50));
-    ST[c.id].p1=ST[c.id].p1H[n-1];
-    ST[c.id].p2=ST[c.id].p2H[n-1];
-    ST[c.id].liveOrders=c.liveOrders;
-  });
+  COS.forEach(c=>{ ST[c.id]={p1:c.p1,p2:c.p2,liveOrders:c.liveOrders}; });
 }
 
 function getRows(){
@@ -564,14 +613,12 @@ function renderTable(){
     let fB2=c.p2V?'<span class="badge bf">F✓</span>':'<span class="badge best">F~</span>';
     let spCls=spPct>30?'sprd-hi':spPct>12?'sprd-med':'sprd-ok';
     let strCls=c.struct==='Direct'?'st-dir':c.struct==='SPV'?'st-spv':'st-mix';
-    let p1rankCell=c.p1rank?`<span style="font-family:var(--mono);font-size:10px;color:var(--text3);">${c.p1rank}</span>`:`<span style="color:var(--border2);">—</span>`;
     let rankBadgeCls=i<3?'rank-badge top3':'rank-badge';
     let tr=document.createElement('tr');
     if(c.id===selCo) tr.classList.add('sel');
     tr.innerHTML=`
       <td><span class="${rankBadgeCls}">${i+1}</span></td>
       <td><div class="co-name">${c.name}</div><span class="sec-tag tag-${c.sc}">${c.sec}</span></td>
-      <td>${p1rankCell}</td>
       <td class="col-p1"><span class="pcol" style="color:var(--green)">${f$(h)}</span>${hB}</td>
       <td class="col-p2"><span class="pcol" style="color:var(--blue)">${f$(fg)}</span>${fB2}</td>
       <td class="col-p3">${c.p3?'<span class="pcol" style="color:var(--purple)">'+f$(c.p3)+'</span>'+(c.p3V?'<span class="badge" style="background:var(--purple-bg);color:var(--purple);border-color:#c4b0f0;">A✓</span>':'<span class="badge best">A~</span>'):'<span style="color:var(--border2);">—</span>'}</td>
@@ -584,7 +631,7 @@ function renderTable(){
       <td><button class="det-btn ${OB[c.id]?'det-btn-'+c.sc:''}" onclick="selCo_('${c.id}')">Detail →</button></td>
     `;
     tb.appendChild(tr);
-    setTimeout(()=>buildSpark(c.id,s.p1H,c.col),0);
+    setTimeout(()=>buildSpark(c.id,blendedHist(c.id).map(p=>p.v),c.col),0);
   });
   applyColVis();
   updateMets();
@@ -594,9 +641,14 @@ function buildSpark(id,data,col){
   let el=document.getElementById('sp-'+id);
   if(!el) return;
   if(sparkC[id]) sparkC[id].destroy();
+  if(data.length<2){
+    delete sparkC[id];
+    el.parentNode.innerHTML='<span style="font-size:10px;color:var(--text4);" title="Only one verified refresh so far">1 point</span>';
+    return;
+  }
   sparkC[id]=new Chart(el.getContext('2d'),{
     type:'line',
-    data:{labels:data.map((_,i)=>i),datasets:[{data,borderColor:col,borderWidth:1,pointRadius:0,tension:0.3,fill:true,backgroundColor:col+'18'}]},
+    data:{labels:data.map((_,i)=>i),datasets:[{data,borderColor:col,borderWidth:1,pointRadius:1.5,pointBackgroundColor:col,tension:0,fill:true,backgroundColor:col+'18'}]},
     options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}
   });
 }
@@ -654,8 +706,8 @@ function renderDetail(){
   let augCard=c.p3?`<div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--purple-mid);flex-shrink:0;"></div>Augment</div><div class="sc-price" style="color:var(--purple)">${f$(c.p3)}</div><div class="sc-note">${c.p3V?'Augment price':'Estimated'}</div></div>`:'';
   let chgHtml=chg>=0?`<span class="up">${fpct(chg)}</span>`:`<span class="dn">${fpct(chg)}</span>`;
   document.getElementById('src-cards').innerHTML=`
-    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>Clarity</div><div class="sc-price" style="color:var(--green)">${f$(s.p1)}</div><div class="sc-note">${c.p1V?'Verified 17 Apr':'Estimated'}</div></div>
-    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;"></div>Forge</div><div class="sc-price" style="color:var(--blue)">${f$(s.p2)}</div><div class="sc-note">${c.p2V?'Verified 17 Apr':'Estimated'}</div></div>
+    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>Clarity</div><div class="sc-price" style="color:var(--green)">${f$(s.p1)}</div><div class="sc-note">${c.p1V?'Verified 7 Oct':'Estimated'}</div></div>
+    <div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;"></div>Forge</div><div class="sc-price" style="color:var(--blue)">${f$(s.p2)}</div><div class="sc-note">${c.p2V?'Verified 7 Oct':'Estimated'}</div></div>
     ${augCard}
     <div class="sc gated"><div class="sc-lbl" style="color:#c4b0f0;"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:#c4b0f0;flex-shrink:0;"></div>EquityZen</div><div class="sc-price" style="font-size:13px;color:var(--text4);">Login required</div><div class="sc-note">SPV model — no public price</div></div>
     <div class="sc"><div class="sc-lbl">Blended mid</div><div class="sc-price">${f$(b)}</div><div class="sc-note">${chgHtml} vs open</div></div>
@@ -677,44 +729,37 @@ function renderDetail(){
     <div class="str-item">Structure: <b style="color:${strCol}">${c.struct}</b></div>
     <div class="str-item">ROFR: <b>${c.rofr}</b></div>
     <div class="str-item">Clarity rank: <b>${c.p1rank?'#'+c.p1rank:'Not in index'}</b></div>
-    <div class="str-item">Live orders: <b>${s.liveOrders||'—'}</b></div>
+    <div class="str-item">Clarity orders: <b>${s.liveOrders||'—'}</b></div>
     <div class="str-item">Approval wait: <b>${wait}</b></div>
   `;
 
-  let datasets=[], leg='';
-  if(dpSrc==='all'||dpSrc==='p1'){
-    datasets.push({label:'Clarity',data:[...s.p1H],borderColor:'#1db87c',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
-    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#1db87c;"></div>Clarity</div>`;
-  }
-  if(dpSrc==='all'||dpSrc==='p2'){
-    datasets.push({label:'Forge',data:[...s.p2H],borderColor:'#2980d9',borderWidth:1.5,pointRadius:0,tension:0.3,fill:false});
-    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#2980d9;"></div>Forge</div>`;
-  }
-  if((dpSrc==='all'||dpSrc==='p3')&&c.p3){
-    let augLine=Array(s.p1H.length).fill(c.p3);
-    datasets.push({label:'Augment',data:augLine,borderColor:'#8b5cf6',borderWidth:1.5,pointRadius:0,tension:0,fill:false,borderDash:[4,3]});
-    leg+=`<div class="leg-item"><div class="leg-sq" style="background:#8b5cf6;"></div>Augment</div>`;
-  }
+  // Real history: one point per verified refresh, lines join a source's points across gaps.
+  const SRC=[['p1','Clarity','#1db87c'],['p2','Forge','#2980d9'],['p3','Augment','#8b5cf6']]
+    .filter(([k])=>(dpSrc==='all'||dpSrc===k)&&HIST[c.id][k].length);
+  let dates=histDates(c.id,SRC.map(([k])=>k));
+  const ts=(d)=>new Date(d+'T00:00:00').getTime();
+  let datasets=SRC.map(([k,label,col])=>({
+    label,data:HIST[c.id][k].map(([d,v])=>({x:ts(d),y:v})),
+    borderColor:col,backgroundColor:col,borderWidth:1.5,pointRadius:3,pointHoverRadius:4,tension:0,fill:false
+  }));
+  let leg=SRC.map(([,label,col])=>`<div class="leg-item"><div class="leg-sq" style="background:${col};"></div>${label}</div>`).join('');
+  leg+=SRC.length?'<div class="leg-item" style="color:var(--text4);">· verified prices at each refresh</div>':'<div class="leg-item" style="color:var(--text4);">No verified price history for this source yet</div>';
   document.getElementById('det-leg').innerHTML=leg;
   let ctx=document.getElementById('detChart').getContext('2d');
   if(detChart) detChart.destroy();
   detChart=new Chart(ctx,{
     type:'line',
-    data:{labels:s.p1H.map((_,i)=>i),datasets},
+    data:{datasets},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
-      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+f$(c.parsed.y)},backgroundColor:'#fff',borderColor:'#e2e6ea',borderWidth:1,titleColor:'#7a8291',bodyColor:'#0f1117',titleFont:{family:'DM Mono',size:10},bodyFont:{family:'DM Mono',size:10}}},
+      plugins:{legend:{display:false},tooltip:{mode:'x',intersect:false,callbacks:{title:it=>it.length?fDateMs(it[0].parsed.x):'',label:c=>c.dataset.label+': '+f$(c.parsed.y)},backgroundColor:'#fff',borderColor:'#e2e6ea',borderWidth:1,titleColor:'#7a8291',bodyColor:'#0f1117',titleFont:{family:'DM Mono',size:10},bodyFont:{family:'DM Mono',size:10}}},
       scales:{
-        x:{display:false},
+        // Linear time axis so gaps between refreshes are drawn to scale; ticks sit on refresh dates.
+        x:{type:'linear',min:dates.length?ts(dates[0])-4*864e5:undefined,max:dates.length?ts(dates[dates.length-1])+4*864e5:undefined,
+          afterBuildTicks:ax=>{ ax.ticks=dates.map(d=>({value:ts(d)})); },
+          grid:{display:false},ticks:{color:'#adb5bd',font:{family:'DM Mono',size:9},callback:fDateMs},border:{display:false}},
         y:{grid:{color:'#f0f2f5'},ticks:{color:'#adb5bd',font:{family:'DM Mono',size:9},callback:v=>'$'+v.toFixed(0)},border:{display:false}}
       }}
   });
-}
-
-function setRange(r,btn){
-  curRange=r;
-  document.querySelectorAll('#rtabs .tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  initState(); renderTable(); renderDetail();
 }
 
 function tick(){
@@ -723,23 +768,13 @@ function tick(){
     let nH=Math.max(0.01,s.p1+(Math.random()-0.478)*hVol*sc*0.4);
     let nF=Math.max(0.01,s.p2+(Math.random()-0.478)*hVol*(Math.max(c.p2,1)/50)*0.35);
     let oldB=blended(c);
-    s.p1H.push(nH); s.p1H.shift();
-    s.p2H.push(nF); s.p2H.shift();
     s.p1=nH; s.p2=nF;
     let nb=blended(c), pct=(nb-oldB)/oldB*100;
     if(Math.abs(pct)>0.25) aLog.unshift({type:pct>0?'up':'dn',txt:`<b>${c.name}</b> ${pct>0?'▲':'▼'} blended ${f$(nb)}`,t:now()});
     checkUA(c,s.p1,s.p2,nb);
-    if(sparkC[c.id]){ sparkC[c.id].data.datasets[0].data=[...s.p1H]; sparkC[c.id].update('none'); }
   });
   if(aLog.length>50) aLog=aLog.slice(0,50);
   renderAlerts(); updateMets();
-  if(detChart){
-    let s=ST[selCo], c=COS.find(x=>x.id===selCo), di=0;
-    if(dpSrc==='all'||dpSrc==='p1'){ detChart.data.datasets[di].data=[...s.p1H]; di++; }
-    if(dpSrc==='all'||dpSrc==='p2'){ detChart.data.datasets[di].data=[...s.p2H]; di++; }
-    if((dpSrc==='all'||dpSrc==='p3')&&c&&c.p3&&detChart.data.datasets[di]){ detChart.data.datasets[di].data=Array(s.p1H.length).fill(c.p3); }
-    detChart.update('none');
-  }
   document.getElementById('ts').textContent='Updated '+now();
 }
 
@@ -836,64 +871,6 @@ function renderOB() {
     </div>`
   ).join('') + `<div style="font-size:10px;color:var(--text4);padding:8px 10px;border-top:1px solid var(--border);">Showing ${items.length} of ${obTab==='L'?ob.tL:ob.tB} · View full depth on Clarity</div>`;
 }
-
-// Hook into company selection
-const _origSelCo = typeof selCo_ === 'function' ? selCo_ : null;
-
-// ── POINT 1 IMPORT ──
-// Accepts any field whose name ends in "Price" (e.g. p1Price, or whatever key
-// the scraper already emits), so the importer works without naming a source.
-function applyP1Data(data) {
-  let matched = 0;
-  data.companies.forEach(h => {
-    const co = COS.find(c => c.id === h.id);
-    if (!co) return;
-    const s = ST[co.id];
-    const pKey = Object.keys(h).find(k => /price$/i.test(k) && h[k] != null);
-    const px = pKey ? h[pKey] : null;
-    if (px != null) { co.p1 = px; s.p1 = px; s.p1H[s.p1H.length-1] = px; }
-    else if (h.highestBid != null) { co.p1 = h.highestBid; s.p1 = h.highestBid; s.p1H[s.p1H.length-1] = h.highestBid; }
-    co.p1V = px != null;
-    co.liveOrders = h.totalOrders;
-    s.liveOrders = h.totalOrders;
-    matched++;
-  });
-  renderTable(); updateMets();
-  if (detChart) { let s=ST[selCo]; detChart.data.datasets[0].data=[...s.p1H]; detChart.update('none'); }
-  const status = document.getElementById('import-status');
-  status.textContent = matched + '/' + data.companies.length + ' matched · ' + new Date().toLocaleTimeString();
-  status.style.display = 'inline';
-  aLog.unshift({type:'info', txt:'<b>Clarity import:</b> ' + matched + ' companies updated from live scrape', t:now()});
-  renderAlerts();
-  document.getElementById('ts').textContent = 'Updated ' + now() + ' (Clarity live)';
-  return matched;
-}
-
-function promptP1Import() {
-  const json = prompt('Paste Clarity scraper JSON here:');
-  if (!json) return;
-  try {
-    const data = JSON.parse(json);
-    if (!data.companies || !Array.isArray(data.companies)) throw new Error('Invalid format');
-    const n = applyP1Data(data);
-    alert('Updated ' + n + ' companies from Clarity live data.');
-  } catch(e) {
-    alert('Import failed: ' + e.message + '\n\nMake sure you paste the full JSON from the Clarity scraper.');
-  }
-}
-
-document.addEventListener('paste', function(e) {
-  const text = (e.clipboardData || window.clipboardData).getData('text');
-  if (!text || !text.includes('"companies"')) return;
-  try {
-    const data = JSON.parse(text);
-    if (data.companies && Array.isArray(data.companies)) {
-      e.preventDefault();
-      const n = applyP1Data(data);
-      console.log('[Tracker] Auto-imported ' + n + ' companies from clipboard paste');
-    }
-  } catch(err) { /* not valid JSON, ignore */ }
-});
 
 initState();
 initAlCo();
