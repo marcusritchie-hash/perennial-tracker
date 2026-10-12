@@ -343,8 +343,8 @@
 
   <div class="metrics">
     <div class="met"><div class="met-label">Total implied cap</div><div class="met-val" id="m-cap">—</div><div class="met-sub">blended mid · 50 cos</div></div>
-    <div class="met"><div class="met-label">Gainers</div><div class="met-val up" id="m-g">—</div><div class="met-sub">of 50 tracked</div></div>
-    <div class="met"><div class="met-label">Losers</div><div class="met-val dn" id="m-l">—</div><div class="met-sub">of 50 tracked</div></div>
+    <div class="met"><div class="met-label">Gainers</div><div class="met-val up" id="m-g">—</div><div class="met-sub met-sub-chg">since previous pull</div></div>
+    <div class="met"><div class="met-label">Losers</div><div class="met-val dn" id="m-l">—</div><div class="met-sub met-sub-chg">since previous pull</div></div>
     <div class="met"><div class="met-label">Avg Clarity/Augment spread</div><div class="met-val neu" id="m-sp">—</div><div class="met-sub">cross-platform gap</div></div>
     <div class="met"><div class="met-label">Clarity orders (total)</div><div class="met-val neu" id="m-ord">—</div><div class="met-sub">listings + bids · as at last refresh</div></div>
   </div>
@@ -353,7 +353,7 @@
     <span class="ctrl-label">Sort by</span>
     <select id="sort-sel" onchange="renderTable()">
       <option value="val">Valuation</option>
-      <option value="chg">24h change</option>
+      <option value="chg">Change since last pull</option>
       <option value="p1-rank">Clarity rank</option>
       <option value="price">Share price</option>
       <option value="spread">Platform spread</option>
@@ -378,7 +378,7 @@
         <th style="width:95px;" class="col-p1">Clarity</th>
         <th style="width:95px;" class="col-p3">Augment</th>
         <th style="width:95px;" class="col-p2">Forge</th>
-        <th style="width:65px;">24h chg</th>
+        <th style="width:65px;" title="Change in blended verified price between the last two data pulls">Chg since last pull</th>
         <th style="width:90px;" class="col-sp">Clarity/Augment spread</th>
         <th style="width:78px;" title="Blended price at each verified refresh (Aug–Oct 2026)">Trend</th>
         <th style="width:76px;">Implied cap</th>
@@ -597,7 +597,15 @@ function spreadInfo(c){
   return {abs,pct:abs/((a+b)/2)*100};
 }
 function spread(c){ let s=spreadInfo(c); return s?s.pct:-1; }
-function chgPct(c){ let b=blended(c),base=avg([c.p1,c.p2,c.p3]); return(b-base)/base*100; }
+// Real change between the last two data pulls, on the blended verified price
+// (same source set at both dates, see blendedHist). null after a single pull.
+function realChg(c){
+  let h=blendedHist(c.id);
+  if(h.length<2) return null;
+  let a=h[h.length-2], b=h[h.length-1];
+  return {pct:(b.v-a.v)/a.v*100, from:a.d, to:b.d};
+}
+const fDay=(d)=>new Date(d+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'short'});
 
 const fDateMs=(ms)=>new Date(ms).toLocaleDateString('en-AU',{day:'numeric',month:'short'});
 
@@ -635,7 +643,7 @@ function initState(){
 
 function getRows(){
   let s=document.getElementById('sort-sel').value;
-  let rows=COS.map(c=>({...c,_b:blended(c),_chg:chgPct(c),_sp:spread(c)}));
+  let rows=COS.map(c=>{ let rc=realChg(c); return {...c,_b:blended(c),_chg:rc?rc.pct:-Infinity,_sp:spread(c)}; });
   if(s==='val') rows.sort((a,b)=>b._b*b.shares-a._b*a.shares);
   else if(s==='chg') rows.sort((a,b)=>b._chg-a._chg);
   else if(s==='p1-rank') rows.sort((a,b)=>{
@@ -656,7 +664,7 @@ function renderTable(){
   tb.innerHTML='';
   rows.forEach((c,i)=>{
     let s=ST[c.id], h=s.p1, fg=s.p2;
-    let chg=chgPct(c), si=spreadInfo(c);
+    let rc=realChg(c), si=spreadInfo(c);
     let val=blended(c)*c.shares;
     const NA='<span style="color:var(--border2);">—</span>';
     let p1Cell=h==null?NA:`<span class="pcol" style="color:var(--green)">${f$(h)}</span><span class="badge bh">C✓</span>`;
@@ -674,7 +682,7 @@ function renderTable(){
       <td class="col-p1">${p1Cell}</td>
       <td class="col-p3">${p3Cell}</td>
       <td class="col-p2">${p2Cell}</td>
-      <td><span class="chg ${chg>=0?'up':'dn'}">${fpct(chg)}</span></td>
+      <td>${rc?`<span class="chg ${Math.abs(rc.pct)<0.05?'':rc.pct>0?'up':'dn'}" style="${Math.abs(rc.pct)<0.05?'color:var(--text4)':''}" title="Blended price ${fDay(rc.from)} → ${fDay(rc.to)}">${fpct(rc.pct)}</span>`:'<span style="color:var(--border2);" title="First data pull — nothing to compare yet">—</span>'}</td>
       <td class="col-sp">${si?`<span class="sprd ${spCls}">${f$(si.abs)} <span style="opacity:.6;font-size:10px;">(${r2(si.pct,0)}%)</span></span>`:'<span style="color:var(--border2);">—</span>'}</td>
       <td><div class="spark-w"><canvas id="sp-${c.id}"></canvas></div></td>
       <td class="vcol">${fB(val)}</td>
@@ -707,13 +715,15 @@ function buildSpark(id,data,col){
 
 function updateMets(){
   let cap=COS.reduce((s,c)=>s+blended(c)*c.shares,0);
-  let g=COS.filter(c=>chgPct(c)>=0).length;
+  let chgs=COS.map(realChg).filter(Boolean);
+  let g=chgs.filter(x=>x.pct>=0.05).length, l=chgs.filter(x=>x.pct<=-0.05).length;
   let sps=COS.map(spreadInfo).filter(Boolean);
   let avgSp=sps.reduce((s,x)=>s+x.pct,0)/sps.length;
   let totalOrders=COS.reduce((s,c)=>s+ST[c.id].liveOrders,0);
   document.getElementById('m-cap').textContent=fB(cap);
   document.getElementById('m-g').textContent=g;
-  document.getElementById('m-l').textContent=COS.length-g;
+  document.getElementById('m-l').textContent=l;
+  document.querySelectorAll('.met-sub-chg').forEach(e=>e.textContent=`since previous pull · ${chgs.length} with history`);
   document.getElementById('m-sp').textContent=r2(avgSp,0)+'%';
   document.getElementById('m-ord').textContent=totalOrders.toLocaleString();
 }
@@ -748,7 +758,7 @@ function setDpSrc(src,btn){
 
 function renderDetail(){
   let c=COS.find(x=>x.id===selCo), s=ST[c.id];
-  let b=blended(c), chg=chgPct(c);
+  let b=blended(c), rc=realChg(c);
   document.getElementById('det-name').textContent=c.name+' — secondary market detail';
   // list each source that has a checked price, with its date
   let vs=[c.p1!=null&&'Clarity',c.p3!=null&&'Augment',c.p2!=null&&'Forge'].filter(Boolean);
@@ -758,13 +768,13 @@ function renderDetail(){
   const card=(label,dot,col,v)=>`<div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:${dot};flex-shrink:0;"></div>${label}</div>`+
     (v==null?`<div class="sc-price" style="font-size:13px;color:var(--text4);">—</div><div class="sc-note">No comparable price</div></div>`
             :`<div class="sc-price" style="color:${col}">${f$(v)}</div><div class="sc-note">Verified ${REFRESH.replace(/ \d{4}$/,'')}</div></div>`);
-  let chgHtml=chg>=0?`<span class="up">${fpct(chg)}</span>`:`<span class="dn">${fpct(chg)}</span>`;
+  let chgHtml=!rc?'First data pull':Math.abs(rc.pct)<0.05?`Unchanged since ${fDay(rc.from)}`:`<span class="${rc.pct>0?'up':'dn'}">${fpct(rc.pct)}</span> since ${fDay(rc.from)}`;
   document.getElementById('src-cards').innerHTML=`
     ${card('Clarity','var(--green)','var(--green)',s.p1)}
     ${card('Augment','var(--purple-mid)','var(--purple)',c.p3)}
     ${card('Forge','var(--blue)','var(--blue)',s.p2)}
     <div class="sc gated"><div class="sc-lbl" style="color:#c4b0f0;"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:#c4b0f0;flex-shrink:0;"></div>EquityZen</div><div class="sc-price" style="font-size:13px;color:var(--text4);">Login required</div><div class="sc-note">SPV model — no public price</div></div>
-    <div class="sc"><div class="sc-lbl">Blended mid</div><div class="sc-price">${f$(b)}</div><div class="sc-note">${chgHtml} vs open</div></div>
+    <div class="sc"><div class="sc-lbl">Blended mid</div><div class="sc-price">${f$(b)}</div><div class="sc-note">${chgHtml}</div></div>
   `;
 
   let si=spreadInfo(c);
@@ -884,9 +894,7 @@ function initAlCo(){
 const OB = {
   ripple:    {tL:109,tB:12,L:[{id:'RIP-1D4',sh:9600,p:121,tr:'Direct',st:'Com'},{id:'RIP-53A',sh:1200,p:124,tr:'Direct',st:'Com'},{id:'RIP-86C',sh:10000,p:125,tr:'Direct',st:'Com'},{id:'RIP-C26',sh:4600,p:125,tr:'Direct',st:'Com'},{id:'RIP-F6E',sh:4000,p:125,tr:'Direct',st:'Com'}],B:[{id:'RIP-63A',sh:200,p:125.5,tr:'Direct',st:'Any'},{id:'RIP-533',sh:2000,p:125,tr:'Direct',st:'Pref'},{id:'RIP-29C',sh:1200,p:115,tr:'Direct',st:'Pref'},{id:'RIP-618',sh:500,p:110.01,tr:'Direct',st:'Any'}]},
   kraken:    {tL:55,tB:18,L:[{id:'KRA-13E',sh:2200,p:32,tr:'Direct',st:'Com'},{id:'KRA-65A',sh:800,p:32.5,tr:'Direct',st:'Com'},{id:'KRA-D3D',sh:3000,p:33,tr:'Direct',st:'Com'}],B:[{id:'KRA-130',sh:6426,p:36,tr:'Direct',st:'Com'}]},
-  cerebras:  {tL:36,tB:31,L:[{id:'CER-0FF',sh:5000,p:110,tr:'Direct',st:'Com'},{id:'CER-92D',sh:null,p:null,tr:'Fwd',st:'Pref'},{id:'CER-A23',sh:null,p:null,tr:'Fwd',st:'Com'}],B:[{id:'CER-B41',sh:1000,p:135,tr:'Direct',st:'Com'}]},
   lambda:    {tL:5,tB:5,L:[{id:'LAM-A1F',sh:2000,p:40,tr:'Direct',st:'Com'}],B:[{id:'LAM-B22',sh:1000,p:48,tr:'Direct',st:'Com'}]},
-  neuralink: {tL:44,tB:44,L:[{id:'NEU-F3A',sh:500,p:175,tr:'SPV',st:'Com'}],B:[{id:'NEU-C11',sh:200,p:83.33,tr:'SPV',st:'Com'}]},
   psiquantum:{tL:11,tB:9,L:[{id:'PSI-72B',sh:2000,p:30,tr:'Direct',st:'Com'}],B:[{id:'PSI-A9E',sh:1000,p:36,tr:'Direct',st:'Com'}]},
   figureai:  {tL:25,tB:17,L:[{id:'FIG-D4A',sh:1000,p:129,tr:'SPV',st:'Com'}],B:[{id:'FIG-E21',sh:500,p:200,tr:'Direct',st:'Com'}]},
   perp:      {tL:25,tB:19,L:[{id:'PER-A3F',sh:500,p:60.25,tr:'Direct',st:'Com'}],B:[{id:'PER-B12',sh:1000,p:66,tr:'Direct',st:'Com'}]},
@@ -909,7 +917,8 @@ function renderOB() {
   const panel = document.getElementById('ob-panel');
   const co = COS.find(c => c.id === selCo);
   const ob = OB[selCo];
-  if (!ob) { panel.style.display = 'none'; return; }
+  // Clarity order book only for companies Clarity currently prices.
+  if (!ob || co.p1 == null) { panel.style.display = 'none'; return; }
   panel.style.display = '';
   document.getElementById('ob-title').textContent = co.name + ' Order Book';
   document.getElementById('ob-meta').textContent = ob.tL + ' Listings · ' + ob.tB + ' Standing Bids · Clarity snapshot, not live';
