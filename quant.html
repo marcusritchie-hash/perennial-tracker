@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicorn Quant Dashboard</title>
+<title>Unicorn Analytics Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -86,6 +86,15 @@
   .btn { font: 600 12px var(--sans); color: var(--brand); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; text-decoration: none; }
   .btn:hover { border-color: var(--brand); }
 
+  [hidden] { display: none !important; }
+
+  /* view tabs */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 4px; overflow-x: auto; }
+  .tab-btn { font: 600 14px var(--sans); color: var(--ink2); background: none; border: none; border-bottom: 3px solid transparent;
+    padding: 10px 18px 9px; cursor: pointer; white-space: nowrap; }
+  .tab-btn:hover { color: var(--brand); }
+  .tab-btn[aria-selected="true"] { color: var(--brand); border-bottom-color: var(--purple); }
+
   /* filters */
   .filters { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
   .chips { display: flex; gap: 4px; flex-wrap: wrap; }
@@ -128,6 +137,11 @@
   tbody tr { cursor: pointer; }
   tbody tr:hover td { background: color-mix(in srgb, var(--accent-light-purple) 35%, var(--surface)); }
   td.co { font-weight: 600; color: var(--ink); }
+  td.note-cell { white-space: normal; min-width: 240px; color: var(--muted); }
+  thead th { cursor: default; }
+  tbody tr.sec-row td { background: var(--surface) !important; cursor: default; padding: 16px 10px 8px; border-bottom: 1px solid var(--brand);
+    font-family: var(--serif); font-size: 15px; color: var(--brand); text-transform: uppercase; letter-spacing: .04em; }
+  tr.sec-row span { font-family: var(--sans); font-size: 11px; color: var(--muted); text-transform: none; letter-spacing: 0; margin-left: 10px; }
   .badge { display: inline-block; font: 700 9px var(--sans); letter-spacing: .04em; border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
   .b-mq { background: var(--purple); color: #fff; }
   .b-ls { background: var(--line); color: var(--ink2); }
@@ -178,7 +192,7 @@
     <div class="hdr-main">
       <div class="rule"></div>
       <div class="eyebrow">Marquee Fund</div>
-      <h1>Unicorn Quant Dashboard</h1>
+      <h1>Unicorn Analytics Dashboard</h1>
       <div class="tagline" id="hdr-sub"></div>
       <div class="rule r2"></div>
       <div class="hdr-links">
@@ -189,16 +203,23 @@
     </div>
   </header>
 
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button class="tab-btn" role="tab" data-view="analytics" type="button">Analytics</button>
+    <button class="tab-btn" role="tab" data-view="marquee" type="button">Marquee list</button>
+    <button class="tab-btn" role="tab" data-view="universe" type="button">Universe</button>
+  </nav>
+
   <div class="filters" role="group" aria-label="Filters">
     <div class="chips" id="f-tier"></div>
     <select id="f-region" aria-label="Region"></select>
     <select id="f-sector" aria-label="Sector"></select>
-    <label class="tog"><input type="checkbox" id="f-mq"> Marquee list only</label>
-    <label class="tog" title="Include premiums measured against rounds older than 18 months or with no reported date"><input type="checkbox" id="f-stale"> Include stale rounds</label>
+    <label class="tog" id="tog-mq"><input type="checkbox" id="f-mq"> Marquee list only</label>
+    <label class="tog" id="tog-stale" title="Include premiums measured against rounds older than 18 months or with no reported date"><input type="checkbox" id="f-stale"> Include stale rounds</label>
     <input type="search" id="f-q" placeholder="Search company…" aria-label="Search company">
     <div class="fcount" id="f-count"></div>
   </div>
 
+  <div class="view" id="view-analytics" role="tabpanel">
   <div class="kpis" id="kpis"></div>
 
   <section>
@@ -253,25 +274,38 @@
   </section>
 
   <section>
-    <div class="sec-hd">
-      <h2>Universe</h2>
-      <p>Click a column to sort, or a company for its detail and price history.</p>
-    </div>
-    <div class="tbl-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
-  </section>
-
-  <section>
     <div class="sec-hd"><h2>Data coverage</h2><p>Share of companies in the current filter with each data point. Statistics above use only the companies that have the inputs they need.</p></div>
     <div class="panel"><div class="cov" id="cov"></div></div>
   </section>
+  </div>
+
+  <div class="view" id="view-marquee" role="tabpanel" hidden>
+  <section>
+    <div class="sec-hd">
+      <h2>Current Marquee list</h2>
+      <p id="mq-sub"></p>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-mq"><thead></thead><tbody></tbody></table></div>
+  </section>
+  </div>
+
+  <div class="view" id="view-universe" role="tabpanel" hidden>
+  <section>
+    <div class="sec-hd">
+      <h2>Universe</h2>
+      <p>Companies grouped by sector and ranked by liquidity score, within the sector and across the whole universe. Click a company for its detail and price history.</p>
+    </div>
+    <div class="tbl-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+  </section>
+  </div>
 
   <section class="method">
     <div class="sec-hd"><h2>Methodology &amp; sources</h2></div>
     <ul>
       <li><b>Secondary prices</b> are indicative per-share prices from Clarity (formerly Hiive) company pages, Augment company pages (data by Caplight) and Forge public company pages. Indicative prices are not executed trades.</li>
       <li><b>Implied valuation</b> = average available venue price × shares outstanding. Share counts are Perennial estimates; for companies outside the Top 50 tracker they are derived from Clarity's implied valuation.</li>
-      <li><b>Premium / discount</b> compares implied valuation with the last primary round's post-money valuation. By default only rounds dated within 18 months are used for summary statistics; older or undated rounds are shown faded.</li>
-      <li><b>Excluded from private-market statistics:</b> listed companies (SpaceX, IPO June 2026) and prices quoted in currencies other than USD (Mistral AI, Monzo).</li>
+      <li><b>Premium / discount</b> compares implied valuation with the last primary round's post-money valuation. Where that round is more than 18 months old and the company has since run a tender offer or buyback, the latest company-run tender valuation is used instead (marked "tender"); investor-to-investor sales are never used. By default only rounds dated within 18 months are used for summary statistics; older or undated rounds are shown faded.</li>
+      <li><b>Private companies only:</b> companies that have listed on a public exchange are removed from the universe (checked 12 Oct 2026). Prices quoted in currencies other than USD (Mistral AI, Monzo) are excluded from cross-venue statistics.</li>
       <li><b>Liquidity score</b> is Perennial's composite of observed secondary pricing (45 pts), trading attention on venue rankings (35 pts) and company scale (20 pts).</li>
       <li>All figures in USD. Universe from Perennial's Pre-IPO Fund Universe; prices refreshed <span class="asof"></span>.</li>
     </ul>
@@ -317,6 +351,15 @@ const cleanName = n => n.replace(/\s*\((?:private|EU roots)\)\s*$/i,'');
 // ── derived metrics ──
 for (const c of UNI) {
   c.name = cleanName(c.name);
+  // Researched funding history (quant-rounds.js) supersedes the workbook's last round.
+  const qrRounds = [...(window.QR?.[c.id]?.rounds || [])].sort((a,b)=>a.date.localeCompare(b.date));
+  const lastEq = qrRounds.filter(r=>r.type==='Equity' && r.post!=null).pop();
+  if (lastEq) Object.assign(c, { lrEv:lastEq.post, lrDate:lastEq.date, lrName:lastEq.name });
+  // If the last primary round is stale, value against the latest company-run tender after it instead.
+  if (c.lrDate && (ASOF - new Date(c.lrDate+'T00:00:00'))/(864e5*30.44) > STALE_MONTHS) {
+    const tender = qrRounds.filter(r=>r.type==='Tender' && r.post!=null && r.companyRun!==false && r.date > c.lrDate).pop();
+    if (tender) Object.assign(c, { lrEv:tender.post, lrDate:tender.date, lrName:tender.name, lrTender:true });
+  }
   const isUsd = c.ccy === 'USD';
   const ps = VENUES.map(v=>c.px[v.k]).filter(x=>x!=null);
   c.nVen = ps.length;
@@ -395,7 +438,7 @@ function emptyBox(boxId, canvasId, msg) {
   if (msg) box.insertAdjacentHTML('beforeend', `<div class="empty">${msg}</div>`);
 }
 const pctAxis = { callback: v => (v>0?'+':'') + Math.round(v*100) + '%' };
-const roundTip = c => `${c.lrName ? esc(c.lrName)+' · ' : ''}${c.lrDate ? fDate(c.lrDate) : 'date not reported'}`;
+const roundTip = c => `${c.lrTender ? 'vs company tender: ' : ''}${c.lrName ? esc(c.lrName)+' · ' : ''}${c.lrDate ? fDate(c.lrDate) : 'date not reported'}`;
 
 function drawPrem(rs) {
   const d = rs.filter(c=>c.prem!=null).sort((a,b)=>b.prem-a.prem);
@@ -477,7 +520,7 @@ function drawMom(rs) {
 // ── KPIs ──
 function drawKpis(rs) {
   const pr = rs.filter(premOk).map(c=>c.prem), sp = rs.filter(c=>c.spread!=null).map(c=>c.spread);
-  const lq = rs.filter(c=>c.liq!=null).map(c=>c.liq), mo = rs.filter(c=>c.mom!=null).map(c=>c.mom);
+  const lq = rs.filter(c=>c.liq!=null && c.nVen>0).map(c=>c.liq), mo = rs.filter(c=>c.mom!=null).map(c=>c.mom);
   const priced = rs.filter(c=>c.nVen).length;
   const above = pr.filter(x=>x>0).length;
   const k = [
@@ -485,43 +528,84 @@ function drawKpis(rs) {
     ['Median vs last round', pr.length?pct(median(pr)):'—', pr.length?`n=${pr.length} · IQR ${pct(quant(pr,.25))} to ${pct(quant(pr,.75))}`:'No priced companies'],
     ['Trading above last round', pr.length?Math.round(above/pr.length*100)+'%':'—', pr.length?`${above} of ${pr.length} companies`:''],
     ['Median venue spread', sp.length?(median(sp)*100).toFixed(1)+'%':'—', `${sp.length} quoted on 2+ venues`],
-    ['Median liquidity score', lq.length?median(lq).toFixed(0):'—', `out of 100 · n=${lq.length}`],
+    ['Median liquidity score', lq.length?median(lq).toFixed(0):'—', `out of 100 · companies with a price · n=${lq.length}`],
     ['Median price change', mo.length?pct(median(mo),1):'—', mo.length?`since first verified price · n=${mo.length}`:'No price history yet'],
   ];
   document.getElementById('kpis').innerHTML = k.map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
 }
 
-// ── table ──
-const COLS = [
-  { k:'name', l:'Company', f:c=>`${esc(c.name)}${c.mq?`<span class="badge b-mq" title="Marquee list rank">M${c.mq}</span>`:''}${c.listed?'<span class="badge b-ls">LISTED</span>':''}`, cls:'co' },
-  { k:'sector', l:'Sector' },
-  { k:'region', l:'Region' },
-  { k:'tier', l:'Tier' },
-  { k:'lrDate', l:'Last round', f:c=>c.lrDate?`${esc(c.lrName||'')} <span class="flag">${fMon(c.lrDate)}</span>`:'<span class="na">—</span>' },
-  { k:'lrEv', l:'Last round val.', r:1, f:c=>bn(c.lrEv) },
-  { k:'impl', l:'Implied val.', r:1, f:c=>bn(c.impl) },
-  { k:'prem', l:'vs last round', r:1, f:c=>c.prem==null?'<span class="na">—</span>':`${pct(c.prem)}${c.stale?' <span class="flag" title="Round older than 18 months or undated">†</span>':''}` },
-  { k:'pc', l:'Clarity', r:1, v:c=>c.px.c, f:c=>c.px.c==null?'<span class="na">—</span>':(c.ccy==='EUR'?'€':c.ccy==='GBP'?'£':'$')+c.px.c.toFixed(2) },
-  { k:'pa', l:'Augment', r:1, v:c=>c.px.a, f:c=>c.px.a==null?'<span class="na">—</span>':usd(c.px.a) },
-  { k:'pf', l:'Forge', r:1, v:c=>c.px.f, f:c=>c.px.f==null?'<span class="na">—</span>':usd(c.px.f) },
-  { k:'spread', l:'Spread', r:1, f:c=>c.spread==null?'<span class="na">—</span>':(c.spread*100).toFixed(1)+'%' },
-  { k:'liq', l:'Liquidity', r:1, f:c=>c.liq==null?'<span class="na">—</span>':c.liq.toFixed(0) },
-  { k:'mom', l:'Price chg.', r:1, f:c=>c.mom==null?'<span class="na">—</span>':pct(c.mom,1) },
-];
-let sortK='liq', sortDir=-1;
-function drawTable(rs) {
-  const thead = document.querySelector('#tbl thead');
-  thead.innerHTML = '<tr>'+COLS.map(c=>`<th class="${c.r?'r':''}" data-k="${c.k}" ${c.k===sortK?`aria-sort="${sortDir>0?'ascending':'descending'}"`:''}>${c.l}</th>`).join('')+'</tr>';
-  const col = COLS.find(c=>c.k===sortK), val = col.v || (c=>c[sortK]);
-  const s = [...rs].sort((a,b)=>{ const x=val(a), y=val(b); if(x==null&&y==null) return a.name.localeCompare(b.name); if(x==null) return 1; if(y==null) return -1; return (typeof x==='string'? x.localeCompare(y) : x-y)*sortDir; });
-  document.querySelector('#tbl tbody').innerHTML = s.map(c=>`<tr data-id="${c.id}">`+COLS.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f?k.f(c):esc(c[k.k]??'—')}</td>`).join('')+'</tr>').join('');
+// ── table: universe by sector, as in the workbook's "Liquidity by Sector" tab ──
+// Ranks are by liquidity score across the whole universe, so filtering hides rows without re-ranking.
+{
+  const ranked = UNI.filter(c=>c.liq!=null).sort((a,b)=>b.liq-a.liq);
+  ranked.forEach((c,i) => c.rank = i+1);
+  UNI.filter(c=>c.liq==null).forEach(c => c.rank = null);
+  const bySec = {};
+  ranked.forEach(c => { bySec[c.sector] = (bySec[c.sector]||0) + 1; c.srank = bySec[c.sector]; });
+  UNI.filter(c=>c.liq==null).forEach(c => c.srank = null);
 }
-document.querySelector('#tbl thead').addEventListener('click', e=>{
-  const th=e.target.closest('th'); if(!th) return;
-  if (sortK===th.dataset.k) sortDir*=-1; else { sortK=th.dataset.k; sortDir = ['name','sector','region','tier'].includes(sortK)?1:-1; }
-  render();
-});
-document.querySelector('#tbl tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
+// Marquee ranks renumbered 1..n in the fund's original order, since listed and acquired names have been removed.
+UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq).forEach((c,i) => c.mq = i+1);
+const SECTOR_ORDER =Object.entries(UNI.reduce((a,c)=>(a[c.sector]=(a[c.sector]||0)+1, a), {}))
+  .sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0])).map(([s])=>s);
+const NA = '<span class="na">—</span>';
+const ccySym = c => c.ccy==='EUR'?'€':c.ccy==='GBP'?'£':'$';
+const COLS = [
+  { l:'Sector rank', r:1, f:c=>c.srank ?? NA },
+  { l:'Overall rank', r:1, f:c=>c.rank ?? NA },
+  { l:'Company', cls:'co', f:c=>`${esc(c.name)}${c.listed?'<span class="badge b-ls">LISTED</span>':''}` },
+  { l:'Tier', f:c=>esc(c.tier) },
+  { l:'Liquidity score', r:1, f:c=>c.liq==null ? NA : c.liq.toFixed(1) },
+  { l:'Last round EV', r:1, f:c=>c.lrEv==null ? NA : bn(c.lrEv) + (c.lrTender ? ' <span class="flag" title="Company-run tender offer; last primary round is over 18 months old">tender</span>' : '') },
+  { l:'Current valuation', r:1, f:c=>{ const v = c.impl ?? c.curVal; return v==null ? NA : bn(v); } },
+  { l:'Clarity', r:1, f:c=>c.px.c==null ? NA : ccySym(c)+c.px.c.toFixed(2) },
+  { l:'Augment', r:1, f:c=>c.px.a==null ? NA : usd(c.px.a) },
+  { l:'Forge', r:1, f:c=>c.px.f==null ? NA : usd(c.px.f) },
+  { l:'Marquee list', f:c=>c.mq ? `<span title="Marquee rank ${c.mq}">Yes</span>` : NA },
+  { l:'Note', cls:'note-cell', f:c=>esc(c.note||'') },
+  { l:'Region', f:c=>esc(c.region) },
+];
+const rowHtml = (cols, c) => `<tr data-id="${c.id}">`+cols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(c)}</td>`).join('')+'</tr>';
+const headHtml = cols => '<tr>'+cols.map(c=>`<th class="${c.r?'r':''}">${c.l}</th>`).join('')+'</tr>';
+function drawTable(rs) {
+  document.querySelector('#tbl thead').innerHTML = headHtml(COLS);
+  const byRank = (a,b) => (a.srank??1e9) - (b.srank??1e9) || a.name.localeCompare(b.name);
+  let h = '';
+  for (const s of SECTOR_ORDER) {
+    const g = rs.filter(c=>c.sector===s).sort(byRank);
+    if (!g.length) continue;
+    const t = TIERS.filter(x=>x!=='Unassigned').map(x=>`${g.filter(c=>c.tier===x).length} ${x}`).join(', ');
+    h += `<tr class="sec-row"><td colspan="${COLS.length}">${esc(s)}<span>· ${g.length} ${g.length===1?'company':'companies'} · ${t}</span></td></tr>`;
+    h += g.map(c=>rowHtml(COLS, c)).join('');
+  }
+  document.querySelector('#tbl tbody').innerHTML = h;
+}
+
+// ── Marquee list, as in the workbook's "Current Marquee List" tab ──
+const MQ_COLS = [
+  { l:'Marquee rank', r:1, f:c=>c.mq },
+  { l:'Overall rank', r:1, f:c=>c.rank ?? NA },
+  { l:'Company', cls:'co', f:c=>`${esc(c.name)}${c.listed?'<span class="badge b-ls">LISTED</span>':''}` },
+  { l:'Sector', f:c=>esc(c.sector) },
+  { l:'Sub-sector', f:c=>esc(c.sub||'') },
+  { l:'Tier', f:c=>esc(c.tier) },
+  { l:'Liquidity score', r:1, f:c=>c.liq==null ? NA : c.liq.toFixed(1) },
+  { l:'Sector rank', r:1, f:c=>c.srank ?? NA },
+  ...COLS.filter(k=>['Last round EV','Current valuation','Clarity','Augment','Forge','Note'].includes(k.l)),
+  { l:'HQ', f:c=>esc(c.hq||'') },
+  { l:'Region', f:c=>esc(c.region) },
+];
+function drawMarquee(rs) {
+  const m = rs.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq);
+  const all = UNI.filter(c=>c.mq);
+  const tiers = TIERS.filter(t=>t!=='Unassigned').map(t=>`${all.filter(c=>c.tier===t).length} ${t}`).join(' · ');
+  document.getElementById('mq-sub').textContent = `Prepared for Perennial Marquee Access Fund · ${all.length} Marquee companies · ${tiers} · ranked by Marquee rank`
+    + (m.length < all.length ? ` · ${m.length} shown with current filters` : '');
+  document.querySelector('#tbl-mq thead').innerHTML = headHtml(MQ_COLS);
+  document.querySelector('#tbl-mq tbody').innerHTML = m.length ? m.map(c=>rowHtml(MQ_COLS, c)).join('')
+    : `<tr><td colspan="${MQ_COLS.length}" class="empty">No Marquee companies match the current filters.</td></tr>`;
+}
+for (const id of ['#tbl','#tbl-mq']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
 
 // ── coverage ──
 function drawCov(rs) {
@@ -549,10 +633,10 @@ function openDetail(c) {
   document.getElementById('dlg-sub').textContent = [c.sector, c.sub, c.hq||c.region, c.tier+' tier', c.mq?`Marquee #${c.mq}`:null, c.listed?'Listed':null].filter(Boolean).join(' · ');
   const qr = window.QR?.[c.id];
   const facts = [
-    ['Last round', c.lrName ? `${esc(c.lrName)}` : '—', c.lrDate?fDate(c.lrDate):'date not reported'],
-    ['Last-round valuation', bn(c.lrEv), 'post-money'],
+    [c.lrTender ? 'Last valuation (tender)' : 'Last round', c.lrName ? `${esc(c.lrName)}` : '—', c.lrDate?fDate(c.lrDate):'date not reported'],
+    [c.lrTender ? 'Tender valuation' : 'Last-round valuation', bn(c.lrEv), c.lrTender ? 'company-run tender' : 'post-money'],
     ['Implied valuation', bn(c.impl), c.shares?`${(c.shares/1e6).toFixed(0)}M shares est.`:'share count unknown'],
-    ['vs last round', pct(c.prem), c.prem!=null&&c.stale?'stale round':''],
+    [c.lrTender ? 'vs last tender' : 'vs last round', pct(c.prem), c.prem!=null&&c.stale?'stale round':''],
     ['Clarity', c.px.c==null?'—':(c.ccy==='EUR'?'€':c.ccy==='GBP'?'£':'$')+c.px.c.toFixed(2), c.ctype||''],
     ['Augment', usd(c.px.a), ''],
     ['Forge', usd(c.px.f), ''],
@@ -593,10 +677,30 @@ function drawDetail(c) {
 }
 
 // ── render ──
+// ── views: Analytics / Marquee list / Universe, selected by the tabs and kept in the URL hash ──
+const VIEWS = ['analytics','marquee','universe'];
+let view = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'analytics';
+function setView(v) {
+  view = VIEWS.includes(v) ? v : 'analytics';
+  for (const x of VIEWS) document.getElementById('view-'+x).hidden = x !== view;
+  document.querySelectorAll('.tab-btn').forEach(b => b.setAttribute('aria-selected', b.dataset.view === view));
+  document.getElementById('tog-stale').hidden = view !== 'analytics';   // only the analytics statistics use it
+  document.getElementById('tog-mq').hidden = view === 'marquee';
+  if (location.hash.slice(1) !== view) history.replaceState(null, '', '#'+view);
+  tipEl.style.opacity = 0;
+  render();
+}
+document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('.tab-btn'); if (b) setView(b.dataset.view); });
+addEventListener('hashchange', () => setView(location.hash.slice(1)));
+
 function render() {
   const rs = rows();
-  document.getElementById('f-count').textContent = `${rs.length} of ${UNI.length} companies`;
-  drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawTable(rs); drawCov(rs);
+  document.getElementById('f-count').textContent = view === 'marquee'
+    ? `${rs.filter(c=>c.mq).length} of ${UNI.filter(c=>c.mq).length} Marquee companies` : `${rs.length} of ${UNI.length} companies`;
+  // Charts are only drawn while their view is visible; hidden canvases have no size.
+  if (view === 'analytics') { drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawCov(rs); }
+  if (view === 'marquee') drawMarquee(rs);
+  if (view === 'universe') drawTable(rs);
 }
 document.getElementById('hdr-sub').textContent = `${UNI.length} companies · secondary prices from Clarity, Augment & Forge, refreshed ${fDate(QD_ASOF)} · all figures USD`;
 document.querySelectorAll('.asof').forEach(e=>e.textContent=fDate(QD_ASOF));
@@ -612,7 +716,7 @@ themeBtn.onclick = () => {
 };
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
 addEventListener('scroll', ()=>tipEl.style.opacity=0, {passive:true});
-render();
+setView(view);
 </script>
 </body>
 </html>

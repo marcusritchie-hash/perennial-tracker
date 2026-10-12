@@ -14,7 +14,7 @@ $asof = '2026-10-12'
 function Rows($p) { Get-Content $p -Encoding UTF8 | ForEach-Object { , ($_ -split "`t") } }
 function Key($s) { ($s -replace '\(.*?\)', '' -replace '[^A-Za-z0-9]', '').ToLower() }
 function J($v) {
-  if ($v -eq $null -or $v -eq '') { return 'null' }
+  if ($v -eq $null -or ($v -is [string] -and $v -eq '')) { return 'null' }
   if ($v -is [double] -or $v -is [int]) { return [string]$v }
   '"' + ($v -replace '\\', '\\' -replace '"', '\"') + '"'
 }
@@ -46,7 +46,7 @@ foreach ($m in [regex]::Matches($html, "(?m)^\s+(\w+):\s+\{ p1:\[(.*?)\], p2:\[(
 }
 
 $liq = @{}
-foreach ($r in (Rows $Liquidity | Where-Object { [int]$_[0] -ge 5 })) { if ($r[1]) { $liq[(Key $r[1])] = $r } }
+foreach ($r in (Rows $Liquidity | Where-Object { [int]$_[0] -ge 5 })) { if ($r[1]) { $liq[$r[1].Trim()] = $r } }   # exact name: "ElevenLabs (EU roots)" must not overwrite "ElevenLabs"
 $mq = @{}
 foreach ($r in (Rows $Marquee | Where-Object { [int]$_[0] -ge 6 })) { if ($r[4] -and $r[2] -match '^\d+$') { $mq[(Key $r[4])] = [int]$r[2] } }
 
@@ -98,7 +98,7 @@ foreach ($r in $allRows) {
     $impl = Bn $r[19]
     if ($impl -and $c -and $ccy -eq 'USD') { $shares = [math]::Round($impl * 1e9 / $c / 1e4) * 1e4; $shSrc = 'derived' } else { $shares = $null; $shSrc = $null }
   }
-  $l = $liq[(Key $orig)]
+  $l = $liq[$orig]
   $status = @($r[14], $r[15], $r[22]) | Where-Object { $_ -match 'Seeking|Confirming' } | Select-Object -First 1
 
   $out += '{' + (@(

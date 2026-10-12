@@ -6,7 +6,7 @@ Naver-adjacent / Wrtn,rename,Wrtn,Korean consumer AI
 Scyne / Deputy,rename,Deputy,Deputy is the unicorn; Scyne Advisory is a consultancy
 Ramp-adjacent / Rho,rename,Rho,
 Hims-adjacent / Function,rename,Function Health,
-Genomics England-adj / Congenica,rename,Congenica,
+Genomics England-adj / Congenica,drop,,Acquired by SeqOne (Sep 2025)
 H2 Green Steel / Stegra,rename,Stegra,H2 Green Steel renamed Stegra in 2024
 Lakestar / Wefox,rename,Wefox,
 Lakestar-backed / Blockpit,rename,Blockpit,
@@ -16,13 +16,13 @@ Ottobock-adjacent / Neura,rename,Neura Robotics,
 Revolut-peer / Zilch,rename,Zilch,
 Truecaller-private peers / Kry,rename,Kry,
 Wayve-peer / Oxa,rename,Oxa,
-Cambricon-adj / Enflame,rename,Enflame,
+Cambricon-adj / Enflame,drop,,Enflame listed Shanghai STAR Sep 2026
 SenseTime-private peers / Megvii,rename,Megvii,
-WeRide-private / Momenta,rename,Momenta,
+WeRide-private / Momenta,drop,,Momenta listed HKEX Jul 2026
 Zhipu-peer / 01.AI,rename,01.AI,
 Sanctuary-peer / Fourier,rename,Fourier,
 DJI (private),rename,DJI,
-Cainiao-adj / JD Industrials,rename,JD Industrials,Check listing status before keeping
+Cainiao-adj / JD Industrials,drop,,Jingdong Industrials listed HKEX Dec 2025
 Circle-adjacent / crypto,drop,,Not a company (Circle itself listed 2025)
 Glovo-private / Wolt-adj,drop,,Subsidiaries of listed Delivery Hero / DoorDash
 Black Sesame-adj / Horizon,drop,,Horizon Robotics listed on HKEX Oct 2024
@@ -36,3 +36,33 @@ Ather Energy-private / Ola Electric-adj,drop,,Both listed in India
 Employment Hero-peer / Rippling AU,drop,,Duplicate of Rippling
 Rakuten Mobile-adj / Sakana-peer,drop,,Duplicate of Sakana AI
 Graphcore (private),drop,,Acquired by SoftBank 2024
+SpaceX,drop,,Listed Nasdaq (SPCX) Jun 2026
+Chime,drop,,Listed Nasdaq (CHYM) Jun 2025
+Klarna,drop,,Listed NYSE (KLAR) Sep 2025
+Netskope,drop,,Listed Nasdaq (NTSK) Sep 2025
+Lenskart,drop,,Listed NSE/BSE Nov 2025
+Groww,drop,,Listed NSE/BSE Nov 2025
+Meesho,drop,,Listed NSE/BSE Dec 2025
+Moore Threads,drop,,Listed Shanghai STAR Dec 2025
+Biren,drop,,Listed HKEX Jan 2026
+Zhipu AI,drop,,Listed HKEX Jan 2026
+MiniMax,drop,,Listed HKEX Jan 2026
+Unitree,drop,,Listed Shanghai STAR Aug 2026
+Shein,drop,,Listed HKEX Sep 2026
+Bending Spoons,drop,,Listed Nasdaq (BSP) Jul 2026
+X-Energy,drop,,Listed Nasdaq (XE) Apr 2026
+Einride,drop,,Listed Nasdaq (ENRD) via SPAC Jun 2026
+xAI,drop,,Acquired by SpaceX (merger closed Feb 2026)
+Cursor (Anysphere),drop,,Acquired by SpaceX (closed Aug 2026)
+Wiz,drop,,Acquired by Google (closed Mar 2026)
+Brex,drop,,Acquired by Capital One (closed Apr 2026)
+Airtable,drop,,Acquired by Bending Spoons (Sep 2026)
+Dragos,drop,,Majority acquired by Accenture (Sep 2026)
+Eucalyptus,drop,,Acquired by Hims & Hers (closed Jun 2026)
+Wallapop,drop,,Fully acquired by Naver (Jan 2026)
+Sana Labs,drop,,Acquired by Workday (Nov 2025)
+Codeium,drop,,Acquired by Cognition (Jul 2025)
+Northvolt (successor),drop,,Bankrupt; assets bought by Lyten (Feb 2026)
+Sun Cable,drop,,Bought out of administration by Grok Ventures/Quinbrook (2023)
+Builder.ai (successor),drop,,Insolvent (May 2025)
+eFishery,drop,,Collapsed after fraud; in liquidation (2025)
