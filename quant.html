@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unicorn Quant Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="quant-data.js"></script>
+<script src="quant-rounds.js" onerror="window.QR=null"></script>
+<style>
+  :root {
+    --purple: #702082;
+    --light-grey: #F5F5F5;
+    --mid-grey: #DCDDD8;
+    --dark-grey: #53565A;
+    --accent-purple: #A785BA;
+    --accent-light-purple: #D4C6E1;
+    --accent-blue: #41E1E3;
+    --accent-pink: #FC6984;
+
+    --bg: var(--light-grey);
+    --surface: #FFFFFF;
+    --ink: #3a3c40;
+    --ink2: var(--dark-grey);
+    --muted: #85888d;
+    --line: var(--mid-grey);
+    --line-soft: #ECECE9;
+    --brand: var(--purple);
+    --pos: var(--purple);
+    --neg: var(--accent-pink);
+    --v-clarity: var(--purple);
+    --v-augment: var(--accent-pink);
+    --v-forge: var(--dark-grey);
+    --shadow: 0 4px 16px rgba(83,86,90,0.14);
+    --serif: 'Bitter', Georgia, serif;
+    --sans: 'Open Sans', Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17161a; --surface: #222127; --ink: #ECEAEF; --ink2: #C9C6CE; --muted: #9a97a0;
+      --line: #3a3840; --line-soft: #2c2b31; --brand: #C9A6DA;
+      --pos: #A56BC2; --neg: #EE5F7D;
+      --v-clarity: #A56BC2; --v-augment: #EE5F7D; --v-forge: #C9C6CE;
+      --shadow: 0 4px 16px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17161a; --surface: #222127; --ink: #ECEAEF; --ink2: #C9C6CE; --muted: #9a97a0;
+    --line: #3a3840; --line-soft: #2c2b31; --brand: #C9A6DA;
+    --pos: #A56BC2; --neg: #EE5F7D;
+    --v-clarity: #A56BC2; --v-augment: #EE5F7D; --v-forge: #C9C6CE;
+    --shadow: 0 4px 16px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink2); font-family: var(--sans); font-weight: 400; font-size: 13px; line-height: 1.5; }
+  .app { max-width: 1360px; margin: 0 auto; padding: 28px 24px 64px; }
+  h1, h2 { font-family: var(--serif); font-weight: 400; color: var(--brand); }
+  h1 { font-size: 26px; line-height: 1.2; }
+  h2 { font-size: 18px; padding-bottom: 6px; border-bottom: 1px solid var(--brand); margin-bottom: 4px; }
+  .sub { color: var(--muted); font-size: 12px; }
+  a { color: var(--brand); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* header */
+  /* Banner after the Marquee Fund artwork: dusk purple, white type, thin rules */
+  .hdr { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-bottom: 16px;
+    padding: 28px 36px; border-radius: 14px; color: #fff; box-shadow: var(--shadow);
+    background:
+      radial-gradient(ellipse 60% 70% at 45% 100%, rgba(160,80,140,.55), transparent 70%),
+      radial-gradient(ellipse 50% 60% at 100% 100%, rgba(30,18,60,.85), transparent 70%),
+      linear-gradient(100deg, #702082 0%, #683a8e 45%, #5a4596 75%, #3a2660 100%); }
+  .logo { width: 220px; height: auto; display: block; }
+  .hdr-main { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+  .hdr .rule { width: 34px; height: 2px; background: #fff; margin: 4px 0 10px; }
+  .hdr .rule.r2 { margin: 10px 0 12px; }
+  .eyebrow { font-weight: 600; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
+  .hdr h1 { color: #fff; font-size: 34px; line-height: 1.15; }
+  .tagline { font-weight: 600; font-size: 12px; margin-top: 4px; }
+  .hdr-links { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .tag { font: 400 10px var(--sans); letter-spacing: .12em; text-transform: uppercase; color: #fff; background: transparent;
+    border: 1px solid rgba(255,255,255,.85); border-radius: 2px; padding: 5px 10px; text-decoration: none; cursor: pointer; }
+  a.tag:hover, button.tag:hover { background: rgba(255,255,255,.14); }
+  .btn { font: 600 12px var(--sans); color: var(--brand); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; text-decoration: none; }
+  .btn:hover { border-color: var(--brand); }
+
+  /* filters */
+  .filters { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+  .chips { display: flex; gap: 4px; flex-wrap: wrap; }
+  .chip { font: 600 12px var(--sans); color: var(--ink2); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--purple); border-color: var(--purple); color: #fff; }
+  select, input[type=search] { font: 400 12px var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; }
+  input[type=search] { width: 180px; }
+  label.tog { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2); cursor: pointer; }
+  .fcount { margin-left: auto; color: var(--muted); font-size: 12px; }
+
+  /* KPI cards */
+  .kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 28px; }
+  .card { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); padding: 16px 18px; border-top: 3px solid var(--purple); }
+  .kpi-lbl { font-weight: 600; font-size: 12px; color: var(--ink2); }
+  .kpi-val { font-family: var(--serif); font-size: 28px; color: var(--brand); line-height: 1.25; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+  .kpi-sub { font-size: 11px; color: var(--muted); }
+
+  /* sections */
+  section { margin-bottom: 32px; }
+  .sec-hd { margin-bottom: 14px; }
+  .sec-hd p { color: var(--muted); font-size: 12px; max-width: 900px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .panel { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); padding: 16px 18px; min-width: 0; }
+  .panel h3 { font: 600 14px var(--sans); color: var(--ink); margin-bottom: 2px; }
+  .panel .sub { margin-bottom: 10px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--ink2); margin-bottom: 8px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  .empty { color: var(--muted); font-size: 12px; padding: 24px 0; text-align: center; }
+
+  /* table */
+  .tbl-wrap { overflow-x: auto; background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); max-height: 640px; overflow-y: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 12px; }
+  thead th { position: sticky; top: 0; background: var(--purple); color: #fff; font-weight: 700; text-align: left; padding: 9px 10px; white-space: nowrap; cursor: pointer; user-select: none; }
+  thead th.r, td.r { text-align: right; }
+  thead th[aria-sort="ascending"]::after { content: " ▲"; font-size: 9px; }
+  thead th[aria-sort="descending"]::after { content: " ▼"; font-size: 9px; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid var(--line-soft); white-space: nowrap; color: var(--ink2); }
+  tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--bg) 55%, var(--surface)); }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover td { background: color-mix(in srgb, var(--accent-light-purple) 35%, var(--surface)); }
+  td.co { font-weight: 600; color: var(--ink); }
+  .badge { display: inline-block; font: 700 9px var(--sans); letter-spacing: .04em; border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
+  .b-mq { background: var(--purple); color: #fff; }
+  .b-ls { background: var(--line); color: var(--ink2); }
+  .flag { color: var(--muted); font-size: 11px; }
+  .na { color: var(--line); }
+
+  /* coverage */
+  .cov { display: grid; grid-template-columns: 220px 1fr 70px; gap: 8px 12px; align-items: center; font-size: 12px; }
+  .cov-bar { height: 8px; background: var(--line-soft); border-radius: 4px; overflow: hidden; }
+  .cov-bar span { display: block; height: 100%; background: var(--purple); border-radius: 0 4px 4px 0; }
+  .method li { margin: 0 0 6px 18px; font-weight: 300; color: var(--ink2); max-width: 980px; }
+  .method b { font-weight: 600; }
+
+  /* detail */
+  dialog { margin: auto; border: none; border-radius: 14px; box-shadow: 0 12px 48px rgba(0,0,0,.3); background: var(--surface); color: var(--ink2); width: min(880px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; }
+  dialog::backdrop { background: rgba(23,22,26,.45); }
+  .dlg-hd { padding: 20px 24px 12px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; }
+  .dlg-bd { padding: 16px 24px 24px; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+  .fact { background: var(--bg); border-radius: 10px; padding: 10px 12px; }
+  .fact .l { font-size: 11px; color: var(--muted); }
+  .fact .v { font-family: var(--serif); font-size: 18px; color: var(--brand); font-variant-numeric: tabular-nums; }
+  .dlg-bd h4 { font: 600 13px var(--sans); color: var(--ink); margin: 18px 0 6px; }
+  .note { font-weight: 300; margin-bottom: 8px; }
+
+  .tip { position: fixed; pointer-events: none; z-index: 50; background: var(--surface); color: var(--ink2); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 8px 10px; font-size: 12px; opacity: 0; transition: opacity .1s; max-width: 280px; }
+
+  @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 760px) {
+    .app { padding: 20px 16px 48px; }
+    .hdr { padding: 22px 20px; }
+    .hdr-main { align-items: flex-start; text-align: left; }
+    .hdr h1 { font-size: 26px; }
+    .logo { width: 170px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .grid2 { grid-template-columns: 1fr; }
+    .facts { grid-template-columns: repeat(2, 1fr); }
+    .cov { grid-template-columns: 140px 1fr 56px; }
+    .fcount { margin-left: 0; width: 100%; }
+    .filters { position: static; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hdr">
+    <img class="logo" src="assets/perennial-logo-white.png" alt="Perennial Private Investments" width="256" height="72">
+    <div class="hdr-main">
+      <div class="rule"></div>
+      <div class="eyebrow">Marquee Fund</div>
+      <h1>Unicorn Quant Dashboard</h1>
+      <div class="tagline" id="hdr-sub"></div>
+      <div class="rule r2"></div>
+      <div class="hdr-links">
+        <span class="tag">Global pre-IPO</span>
+        <a class="tag" href="index.html">Price tracker →</a>
+        <button class="tag" id="theme-btn" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="filters" role="group" aria-label="Filters">
+    <div class="chips" id="f-tier"></div>
+    <select id="f-region" aria-label="Region"></select>
+    <select id="f-sector" aria-label="Sector"></select>
+    <label class="tog"><input type="checkbox" id="f-mq"> Marquee list only</label>
+    <label class="tog" title="Include premiums measured against rounds older than 18 months or with no reported date"><input type="checkbox" id="f-stale"> Include stale rounds</label>
+    <input type="search" id="f-q" placeholder="Search company…" aria-label="Search company">
+    <div class="fcount" id="f-count"></div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section>
+    <div class="sec-hd">
+      <h2>Secondary pricing vs last round</h2>
+      <p>Implied valuation from the average secondary price across Clarity, Augment and Forge, multiplied by shares outstanding, compared with the post-money valuation of the last primary round.</p>
+    </div>
+    <div class="panel">
+      <h3>Premium / discount to last round, by company</h3>
+      <div class="sub" id="prem-sub"></div>
+      <div class="legend"><span><i style="background:var(--pos)"></i>Above last round</span><span><i style="background:var(--neg)"></i>Below last round</span><span><i style="background:var(--pos);opacity:.3"></i>Faded: round older than 18 months or undated</span></div>
+      <div class="chart-box" id="prem-box"><canvas id="c-prem" role="img" aria-label="Premium or discount to last round by company"></canvas></div>
+    </div>
+    <div class="grid2" style="margin-top:18px">
+      <div class="panel">
+        <h3>Median premium by sector</h3>
+        <div class="sub">Sectors with at least two priced companies · n shown per sector</div>
+        <div class="chart-box" id="sec-box"><canvas id="c-sec" role="img" aria-label="Median premium to last round by sector"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Liquidity score vs premium</h3>
+        <div class="sub">Liquidity score 0–100 (observed secondary pricing, trading attention, company scale)</div>
+        <div class="chart-box" style="height:320px"><canvas id="c-liq" role="img" aria-label="Liquidity score against premium to last round"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
+      <h2>Venue dispersion</h2>
+      <p>How far each venue's price sits from the company's average secondary price. A wide spread signals a thin or fragmented market.</p>
+    </div>
+    <div class="panel">
+      <h3>Price by venue, % from the cross-venue average</h3>
+      <div class="sub" id="disp-sub"></div>
+      <div class="legend" id="disp-legend"></div>
+      <div class="chart-box" id="disp-box"><canvas id="c-disp" role="img" aria-label="Venue price dispersion by company"></canvas></div>
+      <button class="btn" id="disp-more" type="button" style="margin-top:10px"></button>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
+      <h2>Secondary price momentum</h2>
+      <p>Change from each company's first verified secondary price to its latest, averaged across venues that have at least two verified prices. Verified price history begins in June 2026.</p>
+    </div>
+    <div class="panel">
+      <h3>Change since first verified price</h3>
+      <div class="sub" id="mom-sub"></div>
+      <div class="chart-box" id="mom-box"><canvas id="c-mom" role="img" aria-label="Change since first verified secondary price by company"></canvas></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
+      <h2>Universe</h2>
+      <p>Click a column to sort, or a company for its detail and price history.</p>
+    </div>
+    <div class="tbl-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Data coverage</h2><p>Share of companies in the current filter with each data point. Statistics above use only the companies that have the inputs they need.</p></div>
+    <div class="panel"><div class="cov" id="cov"></div></div>
+  </section>
+
+  <section class="method">
+    <div class="sec-hd"><h2>Methodology &amp; sources</h2></div>
+    <ul>
+      <li><b>Secondary prices</b> are indicative per-share prices from Clarity (formerly Hiive) company pages, Augment company pages (data by Caplight) and Forge public company pages. Indicative prices are not executed trades.</li>
+      <li><b>Implied valuation</b> = average available venue price × shares outstanding. Share counts are Perennial estimates; for companies outside the Top 50 tracker they are derived from Clarity's implied valuation.</li>
+      <li><b>Premium / discount</b> compares implied valuation with the last primary round's post-money valuation. By default only rounds dated within 18 months are used for summary statistics; older or undated rounds are shown faded.</li>
+      <li><b>Excluded from private-market statistics:</b> listed companies (SpaceX, IPO June 2026) and prices quoted in currencies other than USD (Mistral AI, Monzo).</li>
+      <li><b>Liquidity score</b> is Perennial's composite of observed secondary pricing (45 pts), trading attention on venue rankings (35 pts) and company scale (20 pts).</li>
+      <li>All figures in USD. Universe from Perennial's Pre-IPO Fund Universe; prices refreshed <span class="asof"></span>.</li>
+    </ul>
+  </section>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <div class="dlg-hd">
+    <div><h1 id="dlg-title" style="font-size:22px"></h1><div class="sub" id="dlg-sub"></div></div>
+    <button class="btn" id="dlg-close" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="dlg-bd" id="dlg-bd"></div>
+</dialog>
+<div class="tip" id="tip"></div>
+
+<script>
+// Each venue has a colour and a marker shape, so identity never rests on colour alone.
+const VENUES = [
+  { k:'c', name:'Clarity', css:'--v-clarity', shape:'circle',   glyph:'●' },
+  { k:'a', name:'Augment', css:'--v-augment', shape:'triangle', glyph:'▲' },
+  { k:'f', name:'Forge',   css:'--v-forge',   shape:'rectRot',  glyph:'◆' },
+];
+const DISP_TOP = 25;
+let dispAll = false;
+const TIERS = ['Anchor','Conviction','Tail','Unassigned'].filter(t => UNI.some(c => c.tier === t));
+const STALE_MONTHS = 18;
+const ASOF = new Date(QD_ASOF + 'T00:00:00');
+
+// ── helpers ──
+const mean = xs => xs.reduce((a,b)=>a+b,0)/xs.length;
+const quant = (xs, q) => { const s=[...xs].sort((a,b)=>a-b); if(!s.length) return null; const p=(s.length-1)*q, lo=Math.floor(p); return s[lo]+(s[Math.min(lo+1,s.length-1)]-s[lo])*(p-lo); };
+const median = xs => quant(xs, .5);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const alpha = (hex, a) => { const h=hex.replace('#',''); const n=parseInt(h.length===3?h.split('').map(x=>x+x).join(''):h,16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
+const pct = (x, d=0) => x==null ? '—' : (x>0?'+':'') + (x*100).toFixed(d) + '%';
+const bn = x => x==null ? '—' : x>=1000 ? '$'+(x/1000).toFixed(2)+'T' : x>=10 ? '$'+x.toFixed(0)+'bn' : '$'+x.toFixed(1)+'bn';
+const usd = x => x==null ? '—' : '$'+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fDate = d => d ? new Date(d+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}) : '—';
+const fMon = d => new Date(d+'T00:00:00').toLocaleDateString('en-AU',{month:'short',year:'numeric'});
+const esc = s => String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cleanName = n => n.replace(/\s*\((?:private|EU roots)\)\s*$/i,'');
+
+// ── derived metrics ──
+for (const c of UNI) {
+  c.name = cleanName(c.name);
+  const isUsd = c.ccy === 'USD';
+  const ps = VENUES.map(v=>c.px[v.k]).filter(x=>x!=null);
+  c.nVen = ps.length;
+  c.bl = isUsd && ps.length ? mean(ps) : null;
+  c.impl = c.bl && c.shares ? c.bl*c.shares/1e9 : null;
+  c.prem = c.impl && c.lrEv && !c.listed ? c.impl/c.lrEv - 1 : null;
+  c.lrAge = c.lrDate ? (ASOF - new Date(c.lrDate+'T00:00:00'))/(864e5*30.44) : null;
+  c.stale = c.lrAge==null || c.lrAge > STALE_MONTHS;
+  c.spread = isUsd && !c.listed && ps.length>=2 ? (Math.max(...ps)-Math.min(...ps))/c.bl : null;
+  c.mom = null; c.momFrom = null;
+  if (c.hist && !c.listed) {
+    const ch = [], starts = [];
+    for (const v of VENUES) { const h=c.hist[v.k]; if (h && h.length>=2 && h[0][0]<h[h.length-1][0]) { ch.push(h[h.length-1][1]/h[0][1]-1); starts.push(h[0][0]); } }
+    if (ch.length) { c.mom = mean(ch); c.momFrom = starts.sort()[0]; }
+  }
+}
+
+// ── filters ──
+const F = { tiers:new Set(TIERS), region:'', sector:'', mq:false, stale:false, q:'' };
+function fillSelect(id, label, vals) {
+  document.getElementById(id).innerHTML = `<option value="">All ${label}</option>` + vals.map(v=>`<option>${esc(v)}</option>`).join('');
+}
+fillSelect('f-region','regions',[...new Set(UNI.map(c=>c.region))].sort());
+fillSelect('f-sector','sectors',[...new Set(UNI.map(c=>c.sector))].sort());
+document.getElementById('f-tier').innerHTML = TIERS.map(t=>`<button class="chip" type="button" aria-pressed="true" data-t="${t}">${t}</button>`).join('');
+document.getElementById('f-tier').addEventListener('click', e=>{
+  const b=e.target.closest('.chip'); if(!b) return;
+  const on=b.getAttribute('aria-pressed')!=='true'; b.setAttribute('aria-pressed', on);
+  on ? F.tiers.add(b.dataset.t) : F.tiers.delete(b.dataset.t); render();
+});
+document.getElementById('f-region').onchange = e=>{ F.region=e.target.value; render(); };
+document.getElementById('f-sector').onchange = e=>{ F.sector=e.target.value; render(); };
+document.getElementById('f-mq').onchange = e=>{ F.mq=e.target.checked; render(); };
+document.getElementById('f-stale').onchange = e=>{ F.stale=e.target.checked; render(); };
+document.getElementById('f-q').oninput = e=>{ F.q=e.target.value.trim().toLowerCase(); render(); };
+
+const rows = () => UNI.filter(c => F.tiers.has(c.tier) && (!F.region||c.region===F.region) && (!F.sector||c.sector===F.sector) && (!F.mq||c.mq) && (!F.q||c.name.toLowerCase().includes(F.q)));
+const premOk = c => c.prem!=null && (F.stale || !c.stale);
+
+// ── charts ──
+const charts = {};
+function baseOpts() {
+  const ink=css('--ink2'), line=css('--line-soft');
+  Chart.defaults.font.family = "'Open Sans', Arial, sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.color = ink;
+  return { responsive:true, maintainAspectRatio:false, animation:false,
+    plugins:{ legend:{display:false}, tooltip:{ enabled:false, external:extTip } },
+    scales:{ x:{ grid:{color:line}, border:{color:css('--line')} }, y:{ grid:{display:false}, border:{color:css('--line')} } } };
+}
+const tipEl = document.getElementById('tip');
+function extTip({ chart, tooltip }) {
+  if (!tooltip.opacity || !tooltip.dataPoints?.length) { tipEl.style.opacity=0; return; }
+  const dp = tooltip.dataPoints[0], html = chart.$tip?.(dp);
+  if (!html) { tipEl.style.opacity=0; return; }
+  tipEl.innerHTML = html;
+  const r = chart.canvas.getBoundingClientRect();
+  let x = r.left + tooltip.caretX + 14, y = r.top + tooltip.caretY - 10;
+  const w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+  if (x + w > innerWidth - 8) x = r.left + tooltip.caretX - w - 14;
+  if (y + h > innerHeight - 8) y = innerHeight - h - 8;
+  tipEl.style.left = x+'px'; tipEl.style.top = Math.max(8,y)+'px'; tipEl.style.opacity = 1;
+}
+function mk(id, cfg, tip) {
+  charts[id]?.destroy();
+  const ch = new Chart(document.getElementById(id), cfg);
+  ch.$tip = tip; charts[id] = ch;
+  ch.canvas.onclick = e => { const p = ch.getElementsAtEventForMode(e,'nearest',{intersect:true},false)[0]; const c = p && ch.$co?.[p.index]; if (c) openDetail(c); };
+  return ch;
+}
+function emptyBox(boxId, canvasId, msg) {
+  charts[canvasId]?.destroy(); delete charts[canvasId];
+  const box=document.getElementById(boxId);
+  box.querySelector('.empty')?.remove();
+  box.querySelector('canvas').style.display = msg ? 'none' : '';
+  if (msg) box.insertAdjacentHTML('beforeend', `<div class="empty">${msg}</div>`);
+}
+const pctAxis = { callback: v => (v>0?'+':'') + Math.round(v*100) + '%' };
+const roundTip = c => `${c.lrName ? esc(c.lrName)+' · ' : ''}${c.lrDate ? fDate(c.lrDate) : 'date not reported'}`;
+
+function drawPrem(rs) {
+  const d = rs.filter(c=>c.prem!=null).sort((a,b)=>b.prem-a.prem);
+  const box = document.getElementById('prem-box');
+  emptyBox('prem-box','c-prem', d.length ? '' : 'No companies in this filter have both a secondary price and a last-round valuation.');
+  document.getElementById('prem-sub').textContent = `${d.length} companies · ${d.filter(c=>!c.stale).length} measured against a round from the last ${STALE_MONTHS} months`;
+  if (!d.length) return;
+  box.style.height = (d.length*20 + 50) + 'px';
+  const pos=css('--pos'), neg=css('--neg');
+  const o = baseOpts();
+  o.indexAxis = 'y';
+  o.scales.x.ticks = pctAxis; o.scales.x.position = 'top';
+  o.scales.y.ticks = { autoSkip:false, color:css('--ink') };
+  const ch = mk('c-prem', { type:'bar', data:{ labels:d.map(c=>c.name), datasets:[{ data:d.map(c=>c.prem),
+      backgroundColor:d.map(c=>alpha(c.prem>=0?pos:neg, c.stale?.3:1)), borderRadius:4, borderSkipped:'start', barThickness:12 }] }, options:o },
+    dp => { const c=d[dp.dataIndex]; return `<b>${esc(c.name)}</b><br>${pct(c.prem)} vs last round${c.stale?' <span class="flag">(stale round)</span>':''}<br>Implied ${bn(c.impl)} · last round ${bn(c.lrEv)}<br><span class="flag">${roundTip(c)}</span>`; });
+  ch.$co = d;
+}
+
+function drawSector(rs) {
+  const g = {};
+  rs.filter(premOk).forEach(c => (g[c.sector] ??= []).push(c.prem));
+  const d = Object.entries(g).filter(([,v])=>v.length>=2).map(([s,v])=>({ s, m:median(v), n:v.length })).sort((a,b)=>b.m-a.m);
+  emptyBox('sec-box','c-sec', d.length ? '' : 'Not enough priced companies in this filter.');
+  if (!d.length) return;
+  document.getElementById('sec-box').style.height = (d.length*30 + 50) + 'px';
+  const o = baseOpts(); o.indexAxis='y'; o.scales.x.ticks = pctAxis; o.scales.y.ticks = { color:css('--ink') };
+  mk('c-sec', { type:'bar', data:{ labels:d.map(x=>`${x.s} (n=${x.n})`), datasets:[{ data:d.map(x=>x.m), backgroundColor:d.map(x=>x.m>=0?css('--pos'):css('--neg')), borderRadius:4, borderSkipped:'start', barThickness:14 }] }, options:o },
+    dp => { const x=d[dp.dataIndex]; return `<b>${esc(x.s)}</b><br>Median ${pct(x.m)} across ${x.n} companies`; });
+}
+
+function drawLiq(rs) {
+  const d = rs.filter(c=>premOk(c) && c.liq!=null);
+  const o = baseOpts();
+  o.scales.x = { ...o.scales.x, min:0, max:100, title:{display:true,text:'Liquidity score'} };
+  o.scales.y = { grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:pctAxis, title:{display:true,text:'vs last round'} };
+  const ch = mk('c-liq', { type:'scatter', data:{ datasets:[{ data:d.map(c=>({x:c.liq,y:c.prem})), backgroundColor:css('--pos'), borderColor:css('--surface'), borderWidth:2, pointRadius:6, pointHoverRadius:8 }] }, options:o },
+    dp => { const c=d[dp.dataIndex]; return `<b>${esc(c.name)}</b><br>Liquidity ${c.liq.toFixed(0)} · ${pct(c.prem)} vs last round`; });
+  ch.$co = d;
+}
+
+const venueLegend = vs => vs.map(v=>`<span><span style="color:var(${v.css});margin-right:5px">${v.glyph}</span>${v.name}</span>`).join('');
+document.getElementById('disp-legend').innerHTML = venueLegend(VENUES);
+document.getElementById('disp-more').onclick = () => { dispAll = !dispAll; render(); };
+
+function drawDisp(rs) {
+  const all = rs.filter(c=>c.spread!=null).sort((a,b)=>b.spread-a.spread);
+  const d = dispAll ? all : all.slice(0, DISP_TOP);
+  const more = document.getElementById('disp-more');
+  more.hidden = all.length <= DISP_TOP;
+  more.textContent = dispAll ? `Show the ${DISP_TOP} widest only` : `Show all ${all.length}`;
+  document.getElementById('disp-sub').textContent = all.length ? `${all.length} companies quoted on two or more venues${all.length>d.length?` · ${d.length} widest shown`:''} · median spread ${(median(all.map(c=>c.spread))*100).toFixed(1)}% (highest − lowest price, as % of average)` : '';
+  emptyBox('disp-box','c-disp', d.length ? '' : 'No companies in this filter are quoted on two or more venues.');
+  if (!d.length) return;
+  document.getElementById('disp-box').style.height = (d.length*20 + 50) + 'px';
+  const o = baseOpts();
+  o.scales.x.ticks = pctAxis; o.scales.x.position='top';
+  o.scales.y = { type:'linear', reverse:true, min:-.5, max:d.length-.5, grid:{display:false}, border:{color:css('--line')},
+    afterBuildTicks: ax => { ax.ticks = d.map((_,i)=>({value:i})); }, ticks:{ autoSkip:false, color:css('--ink'), callback:v=>d[v]?.name ?? '' } };
+  const ds = VENUES.map(v => ({ label:v.name, data:d.map((c,i)=>c.px[v.k]!=null?{x:c.px[v.k]/c.bl-1,y:i,c}:null).filter(Boolean),
+    backgroundColor:css(v.css), borderColor:css('--surface'), borderWidth:2, pointStyle:v.shape, pointRadius:6, pointHoverRadius:8 }));
+  const ch = mk('c-disp', { type:'scatter', data:{ datasets:ds }, options:o },
+    dp => { const c=dp.raw.c; return `<b>${esc(c.name)}</b><br>`+VENUES.filter(v=>c.px[v.k]!=null).map(v=>`${v.name}: ${usd(c.px[v.k])}`).join('<br>')+`<br><span class="flag">Spread ${(c.spread*100).toFixed(1)}%</span>`; });
+  ch.canvas.onclick = e => { const p=ch.getElementsAtEventForMode(e,'nearest',{intersect:true},false)[0]; if(p) openDetail(ch.data.datasets[p.datasetIndex].data[p.index].c); };
+}
+
+function drawMom(rs) {
+  const d = rs.filter(c=>c.mom!=null).sort((a,b)=>b.mom-a.mom);
+  document.getElementById('mom-sub').textContent = d.length ? `${d.length} companies with two or more verified prices · median ${pct(median(d.map(c=>c.mom)),1)}` : '';
+  emptyBox('mom-box','c-mom', d.length ? '' : 'No companies in this filter have two or more verified prices yet.');
+  if (!d.length) return;
+  document.getElementById('mom-box').style.height = (d.length*20 + 50) + 'px';
+  const o = baseOpts(); o.indexAxis='y'; o.scales.x.ticks=pctAxis; o.scales.x.position='top'; o.scales.y.ticks={autoSkip:false,color:css('--ink')};
+  const ch = mk('c-mom', { type:'bar', data:{ labels:d.map(c=>c.name), datasets:[{ data:d.map(c=>c.mom), backgroundColor:d.map(c=>c.mom>=0?css('--pos'):css('--neg')), borderRadius:4, borderSkipped:'start', barThickness:12 }] }, options:o },
+    dp => { const c=d[dp.dataIndex]; return `<b>${esc(c.name)}</b><br>${pct(c.mom,1)} since ${fDate(c.momFrom)}`; });
+  ch.$co = d;
+}
+
+// ── KPIs ──
+function drawKpis(rs) {
+  const pr = rs.filter(premOk).map(c=>c.prem), sp = rs.filter(c=>c.spread!=null).map(c=>c.spread);
+  const lq = rs.filter(c=>c.liq!=null).map(c=>c.liq), mo = rs.filter(c=>c.mom!=null).map(c=>c.mom);
+  const priced = rs.filter(c=>c.nVen).length;
+  const above = pr.filter(x=>x>0).length;
+  const k = [
+    ['Companies', rs.length, `${priced} with a secondary price`],
+    ['Median vs last round', pr.length?pct(median(pr)):'—', pr.length?`n=${pr.length} · IQR ${pct(quant(pr,.25))} to ${pct(quant(pr,.75))}`:'No priced companies'],
+    ['Trading above last round', pr.length?Math.round(above/pr.length*100)+'%':'—', pr.length?`${above} of ${pr.length} companies`:''],
+    ['Median venue spread', sp.length?(median(sp)*100).toFixed(1)+'%':'—', `${sp.length} quoted on 2+ venues`],
+    ['Median liquidity score', lq.length?median(lq).toFixed(0):'—', `out of 100 · n=${lq.length}`],
+    ['Median price change', mo.length?pct(median(mo),1):'—', mo.length?`since first verified price · n=${mo.length}`:'No price history yet'],
+  ];
+  document.getElementById('kpis').innerHTML = k.map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
+}
+
+// ── table ──
+const COLS = [
+  { k:'name', l:'Company', f:c=>`${esc(c.name)}${c.mq?`<span class="badge b-mq" title="Marquee list rank">M${c.mq}</span>`:''}${c.listed?'<span class="badge b-ls">LISTED</span>':''}`, cls:'co' },
+  { k:'sector', l:'Sector' },
+  { k:'region', l:'Region' },
+  { k:'tier', l:'Tier' },
+  { k:'lrDate', l:'Last round', f:c=>c.lrDate?`${esc(c.lrName||'')} <span class="flag">${fMon(c.lrDate)}</span>`:'<span class="na">—</span>' },
+  { k:'lrEv', l:'Last round val.', r:1, f:c=>bn(c.lrEv) },
+  { k:'impl', l:'Implied val.', r:1, f:c=>bn(c.impl) },
+  { k:'prem', l:'vs last round', r:1, f:c=>c.prem==null?'<span class="na">—</span>':`${pct(c.prem)}${c.stale?' <span class="flag" title="Round older than 18 months or undated">†</span>':''}` },
+  { k:'pc', l:'Clarity', r:1, v:c=>c.px.c, f:c=>c.px.c==null?'<span class="na">—</span>':(c.ccy==='EUR'?'€':c.ccy==='GBP'?'£':'$')+c.px.c.toFixed(2) },
+  { k:'pa', l:'Augment', r:1, v:c=>c.px.a, f:c=>c.px.a==null?'<span class="na">—</span>':usd(c.px.a) },
+  { k:'pf', l:'Forge', r:1, v:c=>c.px.f, f:c=>c.px.f==null?'<span class="na">—</span>':usd(c.px.f) },
+  { k:'spread', l:'Spread', r:1, f:c=>c.spread==null?'<span class="na">—</span>':(c.spread*100).toFixed(1)+'%' },
+  { k:'liq', l:'Liquidity', r:1, f:c=>c.liq==null?'<span class="na">—</span>':c.liq.toFixed(0) },
+  { k:'mom', l:'Price chg.', r:1, f:c=>c.mom==null?'<span class="na">—</span>':pct(c.mom,1) },
+];
+let sortK='liq', sortDir=-1;
+function drawTable(rs) {
+  const thead = document.querySelector('#tbl thead');
+  thead.innerHTML = '<tr>'+COLS.map(c=>`<th class="${c.r?'r':''}" data-k="${c.k}" ${c.k===sortK?`aria-sort="${sortDir>0?'ascending':'descending'}"`:''}>${c.l}</th>`).join('')+'</tr>';
+  const col = COLS.find(c=>c.k===sortK), val = col.v || (c=>c[sortK]);
+  const s = [...rs].sort((a,b)=>{ const x=val(a), y=val(b); if(x==null&&y==null) return a.name.localeCompare(b.name); if(x==null) return 1; if(y==null) return -1; return (typeof x==='string'? x.localeCompare(y) : x-y)*sortDir; });
+  document.querySelector('#tbl tbody').innerHTML = s.map(c=>`<tr data-id="${c.id}">`+COLS.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f?k.f(c):esc(c[k.k]??'—')}</td>`).join('')+'</tr>').join('');
+}
+document.querySelector('#tbl thead').addEventListener('click', e=>{
+  const th=e.target.closest('th'); if(!th) return;
+  if (sortK===th.dataset.k) sortDir*=-1; else { sortK=th.dataset.k; sortDir = ['name','sector','region','tier'].includes(sortK)?1:-1; }
+  render();
+});
+document.querySelector('#tbl tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
+
+// ── coverage ──
+function drawCov(rs) {
+  const n = rs.length || 1, qr = window.QR || {};
+  const items = [
+    ['Secondary price (any venue)', c=>c.nVen>0],
+    ['Two or more venues', c=>c.nVen>=2],
+    ['Share count', c=>c.shares!=null],
+    ['Last-round valuation', c=>c.lrEv!=null],
+    ['Last-round date', c=>c.lrDate!=null],
+    ['Verified price history (2+ prices)', c=>c.mom!=null],
+    ['Funding round history', c=>qr[c.id]?.rounds?.length>0],
+    ['Key shareholders', c=>qr[c.id]?.holders?.length>0],
+  ];
+  document.getElementById('cov').innerHTML = items.map(([l,f])=>{ const k=rs.filter(f).length, p=k/n*100;
+    return `<div>${l}</div><div class="cov-bar"><span style="width:${p}%"></span></div><div class="r num">${k} / ${rs.length}</div>`; }).join('');
+}
+
+// ── detail ──
+const dlg = document.getElementById('dlg');
+document.getElementById('dlg-close').onclick = () => dlg.close();
+dlg.addEventListener('click', e=>{ if (e.target===dlg) dlg.close(); });
+function openDetail(c) {
+  document.getElementById('dlg-title').textContent = c.name;
+  document.getElementById('dlg-sub').textContent = [c.sector, c.sub, c.hq||c.region, c.tier+' tier', c.mq?`Marquee #${c.mq}`:null, c.listed?'Listed':null].filter(Boolean).join(' · ');
+  const qr = window.QR?.[c.id];
+  const facts = [
+    ['Last round', c.lrName ? `${esc(c.lrName)}` : '—', c.lrDate?fDate(c.lrDate):'date not reported'],
+    ['Last-round valuation', bn(c.lrEv), 'post-money'],
+    ['Implied valuation', bn(c.impl), c.shares?`${(c.shares/1e6).toFixed(0)}M shares est.`:'share count unknown'],
+    ['vs last round', pct(c.prem), c.prem!=null&&c.stale?'stale round':''],
+    ['Clarity', c.px.c==null?'—':(c.ccy==='EUR'?'€':c.ccy==='GBP'?'£':'$')+c.px.c.toFixed(2), c.ctype||''],
+    ['Augment', usd(c.px.a), ''],
+    ['Forge', usd(c.px.f), ''],
+    ['Liquidity score', c.liq==null?'—':c.liq.toFixed(0), c.rank?`#${c.rank} overall · #${c.srank} in sector`:''],
+  ];
+  let h = c.note ? `<p class="note">${esc(c.note)}</p>` : '';
+  h += '<div class="facts">' + facts.map(([l,v,s])=>`<div class="fact"><div class="l">${l}</div><div class="v">${v}</div><div class="l">${s}</div></div>`).join('') + '</div>';
+  h += '<h4>Secondary price history</h4>';
+  const hasHist = c.hist && VENUES.some(v=>c.hist[v.k]?.length);
+  h += hasHist ? '<div class="legend">'+venueLegend(VENUES.filter(v=>c.hist[v.k]?.length))+'</div><div style="height:240px;position:relative"><canvas id="c-det"></canvas></div>'
+    : '<div class="empty">No verified price history yet — prices are a single snapshot.</div>';
+  h += '<h4>Funding rounds</h4>';
+  h += qr?.rounds?.length ? roundsTable(qr.rounds) : '<div class="empty">Funding history not yet compiled for this company.</div>';
+  h += '<h4>Key shareholders</h4>';
+  h += qr?.holders?.length ? holdersTable(qr.holders) : '<div class="empty">Shareholder information not yet compiled for this company.</div>';
+  document.getElementById('dlg-bd').innerHTML = h;
+  dlg.showModal();
+  dlg.scrollTop = 0;
+  if (hasHist) drawDetail(c);
+}
+function roundsTable(rs) {
+  return '<div class="tbl-wrap" style="box-shadow:none;border:1px solid var(--line)"><table><thead><tr><th>Date</th><th>Round</th><th class="r">Price / share</th><th class="r">Post-money</th><th>Lead investors</th><th>Source</th></tr></thead><tbody>' +
+    rs.map(r=>`<tr><td>${fDate(r.date)}</td><td>${esc(r.name)}</td><td class="r num">${usd(r.pps)}</td><td class="r num">${bn(r.post)}</td><td>${esc((r.leads||[]).join(', '))}</td><td class="flag">${esc(r.src||'')}</td></tr>`).join('') + '</tbody></table></div>';
+}
+function holdersTable(hs) {
+  return '<div class="tbl-wrap" style="box-shadow:none;border:1px solid var(--line)"><table><thead><tr><th>Shareholder</th><th>Type</th><th class="r">Stake</th><th>Basis</th><th>Source</th></tr></thead><tbody>' +
+    hs.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.type||'')}</td><td class="r num">${x.stake==null?'—':(x.stake*100).toFixed(1)+'%'}</td><td>${esc(x.basis||'')}</td><td class="flag">${esc(x.src||'')}</td></tr>`).join('') + '</tbody></table></div>';
+}
+function drawDetail(c) {
+  const o = baseOpts();
+  o.scales.x = { type:'linear', grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:{ callback:v=>new Date(v).toLocaleDateString('en-AU',{day:'numeric',month:'short'}) } };
+  o.scales.y = { grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:{ callback:v=>'$'+v } };
+  o.interaction = { mode:'nearest', intersect:false };
+  const ds = VENUES.filter(v=>c.hist[v.k]?.length).map(v=>({ label:v.name, data:c.hist[v.k].map(([d,p])=>({x:+new Date(d+'T00:00:00'),y:p})),
+    borderColor:css(v.css), backgroundColor:css(v.css), borderWidth:2, pointStyle:v.shape, pointRadius:5, pointBorderColor:css('--surface'), pointBorderWidth:2, tension:0 }));
+  mk('c-det', { type:'line', data:{ datasets:ds }, options:o },
+    dp => `<b>${dp.dataset.label}</b><br>${usd(dp.raw.y)} · ${fDate(new Date(dp.raw.x).toISOString().slice(0,10))}`);
+}
+
+// ── render ──
+function render() {
+  const rs = rows();
+  document.getElementById('f-count').textContent = `${rs.length} of ${UNI.length} companies`;
+  drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawTable(rs); drawCov(rs);
+}
+document.getElementById('hdr-sub').textContent = `${UNI.length} companies · secondary prices from Clarity, Augment & Forge, refreshed ${fDate(QD_ASOF)} · all figures USD`;
+document.querySelectorAll('.asof').forEach(e=>e.textContent=fDate(QD_ASOF));
+
+// theme
+const themeBtn = document.getElementById('theme-btn');
+try { const t = localStorage.getItem('pq-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+themeBtn.onclick = () => {
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('pq-theme', document.documentElement.dataset.theme); } catch {}
+  render();
+};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+addEventListener('scroll', ()=>tipEl.style.opacity=0, {passive:true});
+render();
+</script>
+</body>
+</html>

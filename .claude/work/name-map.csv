@@ -1,0 +1,38 @@
+workbook_name,action,new_name,reason
+Revolut-peer / Monzo,drop,,Duplicate of Monzo (kept as Conviction)
+SHmega / CATL-adjacent,needs input,,Unclear which company is meant (Anchor tier)
+Nubank-adjacent / Neon,rename,Neon,Brazilian neobank
+Naver-adjacent / Wrtn,rename,Wrtn,Korean consumer AI
+Scyne / Deputy,rename,Deputy,Deputy is the unicorn; Scyne Advisory is a consultancy
+Ramp-adjacent / Rho,rename,Rho,
+Hims-adjacent / Function,rename,Function Health,
+Genomics England-adj / Congenica,rename,Congenica,
+H2 Green Steel / Stegra,rename,Stegra,H2 Green Steel renamed Stegra in 2024
+Lakestar / Wefox,rename,Wefox,
+Lakestar-backed / Blockpit,rename,Blockpit,
+Lovable-peer / Legora,rename,Legora,
+Monese-peer / Allica Bank,rename,Allica Bank,
+Ottobock-adjacent / Neura,rename,Neura Robotics,
+Revolut-peer / Zilch,rename,Zilch,
+Truecaller-private peers / Kry,rename,Kry,
+Wayve-peer / Oxa,rename,Oxa,
+Cambricon-adj / Enflame,rename,Enflame,
+SenseTime-private peers / Megvii,rename,Megvii,
+WeRide-private / Momenta,rename,Momenta,
+Zhipu-peer / 01.AI,rename,01.AI,
+Sanctuary-peer / Fourier,rename,Fourier,
+DJI (private),rename,DJI,
+Cainiao-adj / JD Industrials,rename,JD Industrials,Check listing status before keeping
+Circle-adjacent / crypto,drop,,Not a company (Circle itself listed 2025)
+Glovo-private / Wolt-adj,drop,,Subsidiaries of listed Delivery Hero / DoorDash
+Black Sesame-adj / Horizon,drop,,Horizon Robotics listed on HKEX Oct 2024
+Horizon Robotics-adj,drop,,Horizon Robotics listed on HKEX Oct 2024
+Geely-adj / Zeekr-private,drop,,Zeekr is a Geely subsidiary
+Neta / Leapmotor-adj,drop,,Leapmotor is listed; Neta's parent is in restructuring
+Pony.ai-private / WeRide-adj,drop,,Both listed on Nasdaq Nov 2024
+SHEIN-peer / Temu (PDD-private),drop,,Temu is part of listed PDD; Shein has its own row
+Woven / Toyota-adj,drop,,Toyota subsidiary
+Ather Energy-private / Ola Electric-adj,drop,,Both listed in India
+Employment Hero-peer / Rippling AU,drop,,Duplicate of Rippling
+Rakuten Mobile-adj / Sakana-peer,drop,,Duplicate of Sakana AI
+Graphcore (private),drop,,Acquired by SoftBank 2024
