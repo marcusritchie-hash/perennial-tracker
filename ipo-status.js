@@ -11,6 +11,7 @@ window.IPO = {
   "kraken": {"status":"Confidentially filed","updated":"2026-04","val":10.9},
   "verkada": {"status":"Reported","updated":"2026-07","val":5.7},
   "oura": {"status":"S-1 publicly filed","updated":"2026-09","val":15},
+  "strava": {"status":"Confidentially filed","updated":"2026-01","val":2.2},
   "vastdata": {"status":"Reported","updated":"2026-04","val":30},
   "cohesity": {"status":"Reported","updated":"2025-09","val":null},
   "upgrade": {"status":"Reported","updated":"2025-10","val":7.3},
