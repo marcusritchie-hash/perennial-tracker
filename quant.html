@@ -374,7 +374,7 @@
         <p class="sub">Is the company compounding value?</p>
         <ul>
           <li><b>Secondary price vs last valuation</b> (40%): −30% scores 0, +60% scores 100. Only marks from the last 18 months count.</li>
-          <li><b>Valuation growth</b> (30%): annual growth in valuation across priced rounds over three years or more; 0% scores 0, 150% a year scores 100.</li>
+          <li><b>Valuation growth</b> (30%): annual growth in valuation across priced rounds over three years or more, or since the first priced round if that is at least a year earlier; 0% scores 0, 150% a year scores 100.</li>
           <li><b>Freshness of the last valuation</b> (15%): a mark within 3 months scores 100, 36 months or older scores 0.</li>
           <li><b>Path to realisation</b> (15%): an IPO filing or a company-run tender in the last 24 months scores 100.</li>
         </ul>
@@ -388,6 +388,7 @@
           <li><b>Scale</b> (30%): valuation on a log scale; $1bn scores 0, $300bn scores 100.</li>
           <li><b>Company liquidity programmes</b> (15%): a company-run tender or buyback in the last 24 months scores 100.</li>
         </ul>
+        <p class="sub" style="margin-top:8px">Companies with a researched funding history are scored on liquidity even if no venue quotes them; the absence of quotes counts as zero coverage.</p>
       </div>
       <div class="panel pillar">
         <div class="pillar-hd"><h3>Demand</h3><span class="wt">30%</span></div>
@@ -847,15 +848,19 @@ const wmean = parts => { const p = parts.filter(([v]) => v!=null); if (!p.length
 for (const c of UNI) {
   const marks = [...(window.QR?.[c.id]?.rounds || [])].filter(r=>r.post!=null && r.type!=='Pending' && r.companyRun!==false).sort((a,b)=>a.date.localeCompare(b.date));
   const last = marks[marks.length-1];
-  const base = last && [...marks].reverse().find(r => (new Date(last.date)-new Date(r.date))/YEAR_MS >= 3);
-  const growth = base ? Math.pow(last.post/base.post, 1/((new Date(last.date)-new Date(base.date))/YEAR_MS)) - 1 : null;
+  // Valuation growth over 3+ years of rounds; failing that, since the first priced round if it is at least a year back.
+  const yrsTo = r => (new Date(last.date)-new Date(r.date))/YEAR_MS;
+  const base = last && ([...marks].reverse().find(r => yrsTo(r) >= 3) || marks.find(r => yrsTo(r) >= 1));
+  const growth = base ? Math.pow(last.post/base.post, 1/yrsTo(base)) - 1 : null;
+  const researched = !!window.QR?.[c.id];
   const tender24 = window.QR?.[c.id] ? marks.some(r => r.type==='Tender' && (ASOF-new Date(r.date))/YEAR_MS <= 2) : null;
   const val = c.impl ?? c.curVal ?? c.lrEv;
   const recentPrem = c.prem!=null && !c.stale ? c.prem : null;
-  const has = { va: recentPrem!=null || growth!=null, lq: c.nVen>0, dm: !!(c.setter || c.c50 || c.mom!=null) };
+  // A researched profile is liquidity evidence even with no venue quotes: scale, tenders, and the absence of quotes.
+  const has = { va: recentPrem!=null || growth!=null, lq: c.nVen>0 || researched, dm: !!(c.setter || c.c50 || c.mom!=null) };
   const va = has.va ? wmean([[lin(recentPrem,-0.3,0.6),0.4], [lin(growth,0,1.5),0.3], [c.lrAge==null?null:lin(-c.lrAge,-36,-3),0.15],
     [/S-1|filing/i.test(c.note||'') || tender24 ? 100 : 0, 0.15]]) : null;
-  const lq = has.lq ? wmean([[c.nVen/3*100,0.3], [c.nVen>=2 ? lin(-c.spread,-0.3,-0.03) : 40, 0.25],
+  const lq = has.lq ? wmean([[c.nVen/3*100,0.3], [c.nVen>=2 ? lin(-c.spread,-0.3,-0.03) : c.nVen===1 ? 40 : null, 0.25],
     [val ? lin(Math.log10(val),0,Math.log10(300)) : null, 0.3], [tender24==null ? null : tender24 ? 100 : 0, 0.15]]) : null;
   const dm = has.dm ? wmean([[c.setter ? lin(31-c.setter,0,30) : 0, 0.4], [c.c50 ? lin(51-c.c50,0,50) : 0, 0.3], [c.mom==null ? null : lin(c.mom,-0.2,0.3), 0.3]]) : null;
   const enough = Object.values(has).filter(Boolean).length >= 2;
