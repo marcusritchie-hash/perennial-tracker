@@ -323,7 +323,7 @@
     <div class="hdr-left">
       <div>
         <div class="hdr-title">Perennial — Top 50 Pre-IPO</div>
-        <div class="hdr-sub">Top 50 by valuation · Clarity (formerly Hiive), Augment &amp; Forge prices refreshed 12 Oct 2026 · movement below is a simulation, not a live feed</div>
+        <div class="hdr-sub">Top 50 by valuation · Clarity (formerly Hiive), Augment &amp; Forge prices refreshed 14 Oct 2026 · movement below is a simulation, not a live feed</div>
       </div>
     </div>
     <div class="hdr-right">
@@ -440,16 +440,16 @@
 
   <div class="footer">
     <div id="src-lists"></div>
-    <b>Augment orders &amp; structure (13 Oct 2026):</b> everything on Augment is a unit in an Augment Collective SPV. Augment orders are open resale sell orders (unit transfers, direct ownership, 5% brokerage fee); Structure shows the share class behind them (Common or Preferred), or "New fund" where Augment is offering new units. Only Discord, Epic Games, Mercor and Polymarket have open orders, and Replit, Zipline, Higgsfield and PsiQuantum have offerings; for other companies Structure shows the earlier hand-entered value in grey, or a dash.<br>
+    <b>Augment orders &amp; structure (14 Oct 2026):</b> everything on Augment is a unit in an Augment Collective SPV. Augment orders are open resale sell orders (unit transfers, 5% brokerage fee; direct ownership except Perplexity's); Structure shows the share class behind them (Common or Preferred), or "New fund" where Augment is offering new units. Only Discord, Epic Games, Mercor, Perplexity and Polymarket have open orders, and Replit, Zipline, Higgsfield and PsiQuantum have offerings; for other companies Structure shows the earlier hand-entered value in grey, or a dash.<br>
     <b>Changed this update (12 Oct 2026):</b> the list grew from 30 to the top 50 pre-IPO companies by Augment valuation. Joined: ByteDance, Cognition AI, Prometheus, ElevenLabs, Skild AI, Harvey, Zipline, Helion Energy, Mercor, Sierra, Deel, Lovable, Physical Intelligence, Cohere, Gusto, Epic Games, Higgsfield, Whoop, Glean, Flock Safety, Abridge, Mercury, Redwood Materials. Left: Tanium, Lightmatter, Tenstorrent (below the top 50). Not included for lack of a second source on the same share basis: Thinking Machines, Shein, VAST Data, Mistral AI, Etched, Reflection AI, Brex, Notion, Relativity Space, Character.ai.<br>
-    <b>Read this before using any number here.</b> Every price shown was read from its platform on 12 Oct 2026; a dash means that platform has no price, or quotes a different share basis and is left out. Each company needs Augment plus one other source, except Anthropic (Clarity no longer shows it), Waymo (Clarity only) and Neuralink (Augment only), which are noted as single-source in their detail panel. Implied market caps use share counts back-solved from Augment valuations and are approximations only. The ticking prices are <b>randomly simulated from these seed values</b> and do not represent real trading. Charts and Trend show only verified prices from each refresh (Augment 30 Jun is its end-of-quarter figure). Not financial advice. For accredited investors only.
+    <b>Read this before using any number here.</b> Every price shown was read from its platform on 14 Oct 2026; a dash means that platform has no price, or quotes a different share basis and is left out. Each company needs Augment plus one other source, except Anthropic (Clarity no longer shows it), Waymo (Clarity only) and Neuralink (Augment only), which are noted as single-source in their detail panel. Implied market caps use share counts back-solved from Augment valuations and are approximations only. The ticking prices are <b>randomly simulated from these seed values</b> and do not represent real trading. Charts and Trend show only verified prices from each refresh (Augment 30 Jun is its end-of-quarter figure). Not financial advice. For accredited investors only.
   </div>
 
 </div>
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
-// TOP 50 by Augment valuation, all three sources read 12 Oct 2026:
+// TOP 50 by Augment valuation, all three sources read 14 Oct 2026 (list set 12 Oct):
 //   p1 = Clarity Price (app.clarity.com company pages)
 //   p2 = Forge Price   (forgeglobal.com public company pages)
 //   p3 = Augment Price (app.augment.market company pages, data by Caplight)
@@ -460,58 +460,58 @@
 // shares = Augment valuation / Augment price (Waymo: carried from earlier data),
 // so IMPLIED CAP is an approximation, not a reported figure.
 // ─────────────────────────────────────────────────────────────────────────────
-const REFRESH='12 Oct 2026';
+const REFRESH='14 Oct 2026';
 const COS = [
-  { id:'anth', name:'Anthropic', sec:'AI', sc:'ai', shares:1637.31e6, col:'#8b5cf6', p1:null, p2:null, p3:1001.64, struct:'SPV', rofr:'Very high', p1rank:12, liveOrders:0 },
-  { id:'openai', name:'OpenAI', sec:'AI', sc:'ai', shares:1234.48e6, col:'#5b3ea6', p1:813.72, p2:954.7, p3:826.26, struct:'Mixed', rofr:'High', p1rank:6, liveOrders:0 },
-  { id:'bytedance', name:'ByteDance', sec:'Social', sc:'ro', shares:1646.29e6, col:'#7a5c00', p1:330.51, p2:null, p3:363.24, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'databricks', name:'Databricks', sec:'Data', sc:'da', shares:725.92e6, col:'#9a6c00', p1:289.75, p2:268.5, p3:258.98, struct:'Mixed', rofr:'Moderate', p1rank:11, liveOrders:61 },
-  { id:'stripe', name:'Stripe', sec:'Fintech', sc:'fin', shares:2579.2e6, col:'#1d9e75', p1:70.27, p2:72.45, p3:71.34, struct:'Mixed', rofr:'Moderate', p1rank:24, liveOrders:29 },
-  { id:'waymo', name:'Waymo', sec:'AI', sc:'ai', shares:2200e6, col:'#5b3ea6', p1:460.97, p2:null, p3:null, struct:'SPV', rofr:'Very high', p1rank:null, liveOrders:0 },
-  { id:'revolut', name:'Revolut', sec:'Fintech', sc:'fin', shares:57.08e6, col:'#0c8c5e', p1:null, p2:2125, p3:2154.92, struct:'Direct', rofr:'Moderate', p1rank:null, liveOrders:0 },
-  { id:'anduril', name:'Anduril', sec:'Defense', sc:'cy', shares:811.76e6, col:'#c0392b', p1:142.25, p2:132.12, p3:130.58, struct:'Mixed', rofr:'High', p1rank:null, liveOrders:0 },
-  { id:'ramp', name:'Ramp', sec:'Fintech', sc:'fin', shares:373.1e6, col:'#0c8c5e', p1:156.92, p2:125.54, p3:150.36, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
-  { id:'cognition', name:'Cognition AI', sec:'AI', sc:'ai', shares:226.26e6, col:'#7c6fe0', p1:256.47, p2:null, p3:245.74, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'neuralink', name:'Neuralink', sec:'BCI', sc:'cy', shares:190.13e6, col:'#c0392b', p1:null, p2:null, p3:286.64, struct:'SPV', rofr:'High', p1rank:null, liveOrders:0 },
-  { id:'prometheus', name:'Prometheus', sec:'AI', sc:'ai', shares:1018.3e6, col:'#8b5cf6', p1:62.31, p2:null, p3:42.62, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'canva', name:'Canva', sec:'Design', sc:'da', shares:25.55e6, col:'#7a5c00', p1:1300, p2:null, p3:1252.27, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
-  { id:'kalshi', name:'Kalshi', sec:'Prediction', sc:'cr', shares:37.12e6, col:'#2980d9', p1:970.41, p2:970.53, p3:829.73, struct:'Mixed', rofr:'Moderate', p1rank:14, liveOrders:26 },
-  { id:'crusoe', name:'Crusoe', sec:'Energy', sc:'en', shares:137.75e6, col:'#4a6741', p1:229.5, p2:223.51, p3:217.06, struct:'Mixed', rofr:'Moderate', p1rank:16, liveOrders:14 },
-  { id:'figureai', name:'Figure AI', sec:'Robotics', sc:'sp', shares:200.39e6, col:'#1a6bb5', p1:204.1, p2:174, p3:147.21, struct:'SPV', rofr:'High', p1rank:null, liveOrders:27 },
-  { id:'elevenlabs', name:'ElevenLabs', sec:'AI', sc:'ai', shares:203.27e6, col:'#5b3ea6', p1:74.77, p2:null, p3:100.36, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'skild', name:'Skild AI', sec:'Robotics', sc:'sp', shares:215.45e6, col:'#1a6bb5', p1:73.51, p2:76.22, p3:92.83, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'harvey', name:'Harvey', sec:'AI', sc:'ai', shares:370.09e6, col:'#7c6fe0', p1:40.56, p2:null, p3:53.77, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'fanatics', name:'Fanatics', sec:'Sports', sc:'ro', shares:406.09e6, col:'#7a5c00', p1:39.46, p2:56.75, p3:47.28, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
-  { id:'zipline', name:'Zipline', sec:'Robotics', sc:'sp', shares:142.25e6, col:'#1a6bb5', p1:114.76, p2:null, p3:132.16, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'perp', name:'Perplexity', sec:'AI', sc:'ai', shares:287.71e6, col:'#8b5cf6', p1:81.34, p2:60, p3:64.3, struct:'SPV', rofr:'High', p1rank:7, liveOrders:41 },
-  { id:'ripple', name:'Ripple', sec:'Crypto', sc:'cr', shares:164.8e6, col:'#2d6e8c', p1:97.5, p2:90.05, p3:111.65, struct:'Mixed', rofr:'Moderate', p1rank:3, liveOrders:121 },
-  { id:'helion', name:'Helion Energy', sec:'Energy', sc:'en', shares:77.14e6, col:'#4a6741', p1:165.1, p2:null, p3:232.05, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'mercor', name:'Mercor', sec:'AI', sc:'ai', shares:14.39e6, col:'#5b3ea6', p1:1100.66, p2:null, p3:1181.63, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'sierra', name:'Sierra', sec:'AI', sc:'ai', shares:194.3e6, col:'#7c6fe0', p1:94.76, p2:null, p3:83.89, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'deel', name:'Deel', sec:'Fintech', sc:'fin', shares:445.06e6, col:'#1d9e75', p1:31.72, p2:32.49, p3:35.95, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'polymarket', name:'Polymarket', sec:'Prediction', sc:'cr', shares:109.45e6, col:'#2d6e8c', p1:127.36, p2:133.04, p3:141.62, struct:'Mixed', rofr:'Moderate', p1rank:4, liveOrders:12 },
-  { id:'lovable', name:'Lovable', sec:'AI', sc:'ai', shares:104.95e6, col:'#8b5cf6', p1:144.47, p2:null, p3:146.74, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'rippling', name:'Rippling', sec:'Fintech', sc:'fin', shares:322.36e6, col:'#1d9e75', p1:46.15, p2:47.28, p3:44.05, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
-  { id:'physint', name:'Physical Intelligence', sec:'Robotics', sc:'sp', shares:21.93e6, col:'#1a6bb5', p1:509.66, p2:null, p3:615.48, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'shieldai', name:'Shield AI', sec:'Defense', sc:'cy', shares:80.54e6, col:'#c0392b', p1:195.49, p2:172.04, p3:158.93, struct:'Mixed', rofr:'High', p1rank:8, liveOrders:0 },
-  { id:'saronic', name:'Saronic', sec:'Defense', sc:'cy', shares:335.59e6, col:'#c0392b', p1:null, p2:32.6, p3:32.48, struct:'Mixed', rofr:'High', p1rank:null, liveOrders:19 },
-  { id:'cohere', name:'Cohere', sec:'AI', sc:'ai', shares:32.74e6, col:'#5b3ea6', p1:320.58, p2:null, p3:320.75, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'lambda', name:'Lambda', sec:'AI', sc:'ai', shares:185.21e6, col:'#5b3ea6', p1:55.45, p2:56.19, p3:51.67, struct:'Mixed', rofr:'Moderate', p1rank:1, liveOrders:47 },
-  { id:'replit', name:'Replit', sec:'AI', sc:'ai', shares:36.26e6, col:'#5b3ea6', p1:240.3, p2:259.43, p3:245.98, struct:'Mixed', rofr:'High', p1rank:26, liveOrders:4 },
-  { id:'gusto', name:'Gusto', sec:'Fintech', sc:'fin', shares:364.62e6, col:'#1d9e75', p1:16.97, p2:null, p3:23.97, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'kraken', name:'Kraken', sec:'Crypto', sc:'cr', shares:330.44e6, col:'#2980d9', p1:29.3, p2:31.54, p3:25.33, struct:'Direct', rofr:'Low', p1rank:10, liveOrders:73 },
-  { id:'discord', name:'Discord', sec:'Social', sc:'ro', shares:272.38e6, col:'#7a5c00', p1:29.87, p2:36.51, p3:28.93, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
-  { id:'epic', name:'Epic Games', sec:'Gaming', sc:'ro', shares:37.5e6, col:'#7a5c00', p1:194, p2:null, p3:203.99, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'higgsfield', name:'Higgsfield', sec:'AI', sc:'ai', shares:27.35e6, col:'#7c6fe0', p1:263.05, p2:null, p3:279.31, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'whoop', name:'Whoop', sec:'Health', sc:'cy', shares:898.92e6, col:'#c0392b', p1:8.55, p2:null, p3:7.42, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'glean', name:'Glean', sec:'AI', sc:'ai', shares:146.86e6, col:'#7c6fe0', p1:42.08, p2:44, p3:43.17, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'flock', name:'Flock Safety', sec:'Security', sc:'cy', shares:507.62e6, col:'#c0392b', p1:10.06, p2:null, p3:12.47, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'plaid', name:'Plaid', sec:'Fintech', sc:'fin', shares:25.43e6, col:'#0c8c5e', p1:179.58, p2:null, p3:235.18, struct:'Direct', rofr:'Low', p1rank:null, liveOrders:0 },
-  { id:'abridge', name:'Abridge', sec:'Health', sc:'cy', shares:33.42e6, col:'#c0392b', p1:185.13, p2:200, p3:170.56, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'apptronik', name:'Apptronik', sec:'Robotics', sc:'sp', shares:143.38e6, col:'#1a6bb5', p1:40.67, p2:36.97, p3:38.36, struct:'Mixed', rofr:'Moderate', p1rank:18, liveOrders:21 },
-  { id:'psiquantum', name:'PsiQuantum', sec:'Quantum', sc:'sp', shares:170.34e6, col:'#2980d9', p1:28.11, p2:27.01, p3:29.47, struct:'Mixed', rofr:'Moderate', p1rank:19, liveOrders:34 },
-  { id:'mercury', name:'Mercury', sec:'Fintech', sc:'fin', shares:293.34e6, col:'#0c8c5e', p1:14.74, p2:null, p3:16.67, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
-  { id:'redwood', name:'Redwood Materials', sec:'Energy', sc:'en', shares:125.71e6, col:'#4a6741', p1:35.58, p2:null, p3:38.66, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'anth', name:'Anthropic', sec:'AI', sc:'ai', shares:1640.58e6, col:'#8b5cf6', p1:null, p2:null, p3:981.36, struct:'SPV', rofr:'Very high', p1rank:12, liveOrders:0 },
+  { id:'openai', name:'OpenAI', sec:'AI', sc:'ai', shares:1237.05e6, col:'#5b3ea6', p1:821.96, p2:954.7, p3:840.71, struct:'Mixed', rofr:'High', p1rank:6, liveOrders:0 },
+  { id:'bytedance', name:'ByteDance', sec:'Social', sc:'ro', shares:1646.84e6, col:'#7a5c00', p1:331.66, p2:null, p3:347.94, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'databricks', name:'Databricks', sec:'Data', sc:'da', shares:723.49e6, col:'#9a6c00', p1:289.02, p2:268.5, p3:240.5, struct:'Mixed', rofr:'Moderate', p1rank:11, liveOrders:61 },
+  { id:'stripe', name:'Stripe', sec:'Fintech', sc:'fin', shares:2578.69e6, col:'#1d9e75', p1:70.27, p2:72.45, p3:79.11, struct:'Mixed', rofr:'Moderate', p1rank:24, liveOrders:29 },
+  { id:'waymo', name:'Waymo', sec:'AI', sc:'ai', shares:2200e6, col:'#5b3ea6', p1:463.92, p2:null, p3:null, struct:'SPV', rofr:'Very high', p1rank:null, liveOrders:0 },
+  { id:'revolut', name:'Revolut', sec:'Fintech', sc:'fin', shares:57.08e6, col:'#0c8c5e', p1:null, p2:2125, p3:1979.51, struct:'Direct', rofr:'Moderate', p1rank:null, liveOrders:0 },
+  { id:'anduril', name:'Anduril', sec:'Defense', sc:'cy', shares:809.57e6, col:'#c0392b', p1:142.7, p2:132.12, p3:134.64, struct:'Mixed', rofr:'High', p1rank:null, liveOrders:0 },
+  { id:'ramp', name:'Ramp', sec:'Fintech', sc:'fin', shares:366.39e6, col:'#0c8c5e', p1:157.54, p2:125.54, p3:158.3, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
+  { id:'cognition', name:'Cognition AI', sec:'AI', sc:'ai', shares:226.01e6, col:'#7c6fe0', p1:263.71, p2:null, p3:251.76, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'neuralink', name:'Neuralink', sec:'BCI', sc:'cy', shares:190e6, col:'#c0392b', p1:null, p2:null, p3:281.58, struct:'SPV', rofr:'High', p1rank:null, liveOrders:0 },
+  { id:'prometheus', name:'Prometheus', sec:'AI', sc:'ai', shares:1017.52e6, col:'#8b5cf6', p1:62.37, p2:null, p3:47.37, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'canva', name:'Canva', sec:'Design', sc:'da', shares:25.54e6, col:'#7a5c00', p1:1300, p2:null, p3:1327.41, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
+  { id:'kalshi', name:'Kalshi', sec:'Prediction', sc:'cr', shares:37.03e6, col:'#2980d9', p1:966.45, p2:970.53, p3:802.13, struct:'Mixed', rofr:'Moderate', p1rank:14, liveOrders:26 },
+  { id:'crusoe', name:'Crusoe', sec:'Energy', sc:'en', shares:137.69e6, col:'#4a6741', p1:229.03, p2:223.51, p3:210.62, struct:'Mixed', rofr:'Moderate', p1rank:16, liveOrders:14 },
+  { id:'figureai', name:'Figure AI', sec:'Robotics', sc:'sp', shares:199.86e6, col:'#1a6bb5', p1:203.96, p2:174, p3:173.62, struct:'SPV', rofr:'High', p1rank:null, liveOrders:27 },
+  { id:'elevenlabs', name:'ElevenLabs', sec:'AI', sc:'ai', shares:203.36e6, col:'#5b3ea6', p1:74.81, p2:null, p3:93.92, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'skild', name:'Skild AI', sec:'Robotics', sc:'sp', shares:215.7e6, col:'#1a6bb5', p1:73.98, p2:76.22, p3:87.62, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'harvey', name:'Harvey', sec:'AI', sc:'ai', shares:371.02e6, col:'#7c6fe0', p1:40.61, p2:null, p3:51.21, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'fanatics', name:'Fanatics', sec:'Sports', sc:'ro', shares:406.44e6, col:'#7a5c00', p1:39.49, p2:56.75, p3:47.24, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
+  { id:'zipline', name:'Zipline', sec:'Robotics', sc:'sp', shares:142.47e6, col:'#1a6bb5', p1:112.93, p2:null, p3:140.38, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'perp', name:'Perplexity', sec:'AI', sc:'ai', shares:287.27e6, col:'#8b5cf6', p1:78.57, p2:60, p3:66.14, struct:'SPV', rofr:'High', p1rank:7, liveOrders:41 },
+  { id:'ripple', name:'Ripple', sec:'Crypto', sc:'cr', shares:164.29e6, col:'#2d6e8c', p1:96.37, p2:90.05, p3:116.26, struct:'Mixed', rofr:'Moderate', p1rank:3, liveOrders:121 },
+  { id:'helion', name:'Helion Energy', sec:'Energy', sc:'en', shares:86.46e6, col:'#4a6741', p1:165.1, p2:null, p3:210.51, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'mercor', name:'Mercor', sec:'AI', sc:'ai', shares:14.33e6, col:'#5b3ea6', p1:1100.86, p2:null, p3:1199.95, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'sierra', name:'Sierra', sec:'AI', sc:'ai', shares:194.39e6, col:'#7c6fe0', p1:94.88, p2:null, p3:77.68, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'deel', name:'Deel', sec:'Fintech', sc:'fin', shares:445.93e6, col:'#1d9e75', p1:31.83, p2:32.49, p3:35.88, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'polymarket', name:'Polymarket', sec:'Prediction', sc:'cr', shares:109.02e6, col:'#2d6e8c', p1:127.25, p2:133.04, p3:133.92, struct:'Mixed', rofr:'Moderate', p1rank:4, liveOrders:12 },
+  { id:'lovable', name:'Lovable', sec:'AI', sc:'ai', shares:105.16e6, col:'#8b5cf6', p1:143.64, p2:null, p3:143.59, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'rippling', name:'Rippling', sec:'Fintech', sc:'fin', shares:323.91e6, col:'#1d9e75', p1:45.5, p2:47.28, p3:43.53, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
+  { id:'physint', name:'Physical Intelligence', sec:'Robotics', sc:'sp', shares:21.88e6, col:'#1a6bb5', p1:511.29, p2:null, p3:621.6, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'shieldai', name:'Shield AI', sec:'Defense', sc:'cy', shares:82.37e6, col:'#c0392b', p1:194.97, p2:172.04, p3:185.74, struct:'Mixed', rofr:'High', p1rank:8, liveOrders:0 },
+  { id:'saronic', name:'Saronic', sec:'Defense', sc:'cy', shares:337.18e6, col:'#c0392b', p1:null, p2:32.6, p3:32.03, struct:'Mixed', rofr:'High', p1rank:null, liveOrders:19 },
+  { id:'cohere', name:'Cohere', sec:'AI', sc:'ai', shares:32.7e6, col:'#5b3ea6', p1:324.09, p2:null, p3:321.1, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'lambda', name:'Lambda', sec:'AI', sc:'ai', shares:185.27e6, col:'#5b3ea6', p1:55.73, p2:56.19, p3:52.95, struct:'Mixed', rofr:'Moderate', p1rank:1, liveOrders:47 },
+  { id:'replit', name:'Replit', sec:'AI', sc:'ai', shares:36.26e6, col:'#5b3ea6', p1:240.28, p2:259.43, p3:243.77, struct:'Mixed', rofr:'High', p1rank:26, liveOrders:4 },
+  { id:'gusto', name:'Gusto', sec:'Fintech', sc:'fin', shares:364.71e6, col:'#1d9e75', p1:16.97, p2:null, p3:24.65, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'kraken', name:'Kraken', sec:'Crypto', sc:'cr', shares:330.39e6, col:'#2980d9', p1:29.49, p2:31.54, p3:26.09, struct:'Direct', rofr:'Low', p1rank:10, liveOrders:73 },
+  { id:'discord', name:'Discord', sec:'Social', sc:'ro', shares:272.3e6, col:'#7a5c00', p1:29.88, p2:36.79, p3:29.6, struct:'Mixed', rofr:'Moderate', p1rank:null, liveOrders:0 },
+  { id:'epic', name:'Epic Games', sec:'Gaming', sc:'ro', shares:37.48e6, col:'#7a5c00', p1:196.12, p2:null, p3:198.26, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'higgsfield', name:'Higgsfield', sec:'AI', sc:'ai', shares:27.36e6, col:'#7c6fe0', p1:263.4, p2:null, p3:312.16, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'whoop', name:'Whoop', sec:'Health', sc:'cy', shares:899.18e6, col:'#c0392b', p1:8.63, p2:null, p3:7.34, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'glean', name:'Glean', sec:'AI', sc:'ai', shares:146.81e6, col:'#7c6fe0', p1:42.04, p2:44, p3:44.14, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'flock', name:'Flock Safety', sec:'Security', sc:'cy', shares:507.55e6, col:'#c0392b', p1:10.06, p2:null, p3:12.59, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'plaid', name:'Plaid', sec:'Fintech', sc:'fin', shares:25.43e6, col:'#0c8c5e', p1:179.38, p2:null, p3:250.52, struct:'Direct', rofr:'Low', p1rank:null, liveOrders:0 },
+  { id:'abridge', name:'Abridge', sec:'Health', sc:'cy', shares:33.41e6, col:'#c0392b', p1:185.27, p2:200, p3:171.49, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'apptronik', name:'Apptronik', sec:'Robotics', sc:'sp', shares:143.27e6, col:'#1a6bb5', p1:39.63, p2:36.97, p3:38.39, struct:'Mixed', rofr:'Moderate', p1rank:18, liveOrders:21 },
+  { id:'psiquantum', name:'PsiQuantum', sec:'Quantum', sc:'sp', shares:170.09e6, col:'#2980d9', p1:28.16, p2:27.01, p3:29.69, struct:'Mixed', rofr:'Moderate', p1rank:19, liveOrders:34 },
+  { id:'mercury', name:'Mercury', sec:'Fintech', sc:'fin', shares:293.09e6, col:'#0c8c5e', p1:14.74, p2:null, p3:17.81, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'redwood', name:'Redwood Materials', sec:'Energy', sc:'en', shares:125.77e6, col:'#4a6741', p1:35.32, p2:null, p3:38.88, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
 ];
 
 // ── PRICE HISTORY ──
@@ -521,56 +521,56 @@ const COS = [
 // added in the 12 Oct top-50 expansion start with a single 12 Oct point.
 // On each refresh, append ['YYYY-MM-DD', price] for every verified price.
 const HIST = {
-  anth:        { p1:[['2026-08-07',1013.86],['2026-10-07',1056.11]], p2:[], p3:[['2026-06-30',847.02],['2026-09-23',967.04],['2026-10-07',1001.64],['2026-10-12',1001.64]] },
-  openai:      { p1:[['2026-08-07',693.33],['2026-10-07',783.27],['2026-10-12',813.72]], p2:[['2026-08-07',721.85],['2026-09-23',721.85],['2026-10-07',954.70],['2026-10-12',954.7]], p3:[['2026-06-30',725.55],['2026-09-23',827.89],['2026-10-07',826.26],['2026-10-12',826.26]] },
-  bytedance:   { p1:[['2026-10-12',330.51]], p2:[], p3:[['2026-10-12',363.24]] },
-  databricks:  { p1:[['2026-08-07',259.22],['2026-10-07',293.29],['2026-10-12',289.75]], p2:[['2026-08-07',242.04],['2026-09-23',268.50],['2026-10-07',268.50],['2026-10-12',268.5]], p3:[['2026-06-30',215.05],['2026-09-23',265.49],['2026-10-07',258.98],['2026-10-12',258.98]] },
-  stripe:      { p1:[['2026-08-07',72.49],['2026-10-07',70.27],['2026-10-12',70.27]], p2:[['2026-08-07',72.45],['2026-09-23',72.45],['2026-10-07',72.45],['2026-10-12',72.45]], p3:[['2026-06-30',65.51],['2026-09-23',71.36],['2026-10-07',71.34],['2026-10-12',71.34]] },
-  waymo:       { p1:[['2026-10-07',411.75],['2026-10-12',460.97]], p2:[], p3:[] },
-  revolut:     { p1:[], p2:[['2026-08-07',2200.00],['2026-09-23',2125.00],['2026-10-07',2125.00],['2026-10-12',2125]], p3:[['2026-06-30',1952.95],['2026-09-23',2129.62],['2026-10-07',2154.92],['2026-10-12',2154.92]] },
-  anduril:     { p1:[['2026-10-07',139.87],['2026-10-12',142.25]], p2:[['2026-08-07',140.00],['2026-09-23',129.01],['2026-10-07',132.12],['2026-10-12',132.12]], p3:[['2026-06-30',118.35],['2026-09-23',133.32],['2026-10-07',130.58],['2026-10-12',130.58]] },
-  ramp:        { p1:[['2026-10-07',153.49],['2026-10-12',156.92]], p2:[['2026-08-07',125.55],['2026-09-23',125.54],['2026-10-07',125.54],['2026-10-12',125.54]], p3:[['2026-06-30',115.57],['2026-09-23',141.01],['2026-10-07',150.36],['2026-10-12',150.36]] },
-  cognition:   { p1:[['2026-10-12',256.47]], p2:[], p3:[['2026-10-12',245.74]] },
-  neuralink:   { p1:[], p2:[], p3:[['2026-06-30',297.65],['2026-09-23',286.85],['2026-10-07',286.64],['2026-10-12',286.64]] },
-  prometheus:  { p1:[['2026-10-12',62.31]], p2:[], p3:[['2026-10-12',42.62]] },
-  canva:       { p1:[['2026-10-07',1300.00],['2026-10-12',1300]], p2:[], p3:[['2026-06-30',1636.84],['2026-09-23',1196.94],['2026-10-07',1252.27],['2026-10-12',1252.27]] },
-  kalshi:      { p1:[['2026-08-07',647.25],['2026-10-07',963.07],['2026-10-12',970.41]], p2:[['2026-09-23',962.36],['2026-10-07',962.36],['2026-10-12',970.53]], p3:[['2026-06-30',625.49],['2026-09-23',735.97],['2026-10-07',829.73],['2026-10-12',829.73]] },
-  crusoe:      { p1:[['2026-08-07',216.09],['2026-10-07',230.53],['2026-10-12',229.5]], p2:[['2026-09-23',224.54],['2026-10-07',223.51],['2026-10-12',223.51]], p3:[['2026-06-30',204.73],['2026-09-23',212.71],['2026-10-07',217.06],['2026-10-12',217.06]] },
-  figureai:    { p1:[['2026-08-07',184.83],['2026-10-07',203.98],['2026-10-12',204.1]], p2:[['2026-09-23',174.00],['2026-10-07',174.00],['2026-10-12',174]], p3:[['2026-09-23',152.47],['2026-10-07',147.21],['2026-10-12',147.21]] },
-  elevenlabs:  { p1:[['2026-10-12',74.77]], p2:[], p3:[['2026-10-12',100.36]] },
-  skild:       { p1:[['2026-10-12',73.51]], p2:[['2026-10-12',76.22]], p3:[['2026-10-12',92.83]] },
-  harvey:      { p1:[['2026-10-12',40.56]], p2:[], p3:[['2026-10-12',53.77]] },
-  fanatics:    { p1:[['2026-10-07',39.43],['2026-10-12',39.46]], p2:[['2026-08-07',53.50],['2026-09-23',56.75],['2026-10-07',56.75],['2026-10-12',56.75]], p3:[['2026-09-23',47.40],['2026-10-07',47.28],['2026-10-12',47.28]] },
-  zipline:     { p1:[['2026-10-12',114.76]], p2:[], p3:[['2026-10-12',132.16]] },
-  perp:        { p1:[['2026-08-07',63.09],['2026-10-07',81.86],['2026-10-12',81.34]], p2:[['2026-09-23',69.50],['2026-10-07',60.00],['2026-10-12',60]], p3:[['2026-06-30',62.82],['2026-09-23',61.25],['2026-10-07',64.30],['2026-10-12',64.3]] },
-  ripple:      { p1:[['2026-08-07',102.43],['2026-10-07',95.63],['2026-10-12',97.5]], p2:[['2026-08-07',105.56],['2026-09-23',92.80],['2026-10-07',90.39],['2026-10-12',90.05]], p3:[['2026-09-23',94.85],['2026-10-07',111.65],['2026-10-12',111.65]] },
-  helion:      { p1:[['2026-10-12',165.1]], p2:[], p3:[['2026-10-12',232.05]] },
-  mercor:      { p1:[['2026-10-12',1100.66]], p2:[], p3:[['2026-10-12',1181.63]] },
-  sierra:      { p1:[['2026-10-12',94.76]], p2:[], p3:[['2026-10-12',83.89]] },
-  deel:        { p1:[['2026-10-12',31.72]], p2:[['2026-10-12',32.49]], p3:[['2026-10-12',35.95]] },
-  polymarket:  { p1:[['2026-08-07',139.57],['2026-10-07',121.62],['2026-10-12',127.36]], p2:[['2026-09-23',137.70],['2026-10-07',137.70],['2026-10-12',133.04]], p3:[['2026-06-30',136.22],['2026-09-23',146.15],['2026-10-07',141.62],['2026-10-12',141.62]] },
-  lovable:     { p1:[['2026-10-12',144.47]], p2:[], p3:[['2026-10-12',146.74]] },
-  rippling:    { p1:[['2026-10-07',46.19],['2026-10-12',46.15]], p2:[['2026-08-07',58.62],['2026-09-23',47.28],['2026-10-07',47.28],['2026-10-12',47.28]], p3:[['2026-06-30',50.81],['2026-09-23',44.57],['2026-10-07',44.05],['2026-10-12',44.05]] },
-  physint:     { p1:[['2026-10-12',509.66]], p2:[], p3:[['2026-10-12',615.48]] },
-  shieldai:    { p1:[['2026-10-07',189.93],['2026-10-12',195.49]], p2:[['2026-09-23',172.04],['2026-10-07',172.04],['2026-10-12',172.04]], p3:[['2026-06-30',161.51],['2026-09-23',158.72],['2026-10-07',158.93],['2026-10-12',158.93]] },
-  saronic:     { p1:[['2026-08-07',48.10]], p2:[['2026-09-23',33.76],['2026-10-07',34.25],['2026-10-12',32.6]], p3:[['2026-06-30',40.21],['2026-09-23',32.98],['2026-10-07',32.48],['2026-10-12',32.48]] },
-  cohere:      { p1:[['2026-10-12',320.58]], p2:[], p3:[['2026-10-12',320.75]] },
-  lambda:      { p1:[['2026-08-07',39.15],['2026-10-07',55.31],['2026-10-12',55.45]], p2:[['2026-08-07',42.06],['2026-09-23',51.17],['2026-10-07',56.86],['2026-10-12',56.19]], p3:[['2026-09-23',54.13],['2026-10-07',51.67],['2026-10-12',51.67]] },
-  replit:      { p1:[['2026-08-07',232.43],['2026-10-07',240.34],['2026-10-12',240.3]], p2:[['2026-08-07',256.70],['2026-09-23',257.29],['2026-10-07',259.43],['2026-10-12',259.43]], p3:[['2026-06-30',271.84],['2026-09-23',233.32],['2026-10-07',245.98],['2026-10-12',245.98]] },
-  gusto:       { p1:[['2026-10-12',16.97]], p2:[], p3:[['2026-10-12',23.97]] },
-  kraken:      { p1:[['2026-08-07',28.60],['2026-10-07',28.25],['2026-10-12',29.3]], p2:[['2026-08-07',29.41],['2026-09-23',30.30],['2026-10-07',31.54],['2026-10-12',31.54]], p3:[['2026-09-23',26.40],['2026-10-07',25.33],['2026-10-12',25.33]] },
-  discord:     { p1:[['2026-10-07',38.07],['2026-10-12',29.87]], p2:[['2026-08-07',31.31],['2026-09-23',36.79],['2026-10-07',36.79],['2026-10-12',36.51]], p3:[['2026-09-23',29.52],['2026-10-07',28.93],['2026-10-12',28.93]] },
-  epic:        { p1:[['2026-10-12',194]], p2:[], p3:[['2026-10-12',203.99]] },
-  higgsfield:  { p1:[['2026-10-12',263.05]], p2:[], p3:[['2026-10-12',279.31]] },
-  whoop:       { p1:[['2026-10-12',8.55]], p2:[], p3:[['2026-10-12',7.42]] },
-  glean:       { p1:[['2026-10-12',42.08]], p2:[['2026-10-12',44]], p3:[['2026-10-12',43.17]] },
-  flock:       { p1:[['2026-10-12',10.06]], p2:[], p3:[['2026-10-12',12.47]] },
-  plaid:       { p1:[['2026-10-07',188.92],['2026-10-12',179.58]], p2:[], p3:[['2026-10-07',235.18],['2026-10-12',235.18]] },
-  abridge:     { p1:[['2026-10-12',185.13]], p2:[['2026-10-12',200]], p3:[['2026-10-12',170.56]] },
-  apptronik:   { p1:[['2026-08-07',40.51],['2026-10-07',41.18],['2026-10-12',40.67]], p2:[['2026-08-07',36.97],['2026-09-23',36.97],['2026-10-07',36.97],['2026-10-12',36.97]], p3:[['2026-09-23',38.86],['2026-10-07',38.36],['2026-10-12',38.36]] },
-  psiquantum:  { p1:[['2026-08-07',27.31],['2026-10-07',27.83],['2026-10-12',28.11]], p2:[['2026-08-07',28.54],['2026-09-23',27.35],['2026-10-07',27.01],['2026-10-12',27.01]], p3:[['2026-09-23',28.30],['2026-10-07',29.47],['2026-10-12',29.47]] },
-  mercury:     { p1:[['2026-10-12',14.74]], p2:[], p3:[['2026-10-12',16.67]] },
-  redwood:     { p1:[['2026-10-12',35.58]], p2:[], p3:[['2026-10-12',38.66]] },
+  anth:        { p1:[['2026-08-07',1013.86],['2026-10-07',1056.11]], p2:[], p3:[['2026-06-30',847.02],['2026-09-23',967.04],['2026-10-07',1001.64],['2026-10-12',1001.64],['2026-10-14',981.36]] },
+  openai:      { p1:[['2026-08-07',693.33],['2026-10-07',783.27],['2026-10-12',813.72],['2026-10-14',821.96]], p2:[['2026-08-07',721.85],['2026-09-23',721.85],['2026-10-07',954.70],['2026-10-12',954.7],['2026-10-14',954.7]], p3:[['2026-06-30',725.55],['2026-09-23',827.89],['2026-10-07',826.26],['2026-10-12',826.26],['2026-10-14',840.71]] },
+  bytedance:   { p1:[['2026-10-12',330.51],['2026-10-14',331.66]], p2:[], p3:[['2026-10-12',363.24],['2026-10-14',347.94]] },
+  databricks:  { p1:[['2026-08-07',259.22],['2026-10-07',293.29],['2026-10-12',289.75],['2026-10-14',289.02]], p2:[['2026-08-07',242.04],['2026-09-23',268.50],['2026-10-07',268.50],['2026-10-12',268.5],['2026-10-14',268.5]], p3:[['2026-06-30',215.05],['2026-09-23',265.49],['2026-10-07',258.98],['2026-10-12',258.98],['2026-10-14',240.5]] },
+  stripe:      { p1:[['2026-08-07',72.49],['2026-10-07',70.27],['2026-10-12',70.27],['2026-10-14',70.27]], p2:[['2026-08-07',72.45],['2026-09-23',72.45],['2026-10-07',72.45],['2026-10-12',72.45],['2026-10-14',72.45]], p3:[['2026-06-30',65.51],['2026-09-23',71.36],['2026-10-07',71.34],['2026-10-12',71.34],['2026-10-14',79.11]] },
+  waymo:       { p1:[['2026-10-07',411.75],['2026-10-12',460.97],['2026-10-14',463.92]], p2:[], p3:[] },
+  revolut:     { p1:[], p2:[['2026-08-07',2200.00],['2026-09-23',2125.00],['2026-10-07',2125.00],['2026-10-12',2125],['2026-10-14',2125]], p3:[['2026-06-30',1952.95],['2026-09-23',2129.62],['2026-10-07',2154.92],['2026-10-12',2154.92],['2026-10-14',1979.51]] },
+  anduril:     { p1:[['2026-10-07',139.87],['2026-10-12',142.25],['2026-10-14',142.7]], p2:[['2026-08-07',140.00],['2026-09-23',129.01],['2026-10-07',132.12],['2026-10-12',132.12],['2026-10-14',132.12]], p3:[['2026-06-30',118.35],['2026-09-23',133.32],['2026-10-07',130.58],['2026-10-12',130.58],['2026-10-14',134.64]] },
+  ramp:        { p1:[['2026-10-07',153.49],['2026-10-12',156.92],['2026-10-14',157.54]], p2:[['2026-08-07',125.55],['2026-09-23',125.54],['2026-10-07',125.54],['2026-10-12',125.54],['2026-10-14',125.54]], p3:[['2026-06-30',115.57],['2026-09-23',141.01],['2026-10-07',150.36],['2026-10-12',150.36],['2026-10-14',158.3]] },
+  cognition:   { p1:[['2026-10-12',256.47],['2026-10-14',263.71]], p2:[], p3:[['2026-10-12',245.74],['2026-10-14',251.76]] },
+  neuralink:   { p1:[], p2:[], p3:[['2026-06-30',297.65],['2026-09-23',286.85],['2026-10-07',286.64],['2026-10-12',286.64],['2026-10-14',281.58]] },
+  prometheus:  { p1:[['2026-10-12',62.31],['2026-10-14',62.37]], p2:[], p3:[['2026-10-12',42.62],['2026-10-14',47.37]] },
+  canva:       { p1:[['2026-10-07',1300.00],['2026-10-12',1300],['2026-10-14',1300]], p2:[], p3:[['2026-06-30',1636.84],['2026-09-23',1196.94],['2026-10-07',1252.27],['2026-10-12',1252.27],['2026-10-14',1327.41]] },
+  kalshi:      { p1:[['2026-08-07',647.25],['2026-10-07',963.07],['2026-10-12',970.41],['2026-10-14',966.45]], p2:[['2026-09-23',962.36],['2026-10-07',962.36],['2026-10-12',970.53],['2026-10-14',970.53]], p3:[['2026-06-30',625.49],['2026-09-23',735.97],['2026-10-07',829.73],['2026-10-12',829.73],['2026-10-14',802.13]] },
+  crusoe:      { p1:[['2026-08-07',216.09],['2026-10-07',230.53],['2026-10-12',229.5],['2026-10-14',229.03]], p2:[['2026-09-23',224.54],['2026-10-07',223.51],['2026-10-12',223.51],['2026-10-14',223.51]], p3:[['2026-06-30',204.73],['2026-09-23',212.71],['2026-10-07',217.06],['2026-10-12',217.06],['2026-10-14',210.62]] },
+  figureai:    { p1:[['2026-08-07',184.83],['2026-10-07',203.98],['2026-10-12',204.1],['2026-10-14',203.96]], p2:[['2026-09-23',174.00],['2026-10-07',174.00],['2026-10-12',174],['2026-10-14',174]], p3:[['2026-09-23',152.47],['2026-10-07',147.21],['2026-10-12',147.21],['2026-10-14',173.62]] },
+  elevenlabs:  { p1:[['2026-10-12',74.77],['2026-10-14',74.81]], p2:[], p3:[['2026-10-12',100.36],['2026-10-14',93.92]] },
+  skild:       { p1:[['2026-10-12',73.51],['2026-10-14',73.98]], p2:[['2026-10-12',76.22],['2026-10-14',76.22]], p3:[['2026-10-12',92.83],['2026-10-14',87.62]] },
+  harvey:      { p1:[['2026-10-12',40.56],['2026-10-14',40.61]], p2:[], p3:[['2026-10-12',53.77],['2026-10-14',51.21]] },
+  fanatics:    { p1:[['2026-10-07',39.43],['2026-10-12',39.46],['2026-10-14',39.49]], p2:[['2026-08-07',53.50],['2026-09-23',56.75],['2026-10-07',56.75],['2026-10-12',56.75],['2026-10-14',56.75]], p3:[['2026-09-23',47.40],['2026-10-07',47.28],['2026-10-12',47.28],['2026-10-14',47.24]] },
+  zipline:     { p1:[['2026-10-12',114.76],['2026-10-14',112.93]], p2:[], p3:[['2026-10-12',132.16],['2026-10-14',140.38]] },
+  perp:        { p1:[['2026-08-07',63.09],['2026-10-07',81.86],['2026-10-12',81.34],['2026-10-14',78.57]], p2:[['2026-09-23',69.50],['2026-10-07',60.00],['2026-10-12',60],['2026-10-14',60]], p3:[['2026-06-30',62.82],['2026-09-23',61.25],['2026-10-07',64.30],['2026-10-12',64.3],['2026-10-14',66.14]] },
+  ripple:      { p1:[['2026-08-07',102.43],['2026-10-07',95.63],['2026-10-12',97.5],['2026-10-14',96.37]], p2:[['2026-08-07',105.56],['2026-09-23',92.80],['2026-10-07',90.39],['2026-10-12',90.05],['2026-10-14',90.05]], p3:[['2026-09-23',94.85],['2026-10-07',111.65],['2026-10-12',111.65],['2026-10-14',116.26]] },
+  helion:      { p1:[['2026-10-12',165.1],['2026-10-14',165.1]], p2:[], p3:[['2026-10-12',232.05],['2026-10-14',210.51]] },
+  mercor:      { p1:[['2026-10-12',1100.66],['2026-10-14',1100.86]], p2:[], p3:[['2026-10-12',1181.63],['2026-10-14',1199.95]] },
+  sierra:      { p1:[['2026-10-12',94.76],['2026-10-14',94.88]], p2:[], p3:[['2026-10-12',83.89],['2026-10-14',77.68]] },
+  deel:        { p1:[['2026-10-12',31.72],['2026-10-14',31.83]], p2:[['2026-10-12',32.49],['2026-10-14',32.49]], p3:[['2026-10-12',35.95],['2026-10-14',35.88]] },
+  polymarket:  { p1:[['2026-08-07',139.57],['2026-10-07',121.62],['2026-10-12',127.36],['2026-10-14',127.25]], p2:[['2026-09-23',137.70],['2026-10-07',137.70],['2026-10-12',133.04],['2026-10-14',133.04]], p3:[['2026-06-30',136.22],['2026-09-23',146.15],['2026-10-07',141.62],['2026-10-12',141.62],['2026-10-14',133.92]] },
+  lovable:     { p1:[['2026-10-12',144.47],['2026-10-14',143.64]], p2:[], p3:[['2026-10-12',146.74],['2026-10-14',143.59]] },
+  rippling:    { p1:[['2026-10-07',46.19],['2026-10-12',46.15],['2026-10-14',45.5]], p2:[['2026-08-07',58.62],['2026-09-23',47.28],['2026-10-07',47.28],['2026-10-12',47.28],['2026-10-14',47.28]], p3:[['2026-06-30',50.81],['2026-09-23',44.57],['2026-10-07',44.05],['2026-10-12',44.05],['2026-10-14',43.53]] },
+  physint:     { p1:[['2026-10-12',509.66],['2026-10-14',511.29]], p2:[], p3:[['2026-10-12',615.48],['2026-10-14',621.6]] },
+  shieldai:    { p1:[['2026-10-07',189.93],['2026-10-12',195.49],['2026-10-14',194.97]], p2:[['2026-09-23',172.04],['2026-10-07',172.04],['2026-10-12',172.04],['2026-10-14',172.04]], p3:[['2026-06-30',161.51],['2026-09-23',158.72],['2026-10-07',158.93],['2026-10-12',158.93],['2026-10-14',185.74]] },
+  saronic:     { p1:[['2026-08-07',48.10]], p2:[['2026-09-23',33.76],['2026-10-07',34.25],['2026-10-12',32.6],['2026-10-14',32.6]], p3:[['2026-06-30',40.21],['2026-09-23',32.98],['2026-10-07',32.48],['2026-10-12',32.48],['2026-10-14',32.03]] },
+  cohere:      { p1:[['2026-10-12',320.58],['2026-10-14',324.09]], p2:[], p3:[['2026-10-12',320.75],['2026-10-14',321.1]] },
+  lambda:      { p1:[['2026-08-07',39.15],['2026-10-07',55.31],['2026-10-12',55.45],['2026-10-14',55.73]], p2:[['2026-08-07',42.06],['2026-09-23',51.17],['2026-10-07',56.86],['2026-10-12',56.19],['2026-10-14',56.19]], p3:[['2026-09-23',54.13],['2026-10-07',51.67],['2026-10-12',51.67],['2026-10-14',52.95]] },
+  replit:      { p1:[['2026-08-07',232.43],['2026-10-07',240.34],['2026-10-12',240.3],['2026-10-14',240.28]], p2:[['2026-08-07',256.70],['2026-09-23',257.29],['2026-10-07',259.43],['2026-10-12',259.43],['2026-10-14',259.43]], p3:[['2026-06-30',271.84],['2026-09-23',233.32],['2026-10-07',245.98],['2026-10-12',245.98],['2026-10-14',243.77]] },
+  gusto:       { p1:[['2026-10-12',16.97],['2026-10-14',16.97]], p2:[], p3:[['2026-10-12',23.97],['2026-10-14',24.65]] },
+  kraken:      { p1:[['2026-08-07',28.60],['2026-10-07',28.25],['2026-10-12',29.3],['2026-10-14',29.49]], p2:[['2026-08-07',29.41],['2026-09-23',30.30],['2026-10-07',31.54],['2026-10-12',31.54],['2026-10-14',31.54]], p3:[['2026-09-23',26.40],['2026-10-07',25.33],['2026-10-12',25.33],['2026-10-14',26.09]] },
+  discord:     { p1:[['2026-10-07',38.07],['2026-10-12',29.87],['2026-10-14',29.88]], p2:[['2026-08-07',31.31],['2026-09-23',36.79],['2026-10-07',36.79],['2026-10-12',36.51],['2026-10-14',36.79]], p3:[['2026-09-23',29.52],['2026-10-07',28.93],['2026-10-12',28.93],['2026-10-14',29.6]] },
+  epic:        { p1:[['2026-10-12',194],['2026-10-14',196.12]], p2:[], p3:[['2026-10-12',203.99],['2026-10-14',198.26]] },
+  higgsfield:  { p1:[['2026-10-12',263.05],['2026-10-14',263.4]], p2:[], p3:[['2026-10-12',279.31],['2026-10-14',312.16]] },
+  whoop:       { p1:[['2026-10-12',8.55],['2026-10-14',8.63]], p2:[], p3:[['2026-10-12',7.42],['2026-10-14',7.34]] },
+  glean:       { p1:[['2026-10-12',42.08],['2026-10-14',42.04]], p2:[['2026-10-12',44],['2026-10-14',44]], p3:[['2026-10-12',43.17],['2026-10-14',44.14]] },
+  flock:       { p1:[['2026-10-12',10.06],['2026-10-14',10.06]], p2:[], p3:[['2026-10-12',12.47],['2026-10-14',12.59]] },
+  plaid:       { p1:[['2026-10-07',188.92],['2026-10-12',179.58],['2026-10-14',179.38]], p2:[], p3:[['2026-10-07',235.18],['2026-10-12',235.18],['2026-10-14',250.52]] },
+  abridge:     { p1:[['2026-10-12',185.13],['2026-10-14',185.27]], p2:[['2026-10-12',200],['2026-10-14',200]], p3:[['2026-10-12',170.56],['2026-10-14',171.49]] },
+  apptronik:   { p1:[['2026-08-07',40.51],['2026-10-07',41.18],['2026-10-12',40.67],['2026-10-14',39.63]], p2:[['2026-08-07',36.97],['2026-09-23',36.97],['2026-10-07',36.97],['2026-10-12',36.97],['2026-10-14',36.97]], p3:[['2026-09-23',38.86],['2026-10-07',38.36],['2026-10-12',38.36],['2026-10-14',38.39]] },
+  psiquantum:  { p1:[['2026-08-07',27.31],['2026-10-07',27.83],['2026-10-12',28.11],['2026-10-14',28.16]], p2:[['2026-08-07',28.54],['2026-09-23',27.35],['2026-10-07',27.01],['2026-10-12',27.01],['2026-10-14',27.01]], p3:[['2026-09-23',28.30],['2026-10-07',29.47],['2026-10-12',29.47],['2026-10-14',29.69]] },
+  mercury:     { p1:[['2026-10-12',14.74],['2026-10-14',14.74]], p2:[], p3:[['2026-10-12',16.67],['2026-10-14',17.81]] },
+  redwood:     { p1:[['2026-10-12',35.58],['2026-10-14',35.32]], p2:[], p3:[['2026-10-12',38.66],['2026-10-14',38.88]] },
 };
 
 let ST={}, hVol=0.5, selCo='anth', dpSrc='all';
@@ -796,7 +796,7 @@ function renderDetail(){
     :`<div class="str-item" title="Hand-entered earlier, not from Augment">Structure: <b style="color:${strCol}">${c.struct}</b></div>`;
   // One chip per Augment order / offering, with its terms.
   let augItems='';
-  if(a&&a.orders) augItems=a.orders.map(o=>`<div class="str-item">Augment order: <b>${f$(o.price)}</b> · ${o.value>=1e6?fB(o.value):'$'+(o.value/1e3).toFixed(1)+'K'} · ${o.asset} · resale · ${o.exp}</div>`).join('');
+  if(a&&a.orders) augItems=a.orders.map(o=>`<div class="str-item">Augment order: <b>${f$(o.price)}</b> · ${o.value>=1e6?fB(o.value):'$'+(o.value/1e3).toFixed(1)+'K'} · ${o.asset} · resale${o.note?' · '+o.note:''} · ${o.exp}</div>`).join('');
   if(a&&a.offering) augItems=`<div class="str-item">Augment offering: <b>${f$(a.offering.price)}</b>/unit · min ${a.offering.min} · ${a.offering.elig}</div>`;
   document.getElementById('str-row').innerHTML=`
     ${structItem}
@@ -894,16 +894,17 @@ function initAlCo(){
 // Individual listing/bid rows below are a 1 Apr 2026 snapshot and are NOT current.
 // Listing/bid TOTALS (tL/tB) refreshed 7 Aug 2026 from the Clarity platform where available.
 // ── AUGMENT ORDERS & OFFERINGS ──
-// Read from each company's Augment page on 13 Oct 2026 (49 of the 50 checked;
+// Read from each company's Augment page on 14 Oct 2026 (49 of the 50 checked;
 // Waymo is not on Augment). Everything on Augment is a unit in an Augment
 // Collective SPV. Orders are resale sell orders ("Unit transfer", direct
 // ownership, 5% brokerage fee); offerings are new SPV units sold by Augment.
-const AUG_AS_AT='13 Oct 2026';
+const AUG_AS_AT='14 Oct 2026';
 const AUG = {
   discord:    { orders:[{price:35,value:14000,asset:'Common',exp:'Until cancelled'},{price:38,value:15200,asset:'Common',exp:'1 Jan 2027'}] },
   epic:       { orders:[{price:300,value:5700,asset:'Common',exp:'Until cancelled'}] },
   mercor:     { orders:[{price:1900,value:87400,asset:'Series A Preferred',exp:'Until cancelled'}] },
   polymarket: { orders:[{price:180,value:100080,asset:'Series A Preferred',exp:'Until cancelled'}] },
+  perp:       { orders:[{price:85,value:30430,asset:'Series D Preferred',exp:'Until cancelled',note:'indirect ownership'}] },
   replit:     { offering:{price:251.99,min:'$10K',elig:'Qualified clients'} },
   zipline:    { offering:{price:105,min:'$10K',elig:'Accredited investors'} },
   higgsfield: { offering:{price:346.76,min:'$10K',elig:'Qualified purchasers'} },
