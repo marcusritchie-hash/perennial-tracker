@@ -912,13 +912,8 @@ const AUG = {
 };
 const augOrders=(id)=>AUG[id]&&AUG[id].orders?AUG[id].orders.length:0;
 const totalOrd=(c)=>(ST[c.id].liveOrders||0)+augOrders(c.id);
-// Combined order count with the per-platform split underneath.
-function ordersCell(c){
-  let cl=ST[c.id].liveOrders||0, au=augOrders(c.id);
-  if(!cl&&!au) return '—';
-  let split=[cl&&`C ${cl}`,au&&`A ${au}`].filter(Boolean).join(' · ');
-  return `${cl+au}<div style="font-size:9px;color:var(--text4);">${split}</div>`;
-}
+// Combined order count (Clarity + Augment); the split is in the detail panel.
+function ordersCell(c){ return totalOrd(c)||'—'; }
 // Structure label from Augment terms, or null when Augment has no order or offering.
 function augStructure(id){
   let a=AUG[id]; if(!a) return null;
