@@ -364,4 +364,94 @@ window.QR = {
     shares: { value:57e6, asOf:'2026-07-22', basis:'Estimated', note:'$115bn ÷ $2,017; ~60m issued incl. treasury per Companies House' },
   },
 
+  machindustries: {
+    researched: '2026-10-13',
+    splits: 'No split reported; no per-share prices published.',
+    rounds: [
+      { date:'2023-06-01', name:'Seed', type:'Equity', amount:5.7e6, post:null, pps:null, leads:['Sequoia Capital'], basis:'Reported', note:'Month only reported', src:['https://techcrunch.com/2025/06/17/two-year-old-defense-tech-mach-industries-confirms-100m-raise-led-by-khosla-bedrock'] },
+      { date:'2023-10-01', name:'Series A', type:'Equity', amount:79e6, post:0.335, pps:null, leads:['Bedrock Capital'], basis:'Reported', note:'Month only reported', src:['https://techcrunch.com/2025/06/17/two-year-old-defense-tech-mach-industries-confirms-100m-raise-led-by-khosla-bedrock','https://www.ocbj.com/oc-homepage/20-year-old-works-to-replace-gunpowder/'] },
+      { date:'2025-06-17', name:'Series B', type:'Equity', amount:100e6, post:0.47, pps:null, leads:['Khosla Ventures','Bedrock Capital'], basis:'Reported', note:'Valuation not stated as pre- or post-money; treated as post', src:['https://techcrunch.com/2025/06/17/two-year-old-defense-tech-mach-industries-confirms-100m-raise-led-by-khosla-bedrock'] },
+      { date:'2026-06-02', name:'Series C', type:'Equity', amount:300e6, post:1.8, pps:null, leads:['Ribbit Capital','Infinite Capital'], basis:'Reported', note:'Upsized from $200m; followed the May 2026 Exquadrum acquisition', src:['https://www.cooley.com/news/coverage/2026/2026-06-02-mach-industries-raises-%24300-million-in-series-c-funding'] },
+      { date:'2026-09-10', name:'Series C extension', type:'Equity', amount:600e6, post:3.7, pps:null, leads:['Ribbit Capital','Infinite Capital','Bedrock Capital','Sequoia Capital'], basis:'Reported', note:'Series C now $900m; total raised over $1bn', src:['https://techcrunch.com/2026/09/10/defense-tech-mach-industries-doubles-valuation-to-3-7b-in-3-months/'] },
+    ],
+    holders: [
+      { name:'Ethan Thornton (founder & CEO)', type:'Founder', stake:null, asOf:'2026-09-28', basis:'Estimated', note:'Stake undisclosed', src:['https://www.ocbj.com/oc-homepage/machs-valuation-skyrockets-to-3-7b/'] },
+      { name:'Bedrock Capital', type:'VC', stake:null, asOf:'2026-09-10', basis:'Reported', note:'Led Series A, co-led B, in both Series C tranches', src:['https://techcrunch.com/2026/09/10/defense-tech-mach-industries-doubles-valuation-to-3-7b-in-3-months/'] },
+      { name:'Sequoia Capital', type:'VC', stake:null, asOf:'2026-09-10', basis:'Reported', note:'Led seed; in every later round', src:['https://techcrunch.com/2026/09/10/defense-tech-mach-industries-doubles-valuation-to-3-7b-in-3-months/'] },
+      { name:'Ribbit Capital', type:'VC', stake:null, asOf:'2026-09-10', basis:'Reported', note:'Co-led Series C', src:['https://pulse2.com/mach-industries-raises-300-million-series-c-at-1-8-billion-valuation'] },
+      { name:'Infinite Capital', type:'VC', stake:null, asOf:'2026-09-10', basis:'Reported', note:'Co-led Series C', src:['https://pulse2.com/mach-industries-raises-300-million-series-c-at-1-8-billion-valuation'] },
+      { name:'Khosla Ventures', type:'VC', stake:null, asOf:'2026-06-02', basis:'Reported', note:'Co-led Series B', src:['https://www.cooley.com/news/coverage/2026/2026-06-02-mach-industries-raises-%24300-million-in-series-c-funding'] },
+    ],
+    shares: { value:null, asOf:'', basis:'Estimated', note:'Not reported' },
+  },
+
+  synchron: {
+    researched: '2026-10-13',
+    splits: 'No split reported; no per-share prices published. Pre-2017 funding was mainly grants.',
+    rounds: [
+      { date:'2017-04-01', name:'Series A', type:'Equity', amount:10e6, post:null, pps:null, leads:['NeuroTechnology Investors'], basis:'Estimated', note:'Date and lead from an aggregator only', src:['https://www.mobihealthnews.com/news/brain-computer-interface-company-synchron-raises-200m'] },
+      { date:'2021-06-01', name:'Series B', type:'Equity', amount:40e6, post:null, pps:null, leads:['Khosla Ventures'], basis:'Reported', src:['https://www.bioworld.com/articles/507806-synchron-gathers-series-b-40m-for-minimally-invasive-implantable-brain-computer-interface'] },
+      { date:'2022-12-13', name:'Series C', type:'Equity', amount:75e6, post:null, pps:null, leads:['ARCH Venture Partners'], basis:'Reported', note:'Incl. Gates Frontier, Bezos Expeditions, Reliance Digital Health', src:['https://www.biospace.com/synchron-raises-75m-series-c-led-by-arch-venture-partners-to-advance-endovascular-brain-computer-interface'] },
+      { date:'2025-11-06', name:'Series D', type:'Equity', amount:200e6, post:1.0, pps:null, leads:['Double Point Ventures'], basis:'Estimated', note:'Valuation ~$1bn per press, not company-disclosed. One source names K5 Global as lead. Incl. ARCH, Khosla, Bezos Expeditions, QIA, Australia\'s National Reconstruction Fund', src:['https://www.alleywatch.com/2025/11/the-alleywatch-startup-daily-funding-report-11-10-2025/','https://www.forbes.com.au/covers/innovation/synchron-raises-308m-to-leapfrog-neuralink-with-54m-from-nrf/'] },
+    ],
+    holders: [
+      { name:'Thomas Oxley (co-founder & CEO)', type:'Founder', stake:null, asOf:'2025-11-06', basis:'Estimated', note:'Stake undisclosed', src:['https://www.forbes.com.au/covers/innovation/synchron-raises-308m-to-leapfrog-neuralink-with-54m-from-nrf/'] },
+      { name:'Nicholas Opie (co-founder)', type:'Founder', stake:null, asOf:'2025-11-06', basis:'Reported', note:'Described as a significant equity holder', src:['https://www.forbes.com.au/covers/innovation/synchron-raises-308m-to-leapfrog-neuralink-with-54m-from-nrf/'] },
+      { name:'Khosla Ventures', type:'VC', stake:null, asOf:'2025-11-06', basis:'Reported', note:'Led Series B; in C and D', src:['https://www.mobihealthnews.com/news/brain-computer-interface-company-synchron-raises-200m'] },
+      { name:'ARCH Venture Partners', type:'VC', stake:null, asOf:'2025-11-06', basis:'Reported', note:'Led Series C; board seat', src:['https://www.biospace.com/synchron-raises-75m-series-c-led-by-arch-venture-partners-to-advance-endovascular-brain-computer-interface'] },
+      { name:'Double Point Ventures', type:'VC', stake:null, asOf:'2025-11-06', basis:'Reported', note:'Led Series D', src:['https://www.alleywatch.com/2025/11/the-alleywatch-startup-daily-funding-report-11-10-2025/'] },
+      { name:'Reliance Digital Health', type:'Strategic', stake:0.0225, asOf:'2022-12-22', basis:'Reported', note:'2.25% fully diluted at Series C; diluted since', src:['https://indiamedtoday.com/reliance-digital-health-to-pick-up-2-25-per-cent-stake-in-synchron/'] },
+      { name:'Bezos Expeditions, Gates Frontier', type:'Other', stake:null, asOf:'2025-11-06', basis:'Reported', note:'Joined Series C', src:['https://www.mddionline.com/business/synchron-clinches-75-million-in-series-c-financing'] },
+    ],
+    shares: { value:null, asOf:'', basis:'Estimated', note:'Not reported' },
+  },
+
+  '1x': {
+    researched: '2026-10-13',
+    splits: 'No split reported. Renamed from Halodi Robotics in 2023.',
+    rounds: [
+      { date:'2021-04-01', name:'ADT Commercial strategic investment', type:'Strategic', amount:2.75e6, post:null, pps:null, leads:['ADT Commercial'], basis:'Reported', note:'~NOK 25m, as Halodi Robotics; month only reported', src:['https://memoori.com/robots-for-guarding-and-facility-management-in-commercial-real-estate/'] },
+      { date:'2022-05-01', name:'Series A', type:'Equity', amount:10.1e6, post:null, pps:null, leads:['Valinor','ADT Commercial'], basis:'Reported', note:'As Halodi Robotics; date approximate', src:['https://svrobo.org/?p=21224'] },
+      { date:'2023-03-27', name:'Series A2', type:'Equity', amount:23.5e6, post:null, pps:null, leads:['OpenAI Startup Fund'], basis:'Reported', note:'Incl. Tiger Global, Alliance Ventures', src:['https://tech.eu/2023/03/27/norways-1x-raises-235-million-in-openai-led-round/'] },
+      { date:'2024-01-11', name:'Series B', type:'Equity', amount:100e6, post:0.82, pps:null, leads:['EQT Ventures'], basis:'Estimated', note:'Incl. Samsung NEXT. Valuation from trackers; not company-disclosed', src:['https://techcrunch.com/2024/01/11/openai-backed-1x-raises-another-100m-for-the-race-to-humanoid-robots/'] },
+      { date:'2025-09-23', name:'2025 growth round (partly raised)', type:'Equity', amount:null, post:null, pps:null, leads:[], basis:'Reported', note:'Targeted up to $1bn at $10bn+; raised less than half (The Information). Terms undisclosed', src:['https://www.theinformation.com/articles/humanoid-robot-developer-1x-targets-1-billion-new-funding'] },
+      { date:'2026-08-26', name:'SoftBank majority stake (in talks)', type:'Pending', amount:null, post:6.0, pps:null, leads:['SoftBank Group'], basis:'Reported', note:'Reported talks at ~$6bn; not signed as of 13 Oct 2026. If completed, 1X becomes SoftBank-controlled', src:['https://dealroom.co/news/147325-softbank-in-talks-to-buy-majority-of-humanoid-maker-1x-at-6b-valuation/'] },
+    ],
+    holders: [
+      { name:'Bernt Øivind Børnich (founder & CEO)', type:'Founder', stake:null, asOf:'2026-08-27', basis:'Reported', note:'Stake undisclosed', src:['https://venturebeat.com/ai/1x-robotic-startup-backed-by-openai-receives-100m-in-funding/'] },
+      { name:'OpenAI Startup Fund', type:'Strategic', stake:null, asOf:'2026-08-27', basis:'Reported', note:'Led Series A2', src:['https://tech.eu/2023/03/27/norways-1x-raises-235-million-in-openai-led-round/'] },
+      { name:'EQT Ventures', type:'VC', stake:null, asOf:'2025-12-12', basis:'Reported', note:'Led Series B; also a commercial customer (up to 10,000 NEO units)', src:['https://techcrunch.com/2024/01/11/openai-backed-1x-raises-another-100m-for-the-race-to-humanoid-robots/'] },
+      { name:'Tiger Global', type:'VC', stake:null, asOf:'2024-01-11', basis:'Reported', note:'Series A2 and B', src:['https://tech.eu/2023/03/27/norways-1x-raises-235-million-in-openai-led-round/'] },
+      { name:'Samsung NEXT', type:'Strategic', stake:null, asOf:'2024-01-11', basis:'Reported', note:'Series B', src:['https://techcrunch.com/2024/01/11/openai-backed-1x-raises-another-100m-for-the-race-to-humanoid-robots/'] },
+      { name:'ADT Commercial', type:'Strategic', stake:null, asOf:'2022-05-01', basis:'Reported', note:'Early investor and customer', src:['https://memoori.com/?p=13626'] },
+    ],
+    shares: { value:null, asOf:'', basis:'Estimated', note:'Not reported' },
+  },
+
+  helion: {
+    researched: '2026-10-13',
+    splits: 'No split reported; no per-share round prices disclosed.',
+    rounds: [
+      { date:'2014-08-14', name:'Seed', type:'Equity', amount:1.5e6, post:null, pps:null, leads:['Mithril Capital'], basis:'Reported', note:'Incl. Y Combinator, Sam Altman', src:['https://techcrunch.com/2014/08/14/y-combinator-and-mithril-invest-in-helion-a-nuclear-fusion-startup'] },
+      { date:'2016-01-01', name:'Series B', type:'Equity', amount:21.26e6, post:null, pps:null, leads:['Capricorn Investment Group'], basis:'Estimated', note:'Tracker data; date approximate', src:['https://multiples.vc/private-comps/helion-energy'] },
+      { date:'2019-01-01', name:'Series C', type:'Equity', amount:10e6, post:null, pps:null, leads:['Capricorn Investment Group'], basis:'Estimated', note:'Tracker data; date approximate', src:['https://multiples.vc/private-comps/helion-energy'] },
+      { date:'2020-09-22', name:'Series D', type:'Equity', amount:40e6, post:1.25, pps:null, leads:['Dustin Moskovitz'], basis:'Reported', src:['https://www.helionenergy.com/newsroom/fusion-energy-startup-helion-energy-closes-latest-funding-round-at-1-25b-valuation'] },
+      { date:'2021-11-05', name:'Series E', type:'Equity', amount:500e6, post:3.0, pps:null, leads:['Sam Altman'], basis:'Reported', note:'Altman $375m; further $1.7bn committed on milestones. Valuation reported by press, not the company', src:['https://techcrunch.com/2021/11/05/helion-series-e/'] },
+      { date:'2023-09-27', name:'Nucor strategic investment', type:'Strategic', amount:35e6, post:null, pps:null, leads:['Nucor'], basis:'Reported', note:'With a 500 MW fusion plant agreement', src:['https://nucor.com/news-release/nucor-and-helion-to-develop-historic-500-mw-fusion-power-plant-122758'] },
+      { date:'2025-01-28', name:'Series F', type:'Equity', amount:425e6, post:5.425, pps:null, leads:['Lightspeed Venture Partners','SoftBank Vision Fund 2'], basis:'Reported', note:'No lead named; listed are the main new investors', src:['https://www.helionenergy.com/newsroom/helion-announces-425m-series-f-investment-to-scale-commercialized-fusion-power'] },
+      { date:'2026-06-04', name:'Series G', type:'Equity', amount:500e6, post:15.5, pps:null, leads:['Thrive Capital'], basis:'Reported', note:'$465m first close; final close Sep 2026 at $500m (sovereign, pension and crossover investors added)', src:['https://helionenergy.com/newsroom/helion-raises-465-million-series-g-funding-round-to-meet-surging-global-demand-for-power','https://www.goodwinlaw.com/en/news-and-events/news/2026/09/announcements-technology-goodwin-advises-helion-500-million-series-g-financing'] },
+      { date:'2026-09-16', name:'Employee share sale', type:'Tender', amount:null, post:15.5, pps:null, leads:[], basis:'Reported', note:'Company-run alongside the Series G final close; size undisclosed', src:['https://www.goodwinlaw.com/en/news-and-events/news/2026/09/announcements-technology-goodwin-advises-helion-500-million-series-g-financing'] },
+    ],
+    holders: [
+      { name:'Sam Altman', type:'Other', stake:0.33, asOf:'2026-05-13', basis:'Reported', note:'About one-third per court testimony (before Series G); stepped down as chair Mar 2026', src:['https://www.geekwire.com/2026/openai-ceo-sam-altmans-stake-in-helion-energy-draws-scrutiny-in-musk-trial-and-on-capitol-hill/'] },
+      { name:'Dustin Moskovitz (Good Ventures)', type:'Other', stake:null, asOf:'2026-06-04', basis:'Reported', note:'Led Series D; in E, F, G', src:['https://helionenergy.com/newsroom/helion-raises-465-million-series-g-funding-round-to-meet-surging-global-demand-for-power'] },
+      { name:'Thrive Capital', type:'VC', stake:null, asOf:'2026-06-04', basis:'Reported', note:'Led Series G', src:['https://helionenergy.com/newsroom/helion-raises-465-million-series-g-funding-round-to-meet-surging-global-demand-for-power'] },
+      { name:'Mithril Capital', type:'VC', stake:null, asOf:'2026-06-04', basis:'Reported', note:'Led seed; in every later round', src:['https://techcrunch.com/2014/08/14/y-combinator-and-mithril-invest-in-helion-a-nuclear-fusion-startup'] },
+      { name:'Capricorn Investment Group', type:'VC', stake:null, asOf:'2026-06-04', basis:'Reported', note:'Early lead; through Series G', src:['https://helionenergy.com/newsroom/helion-raises-465-million-series-g-funding-round-to-meet-surging-global-demand-for-power'] },
+      { name:'SoftBank Vision Fund 2, Lightspeed', type:'VC', stake:null, asOf:'2026-06-04', basis:'Reported', note:'Joined Series F; returned for G', src:['https://www.helionenergy.com/newsroom/helion-announces-425m-series-f-investment-to-scale-commercialized-fusion-power'] },
+      { name:'Nucor', type:'Strategic', stake:null, asOf:'2025-01-28', basis:'Reported', note:'Investor and customer', src:['https://nucor.com/news-release/nucor-and-helion-to-develop-historic-500-mw-fusion-power-plant-122758'] },
+    ],
+    shares: { value:null, asOf:'', basis:'Estimated', note:'Not disclosed' },
+  },
+
 };

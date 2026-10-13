@@ -22,8 +22,8 @@ window.TIER_OVR = {
   fanatics: { tier:'Conviction', category:'Other', reason:'Downgraded from Anchor: no evidence of recent value accretion; kept above Tail for its scale and secondary liquidity.', date:'2026-10-13' },
   replit: { tier:'Conviction', category:'Other', reason:'Upgraded from Tail: strong liquidity and rising valuations.', date:'2026-10-13' },
   apptronik: { tier:'Conviction', category:'Other', reason:'Upgraded from Tail: strong liquidity and rising valuations.', date:'2026-10-13' },
-  '1x': { tier:'Conviction', category:'Data gap', reason:'Marquee list company placed in Conviction by the investment team; to be scored once funding history is compiled.', date:'2026-10-13' },
+  '1x': { tier:'Conviction', category:'Data gap', reason:'Marquee list company placed in Conviction by the investment team; to be scored once secondary-market pricing is available.', date:'2026-10-13' },
   helion: { tier:'Conviction', category:'Data gap', reason:'Marquee list company placed in Conviction by the investment team; to be scored once funding history is compiled.', date:'2026-10-13' },
-  machindustries: { tier:'Conviction', category:'Data gap', reason:'Marquee list company placed in Conviction by the investment team; to be scored once funding history is compiled.', date:'2026-10-13' },
-  synchron: { tier:'Conviction', category:'Data gap', reason:'Marquee list company placed in Conviction by the investment team; to be scored once funding history is compiled.', date:'2026-10-13' },
+  machindustries: { tier:'Conviction', category:'Data gap', reason:'Marquee list company placed in Conviction by the investment team; to be scored once secondary-market pricing is available.', date:'2026-10-13' },
+  synchron: { tier:'Conviction', category:'Data gap', reason:'Marquee list company placed in Conviction by the investment team; to be scored once secondary-market pricing is available.', date:'2026-10-13' },
 };
