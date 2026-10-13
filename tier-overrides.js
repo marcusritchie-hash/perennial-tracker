@@ -6,10 +6,10 @@
 //   reason:   one sentence, client-readable
 //   date:     'YYYY-MM-DD' the decision was made
 window.TIER_OVR = {
-  kalshi: { category:'Regulatory', reason:'Kept at Tail: the legal standing of prediction markets is unsettled.', date:'2026-10-13' },
-  polymarket: { category:'Regulatory', reason:'Kept at Tail: the legal standing of prediction markets is unsettled.', date:'2026-10-13' },
+  kalshi: { tier:'Conviction', category:'Other', reason:'Upgraded from Tail: strong secondary demand and liquidity; regulatory risk remains under review.', date:'2026-10-13' },
+  polymarket: { tier:'Conviction', category:'Other', reason:'Upgraded from Tail: strong secondary demand and liquidity; regulatory risk remains under review.', date:'2026-10-13' },
   neuralink: { category:'Binary', reason:'Kept at Tail: value depends on clinical and regulatory milestones.', date:'2026-10-13' },
-  revolut: { category:'Data gap', reason:'Kept at Anchor: not covered by venue demand rankings despite a $115bn valuation and regular company-run share sales.', date:'2026-10-13' },
+  revolut: { tier:'Conviction', category:'Other', reason:'Moved from Anchor to Conviction by the investment team.', date:'2026-10-13' },
   rippling: { category:'Data gap', reason:'Kept at Conviction: demand scores near zero only because the company is not on venue demand rankings.', date:'2026-10-13' },
   glean: { category:'Data gap', reason:'Kept at Conviction: demand scores near zero only because the company is not on venue demand rankings.', date:'2026-10-13' },
   ramp: { category:'Data gap', reason:'Kept at Conviction: demand scores near zero only because the company is not on venue demand rankings.', date:'2026-10-13' },
