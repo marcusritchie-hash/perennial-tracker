@@ -332,7 +332,8 @@
     </div>
   </header>
 
-  <div class="rank-note"><b>Who's in:</b> the 50 most valuable pre-IPO companies on Augment that a second platform (Clarity or Forge) also prices. <b>How the list is ranked:</b> by implied valuation, highest first: the average of the available Clarity, Augment and Forge prices × shares outstanding. Use <b>Sort by</b> to re-order.</div>
+  <div class="rank-note"><b>Who's in:</b> the 50 most valuable pre-IPO companies on Augment that a second platform (Clarity or Forge) also prices. <b>How the list is ranked:</b> by implied market cap, highest first. Use <b>Sort by</b> to re-order.<br>
+    <b>Implied market cap</b> is an estimate of what the whole company is worth at today's secondary-market prices: the blended share price (the average of the available Clarity, Augment and Forge prices) × the estimated number of shares outstanding. The share count is worked out from Augment's estimated valuation divided by Augment's price, so it is an approximation, not a reported or official valuation.</div>
 
   <div class="src-row">
     <div class="src-chip"><div class="src-dot" style="background:#0c8c5e;"></div>Clarity verified</div>
@@ -374,7 +375,7 @@
       <thead><tr>
         <th style="width:32px;">#</th>
         <th style="width:150px;">Company</th>
-        <th style="width:76px;" title="Blended price × shares (shares back-solved from Augment valuation)">Implied cap</th>
+        <th style="width:76px;" title="Estimated company value at today's secondary prices: blended share price × estimated shares outstanding (shares = Augment valuation ÷ Augment price)">Implied market cap</th>
         <th style="width:95px;" class="col-p1">Clarity</th>
         <th style="width:95px;" class="col-p3">Augment</th>
         <th style="width:95px;" class="col-p2">Forge</th>
@@ -438,9 +439,6 @@
   </div>
 
   <div class="footer">
-    <div id="src-lists"></div>
-    <b>Augment orders &amp; structure (14 Oct 2026):</b> everything on Augment is a unit in an Augment Collective SPV. Augment orders are open resale sell orders (unit transfers, 5% brokerage fee; direct ownership except Perplexity's); Structure shows the share class behind them (Common or Preferred), or "New fund" where Augment is offering new units. Only Discord, Epic Games, Mercor, Perplexity and Polymarket have open orders, and Replit, Zipline, Higgsfield and PsiQuantum have offerings; for other companies Structure shows the earlier hand-entered value in grey, or a dash.<br>
-    <b>Changed this update (12 Oct 2026):</b> the list grew from 30 to the top 50 pre-IPO companies by Augment valuation. Joined: ByteDance, Cognition AI, Prometheus, ElevenLabs, Skild AI, Harvey, Zipline, Helion Energy, Mercor, Sierra, Deel, Lovable, Physical Intelligence, Cohere, Gusto, Epic Games, Higgsfield, Whoop, Glean, Flock Safety, Abridge, Mercury, Redwood Materials. Left: Tanium, Lightmatter, Tenstorrent (below the top 50). Not included for lack of a second source on the same share basis: Thinking Machines, Shein, VAST Data, Mistral AI, Etched, Reflection AI, Brex, Notion, Relativity Space, Character.ai.<br>
     <b>Read this before using any number here.</b> Every price shown was read from its platform on 14 Oct 2026; a dash means that platform has no price, or quotes a different share basis and is left out. Each company needs Augment plus one other source, except Anthropic (Clarity no longer shows it), Waymo (Clarity only) and Neuralink (Augment only), which are noted as single-source in their detail panel. Implied market caps use share counts back-solved from Augment valuations and are approximations only. The ticking prices are <b>randomly simulated from these seed values</b> and do not represent real trading. Charts and Trend show only verified prices from each refresh (Augment 30 Jun is its end-of-quarter figure). Not financial advice. For accredited investors only.
   </div>
 
@@ -970,20 +968,8 @@ function renderOB() {
   ).join('') + `<div style="font-size:10px;color:var(--text4);padding:8px 10px;border-top:1px solid var(--border);">Showing ${items.length} of ${obTab==='L'?ob.tL:ob.tB} · View full depth on Clarity</div>`;
 }
 
-// Footer: every verified price per source, highest first, built from COS so it can't drift.
-function renderSrcLists(){
-  const SRCS=[['p1','Clarity Price (formerly Hiive)'],['p3','Augment Price (company pages, data by Caplight)'],['p2','Forge Price']];
-  document.getElementById('src-lists').innerHTML=SRCS.map(([k,label])=>{
-    let have=COS.filter(c=>c[k]!=null).sort((a,b)=>b[k]-a[k]);
-    let none=COS.filter(c=>c[k]==null).map(c=>c.name);
-    return `<b>${label}, verified ${REFRESH}:</b> `+have.map(c=>c.name+' '+f$(c[k])).join(' · ')+
-      (none.length?`. No comparable price: ${none.join(', ')}`:'')+'<br>';
-  }).join('');
-}
-
 initState();
 initAlCo();
-renderSrcLists();
 renderTable();
 setTimeout(()=>{
   selCo_('anth');
