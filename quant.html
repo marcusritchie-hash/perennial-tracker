@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261014094534"></script>
-<script src="quant-rounds.js?v=20261014094534" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261014094534" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261014094534" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261014094534" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261014094534" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261014104547"></script>
+<script src="quant-rounds.js?v=20261014104547" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261014104547" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261014104547" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261014104547" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261014104547" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -804,7 +804,8 @@ function drawMom(rs) {
 }
 
 // ── KPIs ──
-function drawKpis(rs) {
+// Headline statistics: [label, value, subtitle]; shared by the Analytics cards and the master Excel.
+function kpiRows(rs) {
   const pr = rs.filter(premOk).map(c=>c.prem), sp = rs.filter(c=>c.spread!=null).map(c=>c.spread);
   const lq = rs.filter(c=>c.liq!=null && c.nVen>0).map(c=>c.liq), mo = rs.filter(c=>c.mom!=null).map(c=>c.mom);
   const priced = rs.filter(c=>c.nVen).length;
@@ -817,7 +818,10 @@ function drawKpis(rs) {
     ['Median liquidity score', lq.length?median(lq).toFixed(0):'—', `out of 100 · companies with a price · n=${lq.length}`],
     ['Median price change', mo.length?pct(median(mo),1):'—', mo.length?`since first verified price · n=${mo.length}`:'No price history yet'],
   ];
-  document.getElementById('kpis').innerHTML = k.map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
+  return k;
+}
+function drawKpis(rs) {
+  document.getElementById('kpis').innerHTML = kpiRows(rs).map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
 }
 
 // ── table: universe by sector, as in the workbook's "Liquidity by Sector" tab ──
@@ -928,19 +932,20 @@ function drawIpo(rs) {
 }
 document.querySelector('#tbl-ipo tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
 
+// Data coverage measures, shared by the Analytics panel and the master Excel.
+const COV_ITEMS = [
+  ['Secondary price (any venue)', c=>c.nVen>0],
+  ['Two or more venues', c=>c.nVen>=2],
+  ['Share count', c=>c.shares!=null],
+  ['Last-round valuation', c=>c.lrEv!=null],
+  ['Last-round date', c=>c.lrDate!=null],
+  ['Verified price history (2+ prices)', c=>c.mom!=null],
+  ['Funding round history', c=>window.QR?.[c.id]?.rounds?.length>0],
+  ['Key shareholders', c=>window.QR?.[c.id]?.holders?.length>0],
+];
 function drawCov(rs) {
-  const n = rs.length || 1, qr = window.QR || {};
-  const items = [
-    ['Secondary price (any venue)', c=>c.nVen>0],
-    ['Two or more venues', c=>c.nVen>=2],
-    ['Share count', c=>c.shares!=null],
-    ['Last-round valuation', c=>c.lrEv!=null],
-    ['Last-round date', c=>c.lrDate!=null],
-    ['Verified price history (2+ prices)', c=>c.mom!=null],
-    ['Funding round history', c=>qr[c.id]?.rounds?.length>0],
-    ['Key shareholders', c=>qr[c.id]?.holders?.length>0],
-  ];
-  document.getElementById('cov').innerHTML = items.map(([l,f])=>{ const k=rs.filter(f).length, p=k/n*100;
+  const n = rs.length || 1;
+  document.getElementById('cov').innerHTML = COV_ITEMS.map(([l,f])=>{ const k=rs.filter(f).length, p=k/n*100;
     return `<div>${l}</div><div class="cov-bar"><span style="width:${p}%"></span></div><div class="r num">${k} / ${rs.length}</div>`; }).join('');
 }
 
@@ -1046,14 +1051,16 @@ let tierEdit = false;
 const hasReason = c => !!tierDecision(c)?.reason;
 const isDraft = c => c.id in tierDrafts;
 
+// Calibration status of a company: [status, detail]; shared by the Calibration table and the master Excel.
+const calStatus = c => { const d = tierDecision(c), tag = isDraft(c) ? ' (draft)' : '';
+  return c.ts.comp==null && c.tier==='Watch' ? [`Watch${tag}`, 'awaiting data to score']
+    : c.ts.comp==null ? [`Team judgement${tag}`, d?.reason ? `${d.category ? d.category+': ' : ''}${d.reason}` : 'data-limited']
+    : c.ts.sug===c.tier ? [`Agrees${tag}`, d?.reason || '']
+    : d?.reason ? [`Override${tag}`, `${d.category ? d.category+': ' : ''}${d.reason}`]
+    : ['To review', ''];
+};
 function drawMethod(rs) {
-  const status = c => { const d = tierDecision(c), tag = isDraft(c) ? ' (draft)' : '';
-    return c.ts.comp==null && c.tier==='Watch' ? [`Watch${tag}`, 'awaiting data to score']
-      : c.ts.comp==null ? [`Team judgement${tag}`, d?.reason ? `${d.category ? d.category+': ' : ''}${d.reason}` : 'data-limited']
-      : c.ts.sug===c.tier ? [`Agrees${tag}`, d?.reason || '']
-      : d?.reason ? [`Override${tag}`, `${d.category ? d.category+': ' : ''}${d.reason}`]
-      : ['To review', ''];
-  };
+  const status = calStatus;
   const scored = rs.filter(c=>c.ts.comp!=null), agree = scored.filter(c=>c.ts.sug===c.tier).length;
   const review = scored.filter(c=>c.ts.sug!==c.tier && !hasReason(c)).length;
   document.getElementById('cal-kpis').innerHTML = [
@@ -1332,18 +1339,67 @@ function drawAlloc() {
   mix('al-exitpath', by(c => !c.ipo ? 'No IPO path disclosed' : /filed/i.test(c.ipo.status) ? 'IPO filed' : 'IPO plans reported'));
 }
 
-// The scenario as Excel sheets, for the scenario download and the master Excel.
+// The scenario as Excel sheets laid out like the Allocation tab, for the scenario download and the master Excel.
 function alSheets() {
-  const s = al.s, A = allocate(s, al.sel), e = s.entry/100;
-  const set = AL_FIELDS.map(f=>({ 'Setting':f.l, 'Value':s[f.k], 'Unit':f.u, 'Key':f.k }));
-  const cos = mqAll().map(c=>({ 'ID':c.id, 'Company':c.name, 'Marquee rank':c.mq, 'Tier':c.tier, 'Sector':c.sector,
-    'Hold':al.sel.includes(c.id)?'Y':'', 'Available stock ($m)':al.cap[c.id] ?? '', 'Base case override (%)':al.ovr[c.id] ?? '' }));
-  const res = [...A.rs].sort((a,b)=>b.amt-a.amt).map(r => { const px = r.c.bl==null ? null : r.c.bl*(1+e), m = k => +(r.amt*(1+exitMove(r,k,s))/(1+e)).toFixed(2);
-    return { 'Company':r.c.name, 'Tier':r.c.tier, 'Sector':r.c.sector, 'Weight':r.w, 'Weight share ($m)':+r.target.toFixed(2), 'Allocated ($m)':+r.amt.toFixed(2),
-      '% of investable':A.inv ? +(r.amt/A.inv*100).toFixed(2) : '', 'Entry price ($)':px==null ? '' : +px.toFixed(2), 'Shares bought':px && r.amt ? Math.round(r.amt*1e6/px) : '',
-      'Bear ($m)':m('bear'), 'Base ($m)':m('base'), 'Bull ($m)':m('bull'), 'Note':r.why }; });
-  const W = { 'Setting':34, 'Unit':30, 'Company':24, 'Sector':26, 'Note':36 };
-  return [['Allocation settings', xlSheet(set, W)], ['Allocation companies', xlSheet(cos, W)], ['Allocation (read-only)', xlSheet(res, W)]];
+  const s = al.s, A = allocate(s, al.sel), sh = shapeOf(A), e = s.entry/100;
+  const cases = ['bear','base','bull'].map(k => ({ k, l:k[0].toUpperCase()+k.slice(1), ...outcome(A, s, k) }));
+  const settings = xlTable([
+    { h:'Group', e:false, v:f=>AL_GROUPS[f.g], w:26 }, { h:'Setting', e:false, v:f=>f.l, w:34 },
+    { h:'Value', e:true, v:f=>s[f.k], d:'The value used on the Allocation tab.' }, { h:'Unit', e:false, v:f=>f.u, w:30 },
+    { h:'Key', e:false, v:f=>f.k, w:14, d:'Links the row to the page. Do not change.' },
+  ], AL_FIELDS);
+  const pick = PICK_COLS.map(k => k.l);   // page headers: Hold, Marquee rank, Company, Tier, Sector, Secondary price, Current valuation, IPO status, Available stock ($m), Base case override (%)
+  const companies = xlTable([
+    { h:pick[0], e:true, v:c=>al.sel.includes(c.id) ? 'Y' : '', d:'Y to hold the company in this scenario.' },
+    { h:pick[1], e:false, v:c=>c.mq, z:XZ.int }, { h:pick[2], e:false, v:c=>c.name, w:24 }, { h:pick[3], e:false, v:c=>c.tier }, { h:pick[4], e:false, v:c=>c.sector, w:26 },
+    { h:pick[5], e:false, v:c=>c.bl, z:XZ.usd }, { h:pick[6], e:false, v:c=>c.impl ?? c.curVal, z:XZ.bn },
+    { h:pick[7], e:false, v:c=>c.ipo ? IPO_SHORT[c.ipo.status]||c.ipo.status : '' },
+    { h:pick[8], e:true, v:c=>al.cap[c.id], z:XZ.m, d:'US$ millions of stock that can actually be bought. Blank = no limit.' },
+    { h:pick[9], e:true, v:c=>al.ovr[c.id], z:XZ.pctn, d:'Replaces the global base case for this company, as a % move from today\'s secondary price. Blank = global.' },
+    { h:'ID', e:false, v:c=>c.id, w:16, d:'Links the row to the page. Do not change.' },
+  ], mqAll());
+  const held = A.rs.filter(r=>r.amt>0), d = A.deployed || 1;
+  const mix = f => Object.entries(held.reduce((a,r)=>(a[f(r.c)]=(a[f(r.c)]||0)+r.amt, a), {})).sort((x,y)=>y[1]-x[1]);
+  const mixCols = h => [{ h, v:x=>x[0], w:28 }, { h:'Deployed ($m)', v:x=>x[1], z:XZ.m }, { h:'Share of deployed', v:x=>x[1]/d, z:XZ.share }];
+  const cur = ['Current setting', s.wAnchor, s.wConviction, s.wTail];
+  const presets = AL_PRESETS.some(p=>p[1]===s.wAnchor && p[2]===s.wConviction && p[3]===s.wTail) ? AL_PRESETS : [cur, ...AL_PRESETS];
+  const mv = k => r => r.amt*(1+exitMove(r,k,s))/(1+e);
+  const results = xlBlocks([
+    { title:'Allocation', sub:`${fm(s.raise)} raised · ${fm(A.reserve)} reserve · ${fm(A.inv)} investable · tier weights Anchor ${s.wAnchor} : Conviction ${s.wConviction} : Tail ${s.wTail} : Watch ${s.wWatch}`,
+      cols:[{ h:'Figure', v:x=>x[0], w:24 }, { h:'Value', v:x=>x[1], z:x=>x[2] }, { h:'Detail', v:x=>x[3], w:44 }], rows:[
+        ['Investable', A.inv, XZ.m, `after ${fm(A.reserve)} reserve`], ['Deployed', A.deployed, XZ.m, A.inv ? `${fp(A.deployed/A.inv)} of investable` : ''],
+        ['Undeployed cash', A.cash, XZ.m, A.cash > 0.05 ? 'cannot be placed under current limits' : 'fully placed'],
+        ['Companies held', sh.n, XZ.int, `of ${al.sel.length} selected · effective ${sh.eff.toFixed(1)}`], ['Largest position', sh.top1, XZ.share, `top 3: ${fp(sh.top3)} of deployed`],
+        ['Base case', cases[1].onRaise, XZ.mult, `on the raise · ${fx(cases[1].onDeployed)} on deployed`] ] },
+    { cols:[
+      { h:'Company', v:r=>r.c.name, w:24 }, { h:'Tier', v:r=>r.c.tier }, { h:'Sector', v:r=>r.c.sector, w:26 }, { h:'Weight', v:r=>r.w },
+      { h:'Weight share ($m)', v:r=>r.target, z:XZ.m }, { h:'Available ($m)', v:r=>r.capSet ? r.cap : null, z:XZ.m }, { h:'Allocated ($m)', v:r=>r.amt, z:XZ.m },
+      { h:'% of investable', v:r=>A.inv ? r.amt/A.inv : null, z:XZ.share }, { h:'Entry price', v:r=>r.c.bl==null ? null : r.c.bl*(1+e), z:XZ.usd },
+      { h:'Shares bought', v:r=>r.c.bl && r.amt ? Math.round(r.amt*1e6/(r.c.bl*(1+e))) : null, z:XZ.int },
+      ...['bear','base','bull'].map(k => ({ h:`${k[0].toUpperCase()+k.slice(1)} ($m)`, v:r=>r.total ? A.rs.reduce((a,x)=>a+mv(k)(x),0) : mv(k)(r), z:XZ.m })),
+      { h:'Note', v:r=>r.why, w:36 } ],
+      rows:[...[...A.rs].sort((a,b)=>b.amt-a.amt || a.c.mq-b.c.mq), { total:true, c:{ name:'Total' }, target:A.inv, amt:A.deployed, why:A.cash>0.05 ? `${fm(A.cash)} undeployed` : '' }] },
+    { title:'Exit outcomes', sub:'Current allocation, at the entry price set', cols:[
+      { h:'Case', v:x=>x.l }, { h:'Move vs today', v:x=>s[x.k]/100, z:XZ.pct0 }, { h:'Value ($m)', v:x=>x.val, z:XZ.m }, { h:'Gain ($m)', v:x=>x.gain, z:XZ.m },
+      { h:'× deployed', v:x=>x.onDeployed, z:XZ.mult }, { h:'× raise', v:x=>x.onRaise, z:XZ.mult } ], rows:cases },
+    { title:'Entry price', sub:'Multiple on capital deployed if we pay above or below today\'s secondary price', cols:[
+      { h:'Entry vs today', v:x=>x/100, z:XZ.pct0 }, { h:'Shares bought', v:x=>1/(1+x/100)-1, z:XZ.pct0 },
+      ...['bear','base','bull'].map(k => ({ h:k[0].toUpperCase()+k.slice(1), v:x=>outcome(A, s, k, x/100).onDeployed, z:XZ.mult })) ],
+      rows:[...new Set([-30,-20,-10,0,10,20,30, s.entry])].sort((a,b)=>a-b) },
+    { title:'Tier-weight sensitivity', sub:'The same companies, stock limits and rules under different tier weightings', cols:[
+      { h:'Anchor : Conviction : Tail', v:p=>p[0]==='Current setting' ? `Current setting (${p[1]} : ${p[2]} : ${p[3]})` : p[0], w:28 },
+      { h:'Deployed ($m)', v:p=>p.B.deployed, z:XZ.m }, { h:'Undeployed ($m)', v:p=>p.B.cash, z:XZ.m }, { h:'Companies held', v:p=>p.q.n },
+      { h:'Effective holdings', v:p=>p.q.eff, z:XZ.s1 }, { h:'Largest position', v:p=>p.q.top1, z:XZ.share },
+      ...['bear','base','bull'].map(k => ({ h:`${k[0].toUpperCase()+k.slice(1)} × raise`, v:p=>outcome(p.B, s, k).onRaise, z:XZ.mult })) ],
+      rows:presets.map(p => { const B = allocate(s, al.sel, { Anchor:p[1], Conviction:p[2], Tail:p[3], Watch:s.wWatch }); return Object.assign([...p], { B, q:shapeOf(B) }); }) },
+    { title:'Portfolio shape — concentration', cols:[{ h:'Measure', v:x=>x[0], w:24 }, { h:'Value', v:x=>x[1], z:x=>x[2] }], rows:[
+      ['Companies held', sh.n, XZ.int], ['Effective holdings', sh.eff, XZ.s1], ['Largest position', sh.top1, XZ.share], ['Top 3 positions', sh.top3, XZ.share],
+      ['Anchor share', held.filter(r=>r.c.tier==='Anchor').reduce((a,r)=>a+r.amt,0)/d, XZ.share], ['Undeployed cash', A.cash, XZ.m] ] },
+    { title:'Sector mix', sub:`Sector cap ${s.sectorCap}% of investable (${fm(A.secCap)})`, cols:mixCols('Sector'), rows:mix(c=>c.sector) },
+    { title:'Path to exit', sub:'IPO status of the companies held', cols:mixCols('IPO status'), rows:mix(c => !c.ipo ? 'No IPO path disclosed' : /filed/i.test(c.ipo.status) ? 'IPO filed' : 'IPO plans reported') },
+    { title:'Region mix', cols:mixCols('Region'), rows:mix(c=>c.region) },
+  ]);
+  return [['Allocation settings', settings], ['Allocation companies', companies], ['Allocation (read-only)', results]];
 }
 function alRefresh() { alSave(); drawAlloc(); }
 function initAlloc() {
@@ -1429,38 +1485,42 @@ document.getElementById('hdr-sub').textContent = `${UNI.length} companies · sec
 document.querySelectorAll('.asof').forEach(e=>e.textContent=fDate(QD_ASOF));
 
 // theme
-// ── master Excel export: one sheet per dashboard page, laid out for editing in Excel and re-importing with
-// .claude/work/import-master.ps1. Each value is editable in exactly one sheet; "(read-only)" sheets are recalculated
-// by the dashboard. Column headers are the import contract — keep them in sync with the script.
+// ── master Excel export: one sheet per dashboard page, with the page's columns in the page's order, the values the page
+// shows, and each header carrying the page's definition plus whether it can be edited. Extra input columns that the page
+// does not display sit to the right. Re-imported with .claude/work/import-master.ps1; column headers are the import
+// contract — keep them in sync with the script. Each value is editable in exactly one sheet.
 const MASTER_README = [
   ['Perennial Unicorn Analytics — master data'],
   [],
   ['How to use'],
-  ['1. Edit any sheet not marked read-only. Each value is edited in one sheet only.'],
-  ['2. Save the file (keep it as .xlsx) and upload it to Claude, asking for the master file to be imported.'],
-  ['3. Claude lists every change for you to approve, then updates the dashboard and commits.'],
-  ['4. Allocation sheets are private: load them with "Upload scenario" on the Allocation tab. They are never published.'],
+  ['1. Each sheet matches a dashboard page: the same columns, in the same order, showing the same values.'],
+  ['2. Hover over a column header for its definition and whether it can be edited. Read-only columns are recalculated by the dashboard.'],
+  ['3. Edit the editable columns, save the file (keep it as .xlsx) and upload it to Claude, asking for the master file to be imported.'],
+  ['4. Claude lists every change for you to approve, then updates the dashboard and commits.'],
+  ['5. Allocation sheets are private: load them with "Upload scenario" on the Allocation tab. They are never published.'],
   [],
   ['Sheets', 'Dashboard page · what you can change'],
-  ['Analytics (read-only)', 'Analytics · premiums, spreads and momentum, recalculated from the prices and rounds in Universe and Funding rounds.'],
-  ['IPO pipeline', 'Analytics → IPO pipeline · IPO status, last update, target year and valuation. Add a row (ID + status) to add a company; delete the row to remove it.'],
-  ['Marquee list', 'Marquee list · which companies are on the list and their order. Add a row with the company ID to add; delete the row to remove.'],
-  ['Allocation settings / companies', 'Allocation · fund rules, tier weights, exit cases, chosen companies, available stock. Loaded on the page, not imported.'],
-  ['Allocation (read-only)', 'Allocation · the resulting allocation at the time of export.'],
-  ['Universe', 'Universe · the company master: names, sectors, regions, last rounds, valuations, prices, shares, venue ranks, notes. Add or remove companies here.'],
+  ['Analytics (read-only)', 'Analytics · the headline statistics, each chart as a table, and data coverage.'],
+  ['IPO pipeline', 'Analytics → IPO pipeline · IPO status, last filing update, target listing and recent valuation. Add a row (company + ID + status) to add; delete the row to remove.'],
+  ['Marquee list', 'Marquee list · the Marquee rank only (order and membership). Add a row with the company ID to add; delete the row to remove.'],
+  ['Allocation settings', 'Allocation → settings panels · fund rules, tier weights, exit cases and entry price.'],
+  ['Allocation companies', 'Allocation → Choose companies · Hold (Y), available stock and base-case override.'],
+  ['Allocation (read-only)', 'Allocation · headline figures, the allocation table, sensitivities and portfolio shape.'],
+  ['Universe', 'Universe · the company master, grouped by sector as on the page. Edit Company, Liquidity score, prices, Note, Region, and the input columns to the right. Add or remove companies here.'],
   ['Methodology', 'Methodology · every weight, scoring range and tier threshold. The Methodology page text updates to match.'],
-  ['Calibration', 'Methodology → Calibration · the confirmed tier and the reason for any difference from the rules.'],
+  ['Calibration', 'Methodology → Calibration · Current tier, Category and Reason.'],
   ['Funding rounds, Shareholders, Profile notes', 'Company detail pop-ups · funding history, key shareholders and share-count notes.'],
   [],
   ['Rules'],
   ['ID', 'Never change an existing ID; it links a company across sheets. For a new company leave ID blank in Universe — Claude will assign one.'],
   ['Action', 'Universe only. Leave blank to keep a company. Enter Remove (and an Action reason) to drop it, e.g. after an IPO or acquisition.'],
-  ['Tier', 'Calibration. Anchor, Conviction, Tail or Watch. If it differs from "Default tier (rules)", give an Override category and reason.'],
-  ['Override category', 'Regulatory, Geopolitical, Binary, Transfer restrictions, Data gap or Other.'],
+  ['Current tier', 'Calibration. Anchor, Conviction, Tail or Watch. If it differs from "Default tier (rules)", give a Category and Reason.'],
+  ['Category', 'Regulatory, Geopolitical, Binary, Transfer restrictions, Data gap or Other.'],
+  ['Derived values', 'Universe "Last round EV" and "Current valuation" are what the page shows: researched funding rounds and live prices take precedence. Edit the input columns to the right instead.'],
   ['Methodology weights', 'Weights within a pillar, and the three pillar weights, should each add up to 100.'],
   ['Prices', 'Rows with Price source "tracker" get prices from the price tracker; edits to their prices are ignored. Other rows can be edited.'],
-  ['Valuations', 'In US$ billions. Funding round amounts are in US$ millions.'],
-  ['Dates', 'YYYY-MM-DD (or YYYY-MM for IPO last update). Excel dates are also accepted.'],
+  ['Units', 'Valuations in US$ billions; funding round amounts and allocations in US$ millions; percentages as shown.'],
+  ['Dates', 'YYYY-MM-DD (or YYYY-MM for IPO last filing update). Excel dates are also accepted.'],
   ['Lists', 'Lead investors separated by semicolons; sources separated by spaces or new lines.'],
   ['Funding rounds', 'Type: Equity, Strategic, Convertible, Tender, Debt or Pending (reported, not closed). Company-run = N for investor-to-investor sales.'],
   [],
@@ -1469,7 +1529,45 @@ const MASTER_README = [
 // SheetJS is only needed for Excel downloads and uploads, so it loads on first use.
 const loadXLSX = () => window.XLSX ? Promise.resolve() : new Promise((ok, fail) => { const s = document.createElement('script');
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
-// A sheet from row objects; columns sized to their header unless a width is given.
+
+// Number formats matching the page's display.
+const XZ = {
+  bn: '[>=1000]"$"0.00,"T";[>=10]"$"#,##0"bn";"$"0.0"bn"', usd: '"$"#,##0.00', gbp: '"£"#,##0.00', eur: '"€"#,##0.00',
+  m: '"$"#,##0.0"m";-"$"#,##0.0"m"', pct0: '+0%;-0%;0%', pct1: '+0.0%;-0.0%;0.0%', pctp: '0.0%', share: '0.0%', mult: '0.00"×"',
+  s0: '0', s1: '0.0', int: '#,##0', pctn: '0"%"',
+};
+const pxZ = c => c.ccy==='GBP' ? XZ.gbp : c.ccy==='EUR' ? XZ.eur : XZ.usd;
+const ipoText = c => c.ipo ? `${IPO_SHORT[c.ipo.status]||c.ipo.status} · ${c.ipo.target ? 'target '+c.ipo.target : fMon(c.ipo.updated+'-01')}` : '';
+// A worksheet from blocks stacked top to bottom: { title, sub, cols, rows, filter }. A column is { h: header as on the
+// page, v: value, z: number format, d: definition, e: true/false = editable/read-only (omit on read-only sheets), w: width }.
+function xlBlocks(blocks) {
+  const ws = {}, widths = []; let r = 0;
+  const put = (c, v, z, note) => {
+    if (v==null || v==='' || (typeof v==='number' && !isFinite(v))) return;
+    const a = XLSX.utils.encode_cell({ r, c });
+    ws[a] = typeof v==='number' ? { t:'n', v, ...(z ? { z } : {}) } : { t:'s', v:String(v) };
+    if (note) { ws[a].c = [{ a:'Perennial', t:note }]; ws[a].c.hidden = true; }
+  };
+  for (const b of blocks) {
+    if (b.title) { put(0, b.title); r++; }
+    if (b.sub) { put(0, b.sub); r++; }
+    const h0 = r;
+    b.cols.forEach((k, i) => {
+      const tag = k.e===true ? 'Editable.' : k.e===false ? 'Read-only.' : '';
+      put(i, k.h, null, [tag, k.d].filter(Boolean).join(' ') || null);
+      widths[i] = Math.max(widths[i] || 0, k.w || Math.min(40, Math.max(9, k.h.length + 2)));
+    });
+    r++;
+    for (const row of b.rows) { b.cols.forEach((k, i) => put(i, k.v(row), typeof k.z==='function' ? k.z(row) : k.z)); r++; }
+    if (b.filter && b.rows.length) ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s:{ r:h0, c:0 }, e:{ r:r-1, c:b.cols.length-1 } }) };
+    r++;
+  }
+  ws['!ref'] = XLSX.utils.encode_range({ s:{ r:0, c:0 }, e:{ r:Math.max(0, r-1), c:Math.max(0, widths.length-1) } });
+  ws['!cols'] = widths.map(w => ({ wch:w }));
+  return ws;
+}
+const xlTable = (cols, rows) => xlBlocks([{ cols, rows, filter:true }]);
+// A simple sheet from row objects (the funding-history sheets), columns sized to their headers unless a width is given.
 function xlSheet(rows, widths = {}) {
   const ws = XLSX.utils.json_to_sheet(rows);
   const keys = rows.length ? Object.keys(rows[0]) : [];
@@ -1477,38 +1575,128 @@ function xlSheet(rows, widths = {}) {
   if (rows.length) ws['!autofilter'] = { ref: ws['!ref'] };
   return ws;
 }
+
+// Columns shared by the Universe and Marquee list sheets, defined as on the page (DEF holds the page's ⓘ text).
+const XC = {
+  srank: { h:'Sector rank', v:c=>c.srank, z:XZ.int, d:'Rank within the sector by liquidity score (1 = most liquid).' },
+  rank: { h:'Overall rank', v:c=>c.rank, z:XZ.int, d:'Rank across all companies by liquidity score (1 = most liquid).' },
+  company: { h:'Company', v:c=>c.name, w:26, d:'The company name as shown on the dashboard.' },
+  tier: { h:'Tier', v:c=>c.tier, d:DEF.tier + ' Edit in the Calibration sheet.' },
+  liq: { h:'Liquidity score', v:c=>c.base.liq, z:XZ.s1, d:DEF.liqWb },
+  lrEv: { h:'Last round EV', v:c=>c.lrEv, z:XZ.bn, d:DEF.lrEv + ' Shows the page value: a researched funding history or a company tender takes precedence over the input column.' },
+  curVal: { h:'Current valuation', v:c=>c.impl ?? c.curVal, z:XZ.bn, d:DEF.curVal },
+  clarity: { h:'Clarity', v:c=>c.base.px.c, z:pxZ, d:DEF.venue('Clarity (formerly Hiive)') },
+  augment: { h:'Augment', v:c=>c.base.px.a, z:XZ.usd, d:DEF.venue('Augment (data by Caplight)') },
+  forge: { h:'Forge', v:c=>c.base.px.f, z:XZ.usd, d:DEF.venue('Forge') },
+  ipo: { h:'IPO status', v:ipoText, w:28, d:DEF.ipo + ' Edit in the IPO pipeline sheet.' },
+  note: { h:'Note', v:c=>c.base.note, w:50, d:'Perennial analyst note.' },
+  region: { h:'Region', v:c=>c.base.region, d:'Region.' },
+  hq: { h:'HQ', v:c=>c.base.hq, d:'Headquarters country.' },
+  sector: { h:'Sector', v:c=>c.base.sector, w:26, d:'One of Perennial\'s eight sectors.' },
+  sub: { h:'Sub-sector', v:c=>c.base.sub, w:26, d:'Sub-sector.' },
+  id: { h:'ID', v:c=>c.id, w:16, d:'Links a company across sheets. Never change it.' },
+};
+const ed = (k, e) => ({ ...k, e });
+
 function masterWorkbook() {
   const ovr = window.TIER_OVR || {};
-  const num = x => x==null || x==='' || (typeof x==='number' && !isFinite(x)) ? '' : x;
-  const r1 = x => x==null ? '' : +x.toFixed(1);
-  const analytics = UNI.map(c => ({
-    'ID': c.id, 'Company': c.name, 'Tier': c.tier, 'Sector': c.sector, 'Region': c.region,
-    'Venues quoting': c.nVen, 'Average secondary price ($)': c.bl==null ? '' : +c.bl.toFixed(2), 'Implied valuation ($bn)': c.impl==null ? '' : +c.impl.toFixed(2),
-    'Valuation used for premium': c.lrTender ? 'Company tender' : c.lrEv!=null ? 'Last round' : '', 'Last round valuation ($bn)': num(c.lrEv), 'Last round date': c.lrDate||'',
-    'Round age (months)': r1(c.lrAge), 'Stale round': c.stale ? 'Y' : '', 'Premium vs last round (%)': c.prem==null ? '' : +(c.prem*100).toFixed(1),
-    'Venue spread (%)': c.spread==null ? '' : +(c.spread*100).toFixed(1), 'Momentum (%)': c.mom==null ? '' : +(c.mom*100).toFixed(1), 'Momentum since': c.momFrom||'',
-    'Liquidity score': num(c.liq), 'Overall rank': num(c.rank), 'Sector rank': num(c.srank), 'IPO status': c.ipo?.status||'' }));
-  const ipo = UNI.filter(c=>window.IPO?.[c.id]).map(c => { const ip = window.IPO[c.id];
-    return { 'ID': c.id, 'Company': c.name, 'IPO status': ip.status||'', 'IPO last update': ip.updated||'', 'IPO target': ip.target||'', 'IPO valuation ($bn)': num(ip.val),
-      'Tier (read-only)': c.tier, 'Sector (read-only)': c.sector }; });
-  const marquee = UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq).map(c => ({ 'Marquee rank': c.mq, 'ID': c.id, 'Company': c.name,
-    'Tier (read-only)': c.tier, 'Sector (read-only)': c.sector, 'Current valuation ($bn, read-only)': (c.impl ?? c.curVal)==null ? '' : +(c.impl ?? c.curVal).toFixed(1) }));
-  const universe = UNI.map(c => { const b = c.base;
-    return {
-      'ID': c.id, 'Company': c.name, 'Action': '', 'Action reason': '',
-      'Sector': b.sector||'', 'Sub-sector': b.sub||'', 'Region': b.region||'', 'HQ': b.hq||'',
-      'Last round': b.lrName||'', 'Last round date': b.lrDate||'',
-      'Last round valuation ($bn)': num(b.lrEv), 'Current valuation ($bn)': num(b.curVal), 'Shares outstanding': num(b.shares),
-      'Clarity price': num(b.px.c), 'Augment price': num(b.px.a), 'Forge price': num(b.px.f), 'Price currency': b.ccy||'USD',
-      'Price source': b.pxSrc||'', 'Liquidity score': num(b.liq), 'Augment Power 20 rank': num(b.aug), 'Clarity 50 rank': num(b.c50),
-      'Forge traded': b.forgeTraded ? 'Y' : '', 'Listed': b.listed ? 'Y' : '', 'Clarity price type': b.ctype||'', 'Notes': b.note||'',
-    }; });
-  const method = METHOD_SPEC.map(p => ({ 'Section': p.sec, 'Parameter': p.l, 'Value': M[p.k], 'Unit': p.u, 'Default': p.d, 'Key': p.k }));
-  const calib = UNI.map(c => { const o = ovr[c.id] || {};
-    return { 'ID': c.id, 'Company': c.name, 'Tier': c.tier, 'Default tier (rules)': c.tier0, 'Override category': o.category||'', 'Override reason': o.reason||'',
-      'Suggested tier (read-only)': c.ts.comp==null ? 'not scored' : c.ts.sug, 'Value accretion (read-only)': r1(c.ts.va), 'Liquidity (read-only)': r1(c.ts.lq),
-      'Demand (read-only)': r1(c.ts.dm), 'Composite (read-only)': r1(c.ts.comp), 'Override date (read-only)': o.date||'' }; });
+  const r0 = x => x==null ? null : Math.round(x);
+
+  // Analytics: the headline cards, each chart as a table, and data coverage.
+  const prem = UNI.filter(c=>c.prem!=null).sort((a,b)=>b.prem-a.prem);
+  const secG = {}; UNI.filter(premOk).forEach(c => (secG[c.sector] ??= []).push(c.prem));
+  const secRows = Object.entries(secG).filter(([,v])=>v.length>=2).map(([s,v])=>({ s, m:median(v), n:v.length })).sort((a,b)=>b.m-a.m);
+  const disp = UNI.filter(c=>c.spread!=null).sort((a,b)=>b.spread-a.spread);
+  const mom = UNI.filter(c=>c.mom!=null).sort((a,b)=>b.mom-a.mom);
+  const analytics = xlBlocks([
+    { title:'Headline statistics', cols:[{ h:'Statistic', v:x=>x[0], w:28 }, { h:'Value', v:x=>x[1] }, { h:'Detail', v:x=>x[2], w:50 }], rows:kpiRows(UNI) },
+    { title:'Secondary pricing vs last round — premium / discount to last round, by company', sub:`Measured against a round from the last ${STALE_MONTHS} months unless marked stale`, cols:[
+      XC.company, { h:'Premium / discount', v:c=>c.prem, z:XZ.pct0, d:'Implied valuation ÷ last-round valuation − 1.' },
+      { h:'Implied valuation', v:c=>c.impl, z:XZ.bn }, { h:'Last round EV', v:c=>c.lrEv, z:XZ.bn }, { h:'Valuation basis', v:c=>c.lrTender ? 'Company tender' : 'Last round' },
+      { h:'Last round date', v:c=>c.lrDate }, { h:`Older than ${STALE_MONTHS} months`, v:c=>c.stale ? 'Yes' : '' }, { h:'Liquidity score', v:c=>c.liq, z:XZ.s1 }, XC.tier, { h:'Sector', v:c=>c.sector, w:26 } ], rows:prem },
+    { title:'Median premium by sector', sub:'Sectors with at least two priced companies', cols:[{ h:'Sector', v:x=>x.s, w:28 }, { h:'Median premium', v:x=>x.m, z:XZ.pct0 }, { h:'Companies (n)', v:x=>x.n }], rows:secRows },
+    { title:'Venue dispersion — price by venue, % from the cross-venue average', cols:[
+      XC.company, ...VENUES.map(v => ({ h:v.name, v:c=>c.px[v.k]==null ? null : c.px[v.k]/c.bl-1, z:XZ.pct1 })),
+      { h:'Spread', v:c=>c.spread, z:XZ.pctp, d:'Highest − lowest venue price, as % of the average.' }, { h:'Average price', v:c=>c.bl, z:XZ.usd } ], rows:disp },
+    { title:'Secondary price momentum — change since first verified price', cols:[
+      XC.company, { h:'Change', v:c=>c.mom, z:XZ.pct1 }, { h:'Since', v:c=>c.momFrom } ], rows:mom },
+    { title:'IPO pipeline', sub:'Shown in the IPO pipeline sheet, where it is edited.', cols:[], rows:[] },
+    { title:'Data coverage', sub:`Share of the ${UNI.length} companies with each data point`, cols:[
+      { h:'Data point', v:x=>x[0], w:34 }, { h:'Companies', v:x=>UNI.filter(x[1]).length }, { h:'Share', v:x=>UNI.filter(x[1]).length/UNI.length, z:XZ.share } ], rows:COV_ITEMS },
+  ]);
+
+  // IPO pipeline, ordered as on the page.
+  const ipoRows = UNI.filter(c=>c.ipo).sort((a,b)=>(IPO_ORDER[a.ipo.status]??9)-(IPO_ORDER[b.ipo.status]??9) || b.ipo.updated.localeCompare(a.ipo.updated));
+  const ipo = xlTable([
+    ed(XC.company, false),
+    { h:'IPO status', e:true, w:22, v:c=>c.ipo.status==='Reported' ? 'IPO plans reported' : c.ipo.status, d:'S-1 publicly filed, Confidentially filed, or IPO plans reported.' },
+    { h:'Last filing update', e:true, v:c=>c.ipo.updated, d:'Month of the latest filing or report, as YYYY-MM.' },
+    { h:'Target listing', e:true, v:c=>c.ipo.target, d:'Listing year the company has stated, where it has given one.' },
+    { h:'Recent valuation', e:true, v:c=>c.ipo.val, z:XZ.bn, d:'Most recent valuation, from the latest round or secondary pricing, in US$ billions.' },
+    { h:'Implied valuation', e:false, v:c=>c.impl, z:XZ.bn, d:DEF.curVal },
+    ed(XC.tier, false), { h:'Sector', e:false, v:c=>c.sector, w:26 }, ed(XC.id, true),
+  ], ipoRows);
+
+  // Marquee list, as on the page; only the rank is edited here.
+  const marquee = xlTable([
+    { h:'Marquee rank', e:true, v:c=>c.mq, z:XZ.int, d:'Position on the Marquee Access Fund list. Delete the row to take a company off; add a row with its ID to add one.' },
+    ...[XC.rank, XC.company, XC.sector, XC.sub, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.hq, XC.region].map(k => ed(k, false)),
+    ed(XC.id, true),
+  ], UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq));
+
+  // Universe, grouped by sector and ranked within it as on the page; input columns the page does not show follow.
+  const byRank = (a,b) => (a.srank??1e9) - (b.srank??1e9) || a.name.localeCompare(b.name);
+  const uniRows = SECTOR_ORDER.flatMap(s => UNI.filter(c=>c.sector===s).sort(byRank));
+  const b = c => c.base;
+  const universe = xlTable([
+    ed(XC.sector, true), ed(XC.srank, false), ed(XC.rank, false), ed(XC.company, true), ed(XC.tier, false), ed(XC.liq, true),
+    ed(XC.lrEv, false), ed(XC.curVal, false), ed(XC.clarity, true), ed(XC.augment, true), ed(XC.forge, true),
+    { h:'Marquee list', e:false, v:c=>c.mq ? 'Yes' : '', d:'Yes if the company is on the Marquee list. Edit in the Marquee list sheet.' },
+    ed(XC.ipo, false), ed(XC.note, true), ed(XC.region, true),
+    ed(XC.id, true),
+    { h:'Action', e:true, v:()=>null, d:'Enter Remove (and an Action reason) to drop the company.' },
+    { h:'Action reason', e:true, v:()=>null, w:30 },
+    ed(XC.sub, true), ed(XC.hq, true),
+    { h:'Last round', e:true, v:c=>b(c).lrName, w:22, d:'Input: last primary round name. Used when there is no researched funding history.' },
+    { h:'Last round date', e:true, v:c=>b(c).lrDate, d:'Input: YYYY-MM-DD.' },
+    { h:'Last round valuation input ($bn)', e:true, v:c=>b(c).lrEv, z:XZ.bn, d:'Input: post-money valuation of the last round, US$ billions. Used when there is no researched funding history.' },
+    { h:'Reported valuation input ($bn)', e:true, v:c=>b(c).curVal, z:XZ.bn, d:'Input: most recent reported valuation, US$ billions. Used when there is no secondary price and share count.' },
+    { h:'Shares outstanding', e:true, v:c=>b(c).shares, z:XZ.int, d:'Fully diluted share count, used for implied valuation.' },
+    { h:'Price currency', e:true, v:c=>b(c).ccy || 'USD' },
+    { h:'Price source', e:false, v:c=>b(c).pxSrc, d:'tracker = prices come from the price tracker; workbook / augment / master = edited here.' },
+    { h:'Augment Power 20 rank', e:true, v:c=>b(c).aug, z:XZ.int, d:'1–20; 21 = honourable mention.' },
+    { h:'Clarity 50 rank', e:true, v:c=>b(c).c50, z:XZ.int, d:'Rank in the Clarity Liquidity Index (1–50).' },
+    { h:'Forge traded', e:true, v:c=>b(c).forgeTraded ? 'Y' : '' },
+    { h:'Listed', e:true, v:c=>b(c).listed ? 'Y' : '' },
+    { h:'Clarity price type', e:true, v:c=>b(c).ctype, w:28 },
+  ], uniRows);
+
+  const method = xlTable([
+    { h:'Section', e:false, v:p=>p.sec, w:18 }, { h:'Parameter', e:false, v:p=>p.l, w:52 }, { h:'Value', e:true, v:p=>M[p.k], d:'The value the dashboard uses.' },
+    { h:'Unit', e:false, v:p=>p.u, w:16 }, { h:'Default', e:false, v:p=>p.d, d:'The original value, for reference.' }, { h:'Key', e:false, v:p=>p.k, w:22, d:'Links the row to the dashboard. Do not change.' },
+  ], METHOD_SPEC);
+
+  // Calibration, in the page's order: disagreements first, then by composite score, data-limited companies last.
+  const order = c => c.ts.comp==null ? 3 : c.ts.sug!==c.tier && !hasReason(c) ? 0 : c.ts.sug!==c.tier ? 1 : 2;
+  const calRows = [...UNI].sort((a,b)=>order(a)-order(b) || (b.ts.comp??-1)-(a.ts.comp??-1) || a.name.localeCompare(b.name));
+  const calib = xlTable([
+    ed(XC.company, false),
+    { h:'Current tier', e:true, v:c=>c.tier, d:'The tier confirmed by the investment team: Anchor, Conviction, Tail or Watch.' },
+    { h:'Suggested', e:false, v:c=>c.ts.comp==null && c.tier!=='Watch' ? 'not scored' : c.ts.sug, d:'The tier the methodology rules give from the scores, before any team decision.' },
+    { h:'Value accretion', e:false, v:c=>r0(c.ts.va), z:XZ.s0, d:'0–100 pillar score.' },
+    { h:'Liquidity', e:false, v:c=>r0(c.ts.lq), z:XZ.s0, d:'0–100 pillar score.' },
+    { h:'Demand', e:false, v:c=>r0(c.ts.dm), z:XZ.s0, d:'0–100 pillar score.' },
+    { h:'Composite', e:false, v:c=>r0(c.ts.comp), z:XZ.s0, d:`Overall score: ${M['pillar.va']}% value accretion + ${M['pillar.lq']}% liquidity + ${M['pillar.dm']}% demand.` },
+    { h:'Status', e:false, v:c=>calStatus(c)[0], d:'Agrees, Override, To review, Watch or Team judgement.' },
+    { h:'Category', e:true, v:c=>(ovr[c.id]||{}).category, w:20, d:'Why the tier differs from the suggestion: Regulatory, Geopolitical, Binary, Transfer restrictions, Data gap or Other.' },
+    { h:'Reason', e:true, v:c=>(ovr[c.id]||{}).reason, w:60, d:'One client-readable sentence explaining the decision.' },
+    { h:'Default tier (rules)', e:false, v:c=>c.tier0, d:'The tier the rules give before any team decision.' },
+    { h:'Decision date', e:false, v:c=>(ovr[c.id]||{}).date },
+    ed(XC.id, true),
+  ], calRows);
+
   const nameOf = id => UNI.find(c=>c.id===id)?.name || id;
+  const num = x => x==null || x==='' ? '' : x;
   const rounds = [], holders = [], profiles = [];
   for (const [id, q] of Object.entries(window.QR || {})) {
     for (const r of q.rounds || []) rounds.push({
@@ -1522,17 +1710,17 @@ function masterWorkbook() {
     profiles.push({ 'ID': id, 'Company': nameOf(id), 'Researched': q.researched||'', 'Splits note': q.splits||'',
       'Share count': num(q.shares?.value), 'Share count as of': q.shares?.asOf||'', 'Share count basis': q.shares?.basis||'', 'Share count note': q.shares?.note||'' });
   }
-  const W = { 'Company':24, 'Notes':50, 'Override reason':50, 'Note':50, 'Sources':50, 'Sub-sector':24, 'Lead investors':36, 'Parameter':52, 'Splits note':60, 'Shareholder':32, 'Round':28 };
+  const W = { 'Company':24, 'Note':50, 'Sources':50, 'Lead investors':36, 'Splits note':60, 'Shareholder':32, 'Round':28 };
   const wb = XLSX.utils.book_new();
-  const rm = XLSX.utils.aoa_to_sheet(MASTER_README); rm['!cols'] = [{wch:34},{wch:130}];
+  const rm = XLSX.utils.aoa_to_sheet(MASTER_README); rm['!cols'] = [{wch:34},{wch:140}];
   XLSX.utils.book_append_sheet(wb, rm, 'Read me');
-  XLSX.utils.book_append_sheet(wb, xlSheet(analytics, W), 'Analytics (read-only)');
-  XLSX.utils.book_append_sheet(wb, xlSheet(ipo, W), 'IPO pipeline');
-  XLSX.utils.book_append_sheet(wb, xlSheet(marquee, W), 'Marquee list');
+  XLSX.utils.book_append_sheet(wb, analytics, 'Analytics (read-only)');
+  XLSX.utils.book_append_sheet(wb, ipo, 'IPO pipeline');
+  XLSX.utils.book_append_sheet(wb, marquee, 'Marquee list');
   for (const [name, ws] of alSheets()) XLSX.utils.book_append_sheet(wb, ws, name);
-  XLSX.utils.book_append_sheet(wb, xlSheet(universe, W), 'Universe');
-  XLSX.utils.book_append_sheet(wb, xlSheet(method, W), 'Methodology');
-  XLSX.utils.book_append_sheet(wb, xlSheet(calib, W), 'Calibration');
+  XLSX.utils.book_append_sheet(wb, universe, 'Universe');
+  XLSX.utils.book_append_sheet(wb, method, 'Methodology');
+  XLSX.utils.book_append_sheet(wb, calib, 'Calibration');
   XLSX.utils.book_append_sheet(wb, xlSheet(rounds, W), 'Funding rounds');
   XLSX.utils.book_append_sheet(wb, xlSheet(holders, W), 'Shareholders');
   XLSX.utils.book_append_sheet(wb, xlSheet(profiles, W), 'Profile notes');

@@ -81,6 +81,8 @@ function D($v, $what, [switch]$Month) {   # YYYY-MM-DD (or YYYY-MM), accepting E
   if ([DateTime]::TryParseExact($t, [string[]]@('yyyy-MM-dd','yyyy-M-d','d/M/yyyy','dd/MM/yyyy','yyyy-MM'), [Globalization.CultureInfo]::InvariantCulture, [Globalization.DateTimeStyles]::None, [ref]$dt)) { return $dt.ToString($fmt) }
   $warn.Add("$what : '$t' is not a date (use YYYY-MM-DD); left blank"); $null
 }
+# The value under the first of these headers present in the row (page-style names first, older names as fallbacks).
+function Col($row, [string[]]$names) { foreach ($h in $names) { if ($row.Contains($h)) { return $row[$h] } }; $null }
 function Pick($v, $allowed, $what) { $t = S $v; if (-not $t) { return $null }
   $m = $allowed | Where-Object { $_ -ieq $t } | Select-Object -First 1; if ($m) { return $m }
   $warn.Add("$what : '$t' is not one of: $($allowed -join ', '); left blank"); $null }
@@ -155,8 +157,8 @@ foreach ($r in $CO) {
     listed = (S $r['Listed']) -ieq 'Y'; mq = N $mr['Marquee rank'] "$name Marquee rank"
     aug = N $r['Augment Power 20 rank'] "$name Augment Power 20 rank"; c50 = N $r['Clarity 50 rank'] "$name Clarity 50 rank"
     forgeTraded = (S $r['Forge traded']) -ieq 'Y'
-    lrEv = N $r['Last round valuation ($bn)'] "$name last round valuation"; lrName = S $r['Last round']; lrDate = D $r['Last round date'] "$name last round date"
-    curVal = N $r['Current valuation ($bn)'] "$name current valuation"; note = S $r['Notes']; ctype = S $r['Clarity price type']
+    lrEv = N (Col $r 'Last round valuation input ($bn)','Last round valuation ($bn)') "$name last round valuation"; lrName = S $r['Last round']; lrDate = D $r['Last round date'] "$name last round date"
+    curVal = N (Col $r 'Reported valuation input ($bn)','Current valuation ($bn)') "$name current valuation"; note = S (Col $r 'Note','Notes'); ctype = S $r['Clarity price type']
     ccy = if (S $r['Price currency']) { (S $r['Price currency']).ToUpper() } else { 'USD' }
     status = if ($o) { $o.status } else { $null }
     liq = N $r['Liquidity score'] "$name liquidity score"
@@ -165,10 +167,10 @@ foreach ($r in $CO) {
   if ($tracker) {
     $e.shares = $o.shares; $e.shSrc = $o.shSrc; $e.px = $o.px; $e.pxSrc = 'tracker'; $e.hist = $o.hist
     foreach ($f in @(@('Clarity price','c'),@('Augment price','a'),@('Forge price','f'))) {
-      $nv = N $r[$f[0]] "$name $($f[0])"; if ($nv -ne $o.px.($f[1])) { $warn.Add("$name : $($f[0]) edit ignored — prices for this company come from the price tracker") } }
+      $nv = N (Col $r @(($f[0] -replace ' price',''), $f[0])) "$name $($f[0])"; if ($nv -ne $o.px.($f[1])) { $warn.Add("$name : $($f[0]) edit ignored — prices for this company come from the price tracker") } }
   } else {
     $e.shares = N $r['Shares outstanding'] "$name shares"; $e.shSrc = if ($e.shares -ne $null) { if ($o -and $o.shares -eq $e.shares) { $o.shSrc } else { 'master' } } else { $null }
-    $e.px = [ordered]@{ c = N $r['Clarity price'] "$name Clarity price"; f = N $r['Forge price'] "$name Forge price"; a = N $r['Augment price'] "$name Augment price" }
+    $e.px = [ordered]@{ c = N (Col $r 'Clarity','Clarity price') "$name Clarity price"; f = N (Col $r 'Forge','Forge price') "$name Forge price"; a = N (Col $r 'Augment','Augment price') "$name Augment price" }
     $e.pxSrc = if ($o) { $o.pxSrc } else { 'master' }; $e.hist = if ($o) { $o.hist } else { $null }
   }
   if ($isNew) { $chg.Add("ADD     $name ($($e.sector), $($e.region)) as id '$id'") }
@@ -181,8 +183,8 @@ foreach ($r in $CO) {
 
   # tier decision: a tier differing from the rules' default, or any recorded reason, becomes an override. A tier the team
   # already confirmed explicitly stays explicit even when it equals today's default, so a later rule change cannot move it.
-  $tier = Pick $tr['Tier'] $TIERS "$name Tier"; $def = S $tr['Default tier (rules)']
-  $cat = Pick $tr['Override category'] $CATS "$name Override category"; $why = S $tr['Override reason']
+  $tier = Pick (Col $tr 'Current tier','Tier') $TIERS "$name Tier"; $def = S $tr['Default tier (rules)']
+  $cat = Pick (Col $tr 'Category','Override category') $CATS "$name Override category"; $why = S (Col $tr 'Reason','Override reason')
   $d = [ordered]@{}; $prevTier = (OldProp $oldOvr $id).tier
   if ($tier -and ($tier -ne $def -or $tier -eq $prevTier)) { $d.tier = $tier; if (-not $why -and $tier -ne $def) { $warn.Add("$name : tier $tier differs from the rules ($def) but has no Override reason") } }
   if ($cat) { $d.category = $cat }; if ($why) { $d.reason = $why }
@@ -196,9 +198,9 @@ foreach ($r in $CO) {
     if ($pj -ne $nj) { $chg.Add("TIER    $name : '$pj' → '$nj'  (tier|category|reason)") } }
 
   # IPO pipeline
-  $st = Pick $ir['IPO status'] $IPOS "$name IPO status"
-  if ($st) { $ip = [ordered]@{ status = $st; updated = D $ir['IPO last update'] "$name IPO last update" -Month; val = N $ir['IPO valuation ($bn)'] "$name IPO valuation" }
-    $tg = S $ir['IPO target']; if ($tg) { $ip.target = $tg }; $ipo[$id] = $ip }
+  $st = Pick ((S $ir['IPO status']) -replace '^IPO plans reported$','Reported') $IPOS "$name IPO status"
+  if ($st) { $ip = [ordered]@{ status = $st; updated = D (Col $ir 'Last filing update','IPO last update') "$name IPO last update" -Month; val = N (Col $ir 'Recent valuation','IPO valuation ($bn)') "$name IPO valuation" }
+    $tg = S (Col $ir 'Target listing','IPO target'); if ($tg) { $ip.target = $tg }; $ipo[$id] = $ip }
   if ($oldIPO -ne $null) { $p = OldProp $oldIPO $id; $pj = if ($p) { (Js $p) -replace '(\d)\.0(?=[,}])','$1' } else { '' }; $nj = if ($ipo.Contains($id)) { Js $ipo[$id] } else { '' }
     if ($pj -ne $nj) { $chg.Add("IPO     $name : $pj → $nj") } }
 }
@@ -257,8 +259,22 @@ if ($oldQR -ne $null) {
   foreach ($id in ($qr.Keys + @($oldQR.PSObject.Properties.Name) | Select-Object -Unique)) {
     $p = OldProp $oldQR $id; $n = if ($qr.Contains($id)) { $qr[$id] } else { $null }
     $pr = @($p.rounds).Count; $ph = @($p.holders).Count; $nr = @($n.rounds).Count; $nh = @($n.holders).Count
-    $same = ($p -and $n) -and ((Js $p.rounds) -eq (Js @($n.rounds))) -and ((Js $p.holders) -eq (Js @($n.holders))) -and ((Js $p.shares) -eq (Js $n.shares)) -and ("$($p.splits)" -eq "$($n.splits)")
+    $nz = { param($o) (Js $o) -replace '(\d)\.0(?=[,}\]])','$1' }   # 6.0 and 6 are the same value
+    $same = ($p -and $n) -and ((& $nz $p.rounds) -eq (& $nz @($n.rounds))) -and ((& $nz $p.holders) -eq (& $nz @($n.holders))) -and ((& $nz $p.shares) -eq (& $nz $n.shares)) -and ("$($p.splits)" -eq "$($n.splits)")
     if (-not $same -and ($p -or $n)) { $chg.Add("PROFILE $id : rounds $pr → $nr, shareholders $ph → $nh (contents changed)") } } }
+
+$ordered = [ordered]@{}
+foreach ($id in $old.Keys) { if ($newData.Contains($id)) { $ordered[$id] = $newData[$id] } }
+foreach ($id in $newData.Keys) { if (-not $ordered.Contains($id)) { $ordered[$id] = $newData[$id] } }
+$newData = $ordered
+function KeepOrder($dict, $oldObj) {   # existing keys in their current file order, new keys after
+  if ($oldObj -eq $null) { return $dict }
+  $o = [ordered]@{}
+  foreach ($k in $oldObj.PSObject.Properties.Name) { if ($dict.Contains($k)) { $o[$k] = $dict[$k] } }
+  foreach ($k in $dict.Keys) { if (-not $o.Contains($k)) { $o[$k] = $dict[$k] } }
+  $o
+}
+$ovr = KeepOrder $ovr $oldOvr; $ipo = KeepOrder $ipo $oldIPO
 
 # ── report ──
 ""; "Master workbook: $Xlsx"

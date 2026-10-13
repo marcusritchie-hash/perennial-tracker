@@ -30,5 +30,8 @@ window.TIER_OVR = {
   "tenstorrent": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction by the investment team; not covered by venue demand rankings.","date":"2026-10-13"},
   "figureai": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: round history not yet researched, so value accretion is unscored; not on the current Augment or Clarity demand lists.","date":"2026-10-13"},
   "cognition": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: Augment Power 20 #20; round history not yet researched, so value accretion is unscored.","date":"2026-10-13"},
-  "skild": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: Augment Power 20 honourable mention; round history not yet researched, so value accretion is unscored.","date":"2026-10-13"}
+  "skild": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: Augment Power 20 honourable mention; round history not yet researched, so value accretion is unscored.","date":"2026-10-13"},
+  "wayve": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: $8.6bn Series D (Feb 2026) backed by SoftBank, Nvidia, Microsoft and Uber, ahead of its London robotaxi launch; a single venue quote limits the liquidity score.","date":"2026-10-14"},
+  "helsing": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: $18bn Series E (Jul 2026), Europe's largest defence-tech round; no share count yet, so value accretion cannot be measured.","date":"2026-10-14"},
+  "groq": {"tier":"Watch","category":"Other","reason":"Moved to Watch: after the Dec 2025 NVIDIA licence its leaders left and shareholders were paid out; the remaining inference-cloud business was revalued at $3.5bn (Aug 2026). Monitored until it re-prices.","date":"2026-10-14"}
 };
