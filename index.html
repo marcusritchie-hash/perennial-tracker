@@ -347,7 +347,7 @@
     <div class="met"><div class="met-label">Gainers</div><div class="met-val up" id="m-g">—</div><div class="met-sub met-sub-chg">since previous pull</div></div>
     <div class="met"><div class="met-label">Losers</div><div class="met-val dn" id="m-l">—</div><div class="met-sub met-sub-chg">since previous pull</div></div>
     <div class="met"><div class="met-label">Avg Clarity/Augment spread</div><div class="met-val neu" id="m-sp">—</div><div class="met-sub">cross-platform gap</div></div>
-    <div class="met"><div class="met-label">Clarity orders (total)</div><div class="met-val neu" id="m-ord">—</div><div class="met-sub">listings + bids · as at last refresh</div></div>
+    <div class="met"><div class="met-label">Current orders (total)</div><div class="met-val neu" id="m-ord">—</div><div class="met-sub">Clarity + Augment · as at last refresh</div></div>
   </div>
 
   <div class="controls">
@@ -357,7 +357,7 @@
       <option value="chg">Change since last pull</option>
       <option value="price">Share price</option>
       <option value="spread">Platform spread</option>
-      <option value="orders">Clarity orders</option>
+      <option value="orders">Current orders</option>
       <option value="name">Name A–Z</option>
     </select>
     <div class="ctrl-sep"></div>
@@ -382,8 +382,7 @@
         <th style="width:65px;" title="Change in blended verified price between the last two data pulls">Chg since last pull</th>
         <th style="width:90px;" class="col-sp">Clarity/Augment spread</th>
         <th style="width:78px;" title="Blended price at each verified refresh (Aug–Oct 2026)">Trend</th>
-        <th style="width:55px;" title="Clarity listings + bids, as at the last refresh">Clarity orders</th>
-        <th style="width:55px;" title="Open resale orders on Augment (Collective SPV units)">Augment orders</th>
+        <th style="width:70px;" title="Clarity listings + bids plus open Augment resale orders, as at the last refresh">Current orders</th>
         <th style="width:90px;" title="From Augment's order or offering terms where Augment has one; otherwise the earlier hand-entered value, shown in grey">Structure</th>
         <th></th>
       </tr></thead>
@@ -405,7 +404,7 @@
       <div class="str-row" id="str-row">
         <div class="str-item">Structure: <b>—</b></div>
         <div class="str-item">ROFR: <b>—</b></div>
-        <div class="str-item">Clarity orders: <b>—</b></div>
+        <div class="str-item">Current orders: <b>—</b></div>
       </div>
       <div class="chart-leg" id="det-leg"></div>
       <div class="chart-w"><canvas id="detChart"></canvas></div>
@@ -649,7 +648,7 @@ function getRows(){
   else if(s==='chg') rows.sort((a,b)=>b._chg-a._chg);
   else if(s==='price') rows.sort((a,b)=>b._b-a._b);
   else if(s==='spread') rows.sort((a,b)=>b._sp-a._sp);
-  else if(s==='orders') rows.sort((a,b)=>b.liveOrders-a.liveOrders);
+  else if(s==='orders') rows.sort((a,b)=>totalOrd(b)-totalOrd(a));
   else rows.sort((a,b)=>a.name.localeCompare(b.name));
   return rows;
 }
@@ -682,8 +681,7 @@ function renderTable(){
       <td>${rc?`<span class="chg ${Math.abs(rc.pct)<0.05?'':rc.pct>0?'up':'dn'}" style="${Math.abs(rc.pct)<0.05?'color:var(--text4)':''}" title="Blended price ${fDay(rc.from)} → ${fDay(rc.to)}">${fpct(rc.pct)}</span>`:'<span style="color:var(--border2);" title="First data pull — nothing to compare yet">—</span>'}</td>
       <td class="col-sp">${si?`<span class="sprd ${spCls}">${f$(si.abs)} <span style="opacity:.6;font-size:10px;">(${r2(si.pct,0)}%)</span></span>`:'<span style="color:var(--border2);">—</span>'}</td>
       <td><div class="spark-w"><canvas id="sp-${c.id}"></canvas></div></td>
-      <td class="orders">${s.liveOrders>0?s.liveOrders:'—'}</td>
-      <td class="orders">${augOrders(c.id)||'—'}</td>
+      <td class="orders">${ordersCell(c)}</td>
       <td>${augS?`<span class="str-tag st-spv" title="From Augment, ${AUG_AS_AT}">${augS}</span>`:c.struct&&c.struct!=='—'?`<span class="str-tag ${strCls}" style="opacity:.55" title="Hand-entered earlier, not from Augment">${c.struct}</span>`:'<span style="color:var(--border2);">—</span>'}</td>
       <td><button class="det-btn ${OB[c.id]?'det-btn-'+c.sc:''}" onclick="selCo_('${c.id}')">Detail →</button></td>
     `;
@@ -716,7 +714,7 @@ function updateMets(){
   let g=chgs.filter(x=>x.pct>=0.05).length, l=chgs.filter(x=>x.pct<=-0.05).length;
   let sps=COS.map(spreadInfo).filter(Boolean);
   let avgSp=sps.reduce((s,x)=>s+x.pct,0)/sps.length;
-  let totalOrders=COS.reduce((s,c)=>s+ST[c.id].liveOrders,0);
+  let totalOrders=COS.reduce((s,c)=>s+totalOrd(c),0);
   document.getElementById('m-cap').textContent=fB(cap);
   document.getElementById('m-g').textContent=g;
   document.getElementById('m-l').textContent=l;
@@ -803,8 +801,7 @@ function renderDetail(){
   document.getElementById('str-row').innerHTML=`
     ${structItem}
     <div class="str-item">ROFR: <b>${c.rofr}</b></div>
-    <div class="str-item">Clarity orders: <b>${s.liveOrders||'—'}</b></div>
-    <div class="str-item">Augment orders: <b>${augOrders(c.id)||'—'}</b></div>
+    <div class="str-item">Current orders: <b>${totalOrd(c)||'—'}</b>${totalOrd(c)?` (Clarity ${s.liveOrders||0} · Augment ${augOrders(c.id)})`:''}</div>
     <div class="str-item">Approval wait: <b>${wait}</b></div>
     ${augItems}
   `;
@@ -913,6 +910,14 @@ const AUG = {
   psiquantum: { offering:{price:30,min:'$10K',elig:'Accredited investors'} },
 };
 const augOrders=(id)=>AUG[id]&&AUG[id].orders?AUG[id].orders.length:0;
+const totalOrd=(c)=>(ST[c.id].liveOrders||0)+augOrders(c.id);
+// Combined order count with the per-platform split underneath.
+function ordersCell(c){
+  let cl=ST[c.id].liveOrders||0, au=augOrders(c.id);
+  if(!cl&&!au) return '—';
+  let split=[cl&&`C ${cl}`,au&&`A ${au}`].filter(Boolean).join(' · ');
+  return `${cl+au}<div style="font-size:9px;color:var(--text4);">${split}</div>`;
+}
 // Structure label from Augment terms, or null when Augment has no order or offering.
 function augStructure(id){
   let a=AUG[id]; if(!a) return null;
