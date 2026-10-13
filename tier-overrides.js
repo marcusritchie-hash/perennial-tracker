@@ -22,5 +22,10 @@ window.TIER_OVR = {
   "helion": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: recent $15.5bn round led by Thrive Capital; demand rankings not available.","date":"2026-10-13"},
   "machindustries": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: rapid valuation growth ($0.3bn to $3.7bn since 2023) backed by Sequoia, Bedrock and Ribbit; not yet traded on secondary venues.","date":"2026-10-13"},
   "synchron": {"tier":"Conviction","category":"Data gap","reason":"Marquee list company placed in Conviction by the investment team; to be scored once secondary-market pricing is available.","date":"2026-10-13"},
-  "waymo": {"tier":"Conviction","category":"Other","reason":"Moved to Conviction by the investment team: strong investor demand in recent Alphabet-led funding.","date":"2026-10-13"}
+  "waymo": {"tier":"Conviction","category":"Other","reason":"Moved to Conviction by the investment team: strong investor demand in recent Alphabet-led funding.","date":"2026-10-13"},
+  "clickhouse": {"tier":"Conviction","category":"Other","reason":"Placed in Conviction by the investment team: $15bn Series D led by Dragoneer (Jan 2026).","date":"2026-10-13"},
+  "baseten": {"tier":"Conviction","category":"Other","reason":"Placed in Conviction by the investment team: $13bn Series F led by Sands Capital and Wellington (Jun 2026).","date":"2026-10-13"},
+  "tether": {"tier":"Conviction","category":"Other","reason":"Placed in Conviction by the investment team.","date":"2026-10-13"},
+  "openevidence": {"tier":"Conviction","category":"Data gap","reason":"Marquee list company kept at Conviction by the investment team; not covered by venue demand rankings.","date":"2026-10-13"},
+  "tenstorrent": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction by the investment team; not covered by venue demand rankings.","date":"2026-10-13"}
 };
