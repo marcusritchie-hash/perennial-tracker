@@ -91,6 +91,8 @@
 
   /* methodology */
   .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  @media (max-width: 1100px) { .grid4 { grid-template-columns: repeat(2, 1fr); } }
   .tier-card h3, .pillar h3, .grid2 .panel h3 { font-family: var(--serif); font-weight: 400; font-size: 18px; color: var(--brand); margin-bottom: 6px; }
   .tier-card p { font-weight: 300; margin-bottom: 8px; }
   .tier-card b, .pillar b, .plain b { font-weight: 600; color: var(--ink); }
@@ -202,7 +204,7 @@
     .hdr h1 { font-size: 26px; }
     .logo { width: 170px; }
     .kpis { grid-template-columns: repeat(2, 1fr); }
-    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
     #cal-kpis { grid-template-columns: repeat(2, 1fr) !important; }
     .facts { grid-template-columns: repeat(2, 1fr); }
     .cov { grid-template-columns: 140px 1fr 56px; }
@@ -338,9 +340,9 @@
   <section>
     <div class="sec-hd">
       <h2>Tier methodology</h2>
-      <p>Every company in the universe sits in one of three tiers: Anchor, Conviction or Tail. The tier reflects three things: whether the company is compounding value, whether its shares can be bought and sold at size, and how strong investor demand is. Scores on these three pillars suggest a tier; the investment team confirms it, and any departure from the suggested tier is recorded with its reason.</p>
+      <p>Every company in the universe sits in one of four tiers: Anchor, Conviction, Tail or Watch. The tier reflects three things: whether the company is compounding value, whether its shares can be bought and sold at size, and how strong investor demand is. Scores on these three pillars suggest a tier; the investment team confirms it, and any departure from the suggested tier is recorded with its reason.</p>
     </div>
-    <div class="grid3">
+    <div class="grid4">
       <div class="card tier-card" style="border-top-color:var(--purple)">
         <h3>Anchor</h3>
         <p><b>Proven value creation, deep liquidity, strong demand.</b> Category leaders, typically valued at $50bn or more, quoted across several secondary venues and with a record of rising valuations.</p>
@@ -353,8 +355,13 @@
       </div>
       <div class="card tier-card" style="border-top-color:var(--mid-grey)">
         <h3>Tail</h3>
-        <p><b>Early, thinly traded or carrying elevated risk.</b> Companies with limited secondary liquidity, unproven value accretion, or a risk that caps their tier.</p>
+        <p><b>Scored, but weak or thinly traded.</b> Companies with limited secondary liquidity, little evidence of value accretion, or a risk that caps their tier.</p>
         <p class="role">Portfolio role: smaller positions that add optionality, monitored for upgrade.</p>
+      </div>
+      <div class="card tier-card" style="border-top-color:var(--accent-light-purple)">
+        <h3>Watch</h3>
+        <p><b>On our radar, not yet assessable.</b> Companies without enough secondary pricing or funding data to score. They move to a scored tier as soon as the data allows.</p>
+        <p class="role">Portfolio role: monitored, not held.</p>
       </div>
     </div>
   </section>
@@ -399,7 +406,7 @@
     <div class="tbl-wrap" style="max-height:none"><table class="rules">
       <thead><tr><th>Suggested tier</th><th>Rule</th></tr></thead>
       <tbody>
-        <tr><td class="co">Insufficient data</td><td>Fewer than two pillars are backed by data. The tier rests on the investment team's judgement until coverage improves.</td></tr>
+        <tr><td class="co">Watch</td><td>Fewer than two pillars are backed by data. The company is monitored, not held, until it can be scored. Companies the investment team has placed in Anchor or Conviction keep that tier.</td></tr>
         <tr><td class="co">Anchor</td><td>Composite score of 60 or more, liquidity score of 50 or more, and valuation of $50bn or more.</td></tr>
         <tr><td class="co">Tail</td><td>Liquidity score below 30, whatever the other pillars show.</td></tr>
         <tr><td class="co">Conviction</td><td>Composite score of 40 or more, or a value accretion score of 70 or more.</td></tr>
@@ -425,7 +432,7 @@
         <ul class="plain">
           <li><b>Investment team decides:</b> scores suggest a tier; the team confirms it. Every difference between the suggested and confirmed tier is recorded with its reason and date.</li>
           <li><b>Quarterly review</b> of all tiers, plus an immediate review when a company raises a round, runs a tender, files for an IPO, or an overlay risk changes.</li>
-          <li><b>Data-limited companies</b> keep their team-assigned tier and are re-scored as secondary pricing and funding history are added.</li>
+          <li><b>Data-limited companies</b> sit on Watch unless the team has assigned them a tier, and are re-scored as secondary pricing and funding history are added.</li>
         </ul>
       </div>
     </div>
@@ -475,7 +482,7 @@ const DISP_TOP = 25;
 let dispAll = false;
 // Confirmed tiers: workbook tier (tier0), replaced by the published overrides (tier-overrides.js),
 // replaced in turn by this browser's unpublished drafts from the Methodology tab's edit mode.
-const TIER_CHOICES = ['Anchor','Conviction','Tail'];
+const TIER_CHOICES = ['Anchor','Conviction','Tail','Watch'];
 const DRAFT_KEY = 'pq-tier-drafts';
 let tierDrafts = {};
 try { tierDrafts = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}') || {}; } catch {}
@@ -485,7 +492,7 @@ const tierDecision = c => c.id in tierDrafts ? tierDrafts[c.id] : (window.TIER_O
 for (const c of UNI) c.tier0 = c.tier;
 function applyTiers() { for (const c of UNI) c.tier = tierDecision(c)?.tier || c.tier0; }
 applyTiers();
-const TIERS = ['Anchor','Conviction','Tail','Unassigned'].filter(t => UNI.some(c => c.tier0 === t || c.tier === t));
+const TIERS = ['Anchor','Conviction','Tail','Watch','Unassigned'].filter(t => t!=='Unassigned' || UNI.some(c => c.tier0 === t || c.tier === t));
 const STALE_MONTHS = 18;
 const ASOF = new Date(QD_ASOF + 'T00:00:00');
 
@@ -853,12 +860,16 @@ for (const c of UNI) {
   const dm = has.dm ? wmean([[c.setter ? lin(31-c.setter,0,30) : 0, 0.4], [c.c50 ? lin(51-c.c50,0,50) : 0, 0.3], [c.mom==null ? null : lin(c.mom,-0.2,0.3), 0.3]]) : null;
   const enough = Object.values(has).filter(Boolean).length >= 2;
   const comp = enough ? TIER_W.va*(va??0) + TIER_W.lq*(lq??0) + TIER_W.dm*(dm??0) : null;
-  const sug = comp==null ? 'Insufficient data'
+  const sug = comp==null ? 'Watch'
     : comp>=60 && (lq??0)>=50 && val>=50 ? 'Anchor'
     : (lq??0) < 30 ? 'Tail'
     : comp>=40 || (va??0)>=70 ? 'Conviction' : 'Tail';
   c.ts = { va, lq, dm, comp, sug, growth };
 }
+// Watch: workbook-Tail companies the model cannot score yet are monitored, not held. They leave Watch
+// automatically once two pillars have data; team-assigned Anchor/Conviction and overrides are untouched.
+for (const c of UNI) if (c.tier0==='Tail' && c.ts.comp==null) c.tier0 = 'Watch';
+applyTiers();
 
 const OVR_CATEGORIES = ['Regulatory','Geopolitical','Binary','Transfer restrictions','Data gap','Other'];
 let tierEdit = false;
@@ -867,7 +878,8 @@ const isDraft = c => c.id in tierDrafts;
 
 function drawMethod(rs) {
   const status = c => { const d = tierDecision(c), tag = isDraft(c) ? ' (draft)' : '';
-    return c.ts.sug==='Insufficient data' ? [`Team judgement${tag}`, d?.reason ? `${d.category ? d.category+': ' : ''}${d.reason}` : 'data-limited']
+    return c.ts.comp==null && c.tier==='Watch' ? [`Watch${tag}`, 'awaiting data to score']
+      : c.ts.comp==null ? [`Team judgement${tag}`, d?.reason ? `${d.category ? d.category+': ' : ''}${d.reason}` : 'data-limited']
       : c.ts.sug===c.tier ? [`Agrees${tag}`, d?.reason || '']
       : d?.reason ? [`Override${tag}`, `${d.category ? d.category+': ' : ''}${d.reason}`]
       : ['To review', ''];
@@ -878,13 +890,13 @@ function drawMethod(rs) {
     ['Scored', scored.length, `of ${rs.length} companies`],
     ['Suggested = current', scored.length ? Math.round(agree/scored.length*100)+'%' : '—', `${agree} companies`],
     ['To review', review, 'suggested tier differs, no reason recorded'],
-    ['Insufficient data', rs.length-scored.length, 'tier rests on team judgement'],
+    ['Not yet scored', rs.length-scored.length, `${rs.filter(c=>c.ts.comp==null && c.tier==='Watch').length} on Watch · rest by team judgement`],
   ].map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
   const f0 = x => x==null ? NA : Math.round(x);
   const cols = [
     { l:'Company', cls:'co', f:c=>esc(c.name) },
     { l:'Current tier', f:c=>`${esc(c.tier)}${c.tier!==c.tier0 ? ` <span class="flag">was ${esc(c.tier0)}</span>` : ''}` },
-    { l:'Suggested', f:c=>c.ts.sug===c.tier ? esc(c.ts.sug) : `<b>${esc(c.ts.sug)}</b>` },
+    { l:'Suggested', f:c=>c.ts.comp==null && c.tier!=='Watch' ? '<span class="flag">not scored</span>' : c.ts.sug===c.tier ? esc(c.ts.sug) : `<b>${esc(c.ts.sug)}</b>` },
     { l:'Value accretion', r:1, f:c=>f0(c.ts.va) },
     { l:'Liquidity', r:1, f:c=>f0(c.ts.lq) },
     { l:'Demand', r:1, f:c=>f0(c.ts.dm) },
@@ -893,7 +905,7 @@ function drawMethod(rs) {
   if (tierEdit) {
     const opt = (v, cur, label=v) => `<option value="${esc(v)}"${v===cur?' selected':''}>${esc(label)}</option>`;
     cols.push(
-      { l:'Set tier', f:c=>{ const d=tierDecision(c); return `<select class="ed" data-f="tier" aria-label="Tier for ${esc(c.name)}">${opt('', d?.tier||'', `Workbook (${c.tier0})`)}${TIER_CHOICES.map(t=>opt(t, d?.tier||'')).join('')}</select>`; } },
+      { l:'Set tier', f:c=>{ const d=tierDecision(c); return `<select class="ed" data-f="tier" aria-label="Tier for ${esc(c.name)}">${opt('', d?.tier||'', `Default (${c.tier0})`)}${TIER_CHOICES.map(t=>opt(t, d?.tier||'')).join('')}</select>`; } },
       { l:'Category', f:c=>{ const d=tierDecision(c); return `<select class="ed" data-f="category" aria-label="Override category for ${esc(c.name)}">${opt('', d?.category||'', '—')}${OVR_CATEGORIES.map(t=>opt(t, d?.category||'')).join('')}</select>`; } },
       { l:'Reason', cls:'note-cell', f:c=>`<input class="ed" data-f="reason" type="text" value="${esc(tierDecision(c)?.reason||'')}" placeholder="Why the tier differs from the suggestion" aria-label="Reason for ${esc(c.name)}">` },
     );
@@ -939,12 +951,13 @@ document.getElementById('discard-tiers').addEventListener('click', ()=>{
 document.getElementById('dl-tiers').addEventListener('click', ()=>{
   const merged = { ...(window.TIER_OVR || {}) };
   for (const [id, d] of Object.entries(tierDrafts)) { if (d) merged[id] = d; else delete merged[id]; }
-  const line = (id, d) => `  ${id}: { ${['tier','category','reason','date'].filter(k=>d[k]).map(k=>`${k}:${JSON.stringify(d[k])}`).join(', ')} },`;
+  const key = id => /^[A-Za-z_$][\w$]*$/.test(id) ? id : JSON.stringify(id);   // e.g. '1x' must be quoted
+  const line = (id, d) => `  ${key(id)}: {${['tier','category','reason','date'].filter(k=>d[k]).map(k=>`${k}:${JSON.stringify(d[k])}`).join(', ')} },`;
   const js = [
     '// Confirmed tiers set by the investment team, and the reasons where they differ from the',
     '// score-suggested tier. Keyed by quant-data.js id. Generated by the Methodology tab\'s',
     '// "Download changes" button, or edited by hand.',
-    "//   tier:     'Anchor' | 'Conviction' | 'Tail' — omit to keep the workbook tier",
+    "//   tier:     'Anchor' | 'Conviction' | 'Tail' | 'Watch' — omit to keep the workbook tier",
     "//   category: 'Regulatory' | 'Geopolitical' | 'Binary' | 'Transfer restrictions' | 'Data gap' | 'Other'",
     '//   reason:   one sentence, client-readable',
     "//   date:     'YYYY-MM-DD' the decision was made",
