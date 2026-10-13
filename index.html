@@ -6,7 +6,7 @@
 <title>Perennial — Top 50 Pre-IPO</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&family=Bitter:wght@400&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #ffffff;
@@ -58,25 +58,29 @@
   .app { max-width: 1400px; margin: 0 auto; padding: 24px 20px 60px; }
 
   /* ── HEADER ── */
+  /* Header in Perennial brand: Perennial Purple box, white logo, Bitter title, Open Sans sub */
   .hdr {
+    --brand-purple: #702082;
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
-    background: var(--bg); border: 1px solid var(--border);
-    padding: 16px 20px; box-shadow: var(--shadow-sm); border-radius: var(--radius-xl);
+    background: var(--brand-purple); border: 1px solid var(--brand-purple);
+    padding: 18px 22px; box-shadow: 0 4px 16px rgba(83,86,90,0.18); border-radius: var(--radius-xl);
   }
-  .hdr-left { display: flex; align-items: center; gap: 12px; }
-  .hdr-title { font-size: 15px; font-weight: 500; color: var(--text); }
-  .hdr-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .hdr-left { display: flex; align-items: center; gap: 18px; }
+  .hdr-logo { height: 34px; width: auto; display: block; }
+  .hdr-divider { width: 1px; align-self: stretch; background: rgba(255,255,255,0.35); }
+  .hdr-title { font-family: 'Bitter', Georgia, serif; font-weight: 400; font-size: 20px; color: #ffffff; }
+  .hdr-sub { font-family: 'Open Sans', Arial, sans-serif; font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 3px; }
   .hdr-right { display: flex; align-items: center; gap: 10px; }
   .live-pill {
     display: flex; align-items: center; gap: 6px;
     font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
-    color: var(--green); background: var(--green-bg);
-    border: 1px solid #b3e3d0; padding: 4px 10px; border-radius: 20px;
+    color: #ffffff; background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.35); padding: 4px 10px; border-radius: 20px;
   }
-  .live-dot { width: 6px; height: 6px; background: var(--green-mid); border-radius: 50%; animation: blink 1.4s infinite; }
+  .live-dot { width: 6px; height: 6px; background: #41E1E3; border-radius: 50%; animation: blink 1.4s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-  .ts { font-family: var(--mono); font-size: 10px; color: var(--text4); }
+  .ts { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.75); }
 
   /* ── SOURCE LEGEND ── */
   .src-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -321,8 +325,10 @@
 
   <header class="hdr">
     <div class="hdr-left">
+      <img class="hdr-logo" src="assets/perennial-logo-white.png" alt="Perennial">
+      <div class="hdr-divider"></div>
       <div>
-        <div class="hdr-title">Perennial — Top 50 Pre-IPO</div>
+        <div class="hdr-title">Top 50 Pre-IPO</div>
         <div class="hdr-sub">Top 50 by valuation · Clarity (formerly Hiive), Augment &amp; Forge prices refreshed 14 Oct 2026 · movement below is a simulation, not a live feed</div>
       </div>
     </div>
