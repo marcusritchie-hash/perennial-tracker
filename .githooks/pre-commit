@@ -1,6 +1,18 @@
 #!/bin/sh
-# Stamps the dashboard with the date of every commit (site-updated.js), so the page shows when it was last updated.
-# Enabled with: git config core.hooksPath .githooks
+# Runs on every commit (enable once per clone with: git config core.hooksPath .githooks).
+# 1. Stamps the dashboard with the commit date (site-updated.js); the page header shows it.
+# 2. Gives quant.html's data-file links a fresh ?v= so browsers fetch the new data with the new page,
+#    instead of a copy cached for up to 10 minutes by GitHub Pages. Only the staged copy of quant.html
+#    is rewritten (and the same edit made in the working copy), so unstaged edits never slip into a commit.
 d=$(date +%Y-%m-%d)
 printf '// Written by .githooks/pre-commit on every commit; do not edit.\nwindow.SITE_UPDATED = "%s";\n' "$d" > site-updated.js
 git add site-updated.js
+
+v=$(date +%Y%m%d%H%M%S)
+re='s/(src="(quant-data|quant-rounds|tier-overrides|ipo-status|method-config|site-updated)\.js)(\?v=[0-9]+)?"/\1?v='"$v"'"/g'
+if git cat-file -e :quant.html 2>/dev/null; then
+  blob=$(git show :quant.html | sed -E "$re" | git hash-object -w --stdin)
+  mode=$(git ls-files -s quant.html | cut -d' ' -f1)
+  git update-index --cacheinfo "$mode,$blob,quant.html"
+  sed -E -i "$re" quant.html
+fi
