@@ -407,8 +407,8 @@
         <div class="pillar-hd"><h3>Demand</h3><span class="wt">30%</span></div>
         <p class="sub">How strong is buyer interest?</p>
         <ul>
-          <li><b>Setter 30 ranking</b> (40%): rank on the secondary market's most-demanded list; #1 scores 100, unranked scores 0.</li>
-          <li><b>Clarity 50 ranking</b> (30%): rank on Clarity's most-traded list; #1 scores 100, unranked scores 0.</li>
+          <li><b>Augment Power 20</b> (35%): Augment's quarterly ranking of market activity, price trend and company growth; #1 scores 100, #20 scores 5, an honourable mention scores 25, unranked scores 0.</li>
+          <li><b>Clarity Liquidity Index</b> (35%): rank among the 50 most liquid companies on Clarity (formerly Hiive); #1 scores 100, unranked scores 0.</li>
           <li><b>Price momentum</b> (30%): change since our first verified secondary price; −20% scores 0, +30% scores 100.</li>
         </ul>
       </div>
@@ -910,12 +910,14 @@ for (const c of UNI) {
   const val = c.impl ?? c.curVal ?? c.lrEv;
   const recentPrem = c.prem!=null && !c.stale ? c.prem : null;
   // A researched profile is liquidity evidence even with no venue quotes: scale, tenders, and the absence of quotes.
-  const has = { va: recentPrem!=null || growth!=null, lq: c.nVen>0 || researched, dm: !!(c.setter || c.c50 || c.mom!=null) };
+  const has = { va: recentPrem!=null || growth!=null, lq: c.nVen>0 || researched, dm: !!(c.aug || c.c50 || c.mom!=null) };
   const va = has.va ? wmean([[lin(recentPrem,-0.3,0.6),0.4], [lin(growth,0,1.5),0.3], [c.lrAge==null?null:lin(-c.lrAge,-36,-3),0.15],
     [/filed/.test(c.ipo?.status||'') || tender24 ? 100 : c.ipo ? 50 : 0, 0.15]]) : null;
   const lq = has.lq ? wmean([[c.nVen/3*100,0.3], [c.nVen>=2 ? lin(-c.spread,-0.3,-0.03) : c.nVen===1 ? 40 : null, 0.25],
     [val ? lin(Math.log10(val),0,Math.log10(300)) : null, 0.3], [tender24==null ? null : tender24 ? 100 : 0, 0.15]]) : null;
-  const dm = has.dm ? wmean([[c.setter ? lin(31-c.setter,0,30) : 0, 0.4], [c.c50 ? lin(51-c.c50,0,50) : 0, 0.3], [c.mom==null ? null : lin(c.mom,-0.2,0.3), 0.3]]) : null;
+  // Venue demand lists: Augment Power 20 (21 = honourable mention, scores 25), Clarity Liquidity Index top 50.
+  const augS = !c.aug ? 0 : c.aug<=20 ? lin(21-c.aug,0,20) : 25;
+  const dm = has.dm ? wmean([[augS, 0.35], [c.c50 ? lin(51-c.c50,0,50) : 0, 0.35], [c.mom==null ? null : lin(c.mom,-0.2,0.3), 0.3]]) : null;
   const enough = Object.values(has).filter(Boolean).length >= 2;
   const comp = enough ? TIER_W.va*(va??0) + TIER_W.lq*(lq??0) + TIER_W.dm*(dm??0) : null;
   const sug = comp==null ? 'Watch'
@@ -961,7 +963,7 @@ function drawMethod(rs) {
     { d:'The tier the methodology rules give from the scores, before any team decision. "not scored" means fewer than two pillars have data.', l:'Suggested', f:c=>c.ts.comp==null && c.tier!=='Watch' ? '<span class="flag">not scored</span>' : c.ts.sug===c.tier ? esc(c.ts.sug) : `<b>${esc(c.ts.sug)}</b>` },
     { d:'0–100: is the company compounding value? Secondary price vs last valuation (40%), valuation growth (30%), freshness of the last valuation (15%), path to realisation: IPO filing or company tender (15%).', l:'Value accretion', r:1, f:c=>f0(c.ts.va) },
     { d:'0–100: can positions be entered and exited at size? Venue coverage (30%), price agreement between venues (25%), scale (30%), company-run tenders (15%).', l:'Liquidity', r:1, f:c=>f0(c.ts.lq) },
-    { d:'0–100: how strong is buyer interest? Setter 30 rank (40%), Clarity 50 rank (30%), secondary price momentum (30%).', l:'Demand', r:1, f:c=>f0(c.ts.dm) },
+    { d:'0–100: how strong is buyer interest? Augment Power 20 (35%), Clarity Liquidity Index (35%), secondary price momentum (30%).', l:'Demand', r:1, f:c=>f0(c.ts.dm) },
     { d:'Overall score: 40% value accretion + 30% liquidity + 30% demand. A pillar without data counts as 0.', l:'Composite', r:1, f:c=>f0(c.ts.comp) },
   ];
   if (tierEdit) {
@@ -1093,7 +1095,7 @@ function masterWorkbook() {
       'Marquee rank': num(c.mq), 'Last round': b.lrName||'', 'Last round date': b.lrDate||'',
       'Last round valuation ($bn)': num(b.lrEv), 'Current valuation ($bn)': num(b.curVal), 'Shares outstanding': num(b.shares),
       'Clarity price': num(b.px.c), 'Augment price': num(b.px.a), 'Forge price': num(b.px.f), 'Price currency': b.ccy||'USD',
-      'Price source': b.pxSrc||'', 'Liquidity score': num(b.liq), 'Setter 30 rank': num(b.setter), 'Clarity 50 rank': num(b.c50),
+      'Price source': b.pxSrc||'', 'Liquidity score': num(b.liq), 'Augment Power 20 rank': num(b.aug), 'Clarity 50 rank': num(b.c50),
       'Forge traded': b.forgeTraded ? 'Y' : '', 'Listed': b.listed ? 'Y' : '', 'Clarity price type': b.ctype||'', 'Notes': b.note||'',
       'IPO status': ip.status||'', 'IPO last update': ip.updated||'', 'IPO target': ip.target||'', 'IPO valuation ($bn)': num(ip.val),
     }; });

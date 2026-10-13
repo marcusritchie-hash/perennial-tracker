@@ -120,7 +120,7 @@ foreach ($r in $CO) {
     id = $id; name = $name; region = S $r['Region']; hq = S $r['HQ']; sector = S $r['Sector']; sub = S $r['Sub-sector']
     tier = if ($o) { $o.tier } else { 'Tail' }   # stored base tier; the page's rules and overrides set the confirmed tier
     listed = (S $r['Listed']) -ieq 'Y'; mq = N $r['Marquee rank'] "$name Marquee rank"
-    setter = N $r['Setter 30 rank'] "$name Setter 30 rank"; c50 = N $r['Clarity 50 rank'] "$name Clarity 50 rank"
+    aug = N $r['Augment Power 20 rank'] "$name Augment Power 20 rank"; c50 = N $r['Clarity 50 rank'] "$name Clarity 50 rank"
     forgeTraded = (S $r['Forge traded']) -ieq 'Y'
     lrEv = N $r['Last round valuation ($bn)'] "$name last round valuation"; lrName = S $r['Last round']; lrDate = D $r['Last round date'] "$name last round date"
     curVal = N $r['Current valuation ($bn)'] "$name current valuation"; note = S $r['Notes']; ctype = S $r['Clarity price type']
@@ -140,7 +140,7 @@ foreach ($r in $CO) {
   }
   if ($isNew) { $chg.Add("ADD     $name ($($e.sector), $($e.region)) as id '$id'") }
   else {
-    foreach ($k in 'name','region','hq','sector','sub','listed','mq','setter','c50','forgeTraded','lrEv','lrName','lrDate','curVal','note','ctype','ccy','liq','shares') {
+    foreach ($k in 'name','region','hq','sector','sub','listed','mq','aug','c50','forgeTraded','lrEv','lrName','lrDate','curVal','note','ctype','ccy','liq','shares') {
       $a = $o.$k; $b = $e[$k]; if ("$a" -ne "$b") { $chg.Add("EDIT    $name · $k : '$a' → '$b'") } }
     if (-not $tracker) { foreach ($k in 'c','a','f') { if ("$($o.px.$k)" -ne "$($e.px[$k])") { $chg.Add("EDIT    $name · price $k : '$($o.px.$k)' → '$($e.px[$k])'") } } }
   }
