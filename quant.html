@@ -10,6 +10,7 @@
 <script src="quant-data.js"></script>
 <script src="quant-rounds.js" onerror="window.QR=null"></script>
 <script src="tier-overrides.js" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js" onerror="window.IPO={}"></script>
 <style>
   :root {
     --purple: #702082;
@@ -311,6 +312,11 @@
   </section>
 
   <section>
+    <div class="sec-hd"><h2>IPO pipeline</h2><p id="ipo-sub"></p></div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-ipo"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
     <div class="sec-hd"><h2>Data coverage</h2><p>Share of companies in the current filter with each data point. Statistics above use only the companies that have the inputs they need.</p></div>
     <div class="panel"><div class="cov" id="cov"></div></div>
   </section>
@@ -355,12 +361,12 @@
       </div>
       <div class="card tier-card" style="border-top-color:var(--mid-grey)">
         <h3>Tail</h3>
-        <p><b>Scored, but weak or thinly traded.</b> Companies with limited secondary liquidity, little evidence of value accretion, or a risk that caps their tier.</p>
+        <p><b>Scored, but thinly traded.</b> Companies whose shares are hard to buy or sell at size, or that carry a risk that caps their tier.</p>
         <p class="role">Portfolio role: smaller positions that add optionality, monitored for upgrade.</p>
       </div>
       <div class="card tier-card" style="border-top-color:var(--accent-light-purple)">
         <h3>Watch</h3>
-        <p><b>On our radar, not yet assessable.</b> Companies without enough secondary pricing or funding data to score. They move to a scored tier as soon as the data allows.</p>
+        <p><b>On our radar, not yet investable.</b> Companies we cannot yet score, or that score too low on value accretion and demand. They move up as the data and the business improve.</p>
         <p class="role">Portfolio role: monitored, not held.</p>
       </div>
     </div>
@@ -376,7 +382,7 @@
           <li><b>Secondary price vs last valuation</b> (40%): −30% scores 0, +60% scores 100. Only marks from the last 18 months count.</li>
           <li><b>Valuation growth</b> (30%): annual growth in valuation across priced rounds over three years or more, or since the first priced round if that is at least a year earlier; 0% scores 0, 150% a year scores 100.</li>
           <li><b>Freshness of the last valuation</b> (15%): a mark within 3 months scores 100, 36 months or older scores 0.</li>
-          <li><b>Path to realisation</b> (15%): an IPO filing or a company-run tender in the last 24 months scores 100.</li>
+          <li><b>Path to realisation</b> (15%): an IPO filing (public or confidential) or a company-run tender in the last 24 months scores 100; reported IPO plans score 50.</li>
         </ul>
       </div>
       <div class="panel pillar">
@@ -407,11 +413,12 @@
     <div class="tbl-wrap" style="max-height:none"><table class="rules">
       <thead><tr><th>Suggested tier</th><th>Rule</th></tr></thead>
       <tbody>
+        <tr><td class="co">Conviction (IPO)</td><td>A company that has filed for an IPO, publicly or confidentially, or has reported IPO plans is at least Conviction, whatever its scores. The IPO path is the driver.</td></tr>
         <tr><td class="co">Watch</td><td>Fewer than two pillars are backed by data. The company is monitored, not held, until it can be scored. Companies the investment team has placed in Anchor or Conviction keep that tier.</td></tr>
         <tr><td class="co">Anchor</td><td>Composite score of 60 or more, liquidity score of 50 or more, and valuation of $50bn or more.</td></tr>
         <tr><td class="co">Tail</td><td>Liquidity score below 30, whatever the other pillars show.</td></tr>
         <tr><td class="co">Conviction</td><td>Composite score of 40 or more, or a value accretion score of 70 or more.</td></tr>
-        <tr><td class="co">Tail</td><td>Everything else.</td></tr>
+        <tr><td class="co">Watch</td><td>Everything else: scored, but too weak on value accretion and demand to hold. Monitored, not held.</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -512,8 +519,10 @@ const esc = s => String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>
 const cleanName = n => n.replace(/\s*\((?:private|EU roots)\)\s*$/i,'');
 
 // ── derived metrics ──
+const IPO_SHORT = { 'S-1 publicly filed':'S-1 public', 'Confidentially filed':'Confidential filing', 'Reported':'Plans reported' };
 for (const c of UNI) {
   c.name = cleanName(c.name);
+  c.ipo = window.IPO?.[c.id] || null;
   // Researched funding history (quant-rounds.js) supersedes the workbook's last round.
   const qrRounds = [...(window.QR?.[c.id]?.rounds || [])].sort((a,b)=>a.date.localeCompare(b.date));
   const lastEq = qrRounds.filter(r=>r.type==='Equity' && r.post!=null).pop();
@@ -725,6 +734,7 @@ const COLS = [
   { l:'Augment', r:1, f:c=>c.px.a==null ? NA : usd(c.px.a) },
   { l:'Forge', r:1, f:c=>c.px.f==null ? NA : usd(c.px.f) },
   { l:'Marquee list', f:c=>c.mq ? `<span title="Marquee rank ${c.mq}">Yes</span>` : NA },
+  { l:'IPO status', f:c=>c.ipo ? `${IPO_SHORT[c.ipo.status]||esc(c.ipo.status)} <span class="flag">${fMon(c.ipo.updated+'-01')}</span>` : NA },
   { l:'Note', cls:'note-cell', f:c=>esc(c.note||'') },
   { l:'Region', f:c=>esc(c.region) },
 ];
@@ -754,7 +764,7 @@ const MQ_COLS = [
   { l:'Tier', f:c=>esc(c.tier) },
   { l:'Liquidity score', r:1, f:c=>c.liq==null ? NA : c.liq.toFixed(1) },
   { l:'Sector rank', r:1, f:c=>c.srank ?? NA },
-  ...COLS.filter(k=>['Last round EV','Current valuation','Clarity','Augment','Forge','Note'].includes(k.l)),
+  ...COLS.filter(k=>['Last round EV','Current valuation','Clarity','Augment','Forge','IPO status','Note'].includes(k.l)),
   { l:'HQ', f:c=>esc(c.hq||'') },
   { l:'Region', f:c=>esc(c.region) },
 ];
@@ -771,6 +781,27 @@ function drawMarquee(rs) {
 for (const id of ['#tbl','#tbl-mq']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
 
 // ── coverage ──
+// ── IPO pipeline: companies with a filing or reported IPO plans, furthest along first ──
+const IPO_ORDER = { 'S-1 publicly filed':0, 'Confidentially filed':1, 'Reported':2 };
+function drawIpo(rs) {
+  const d = rs.filter(c=>c.ipo).sort((a,b)=>(IPO_ORDER[a.ipo.status]??9)-(IPO_ORDER[b.ipo.status]??9) || b.ipo.updated.localeCompare(a.ipo.updated));
+  const filed = d.filter(c=>/filed/.test(c.ipo.status)).length;
+  document.getElementById('ipo-sub').textContent = `${d.length} companies in this filter with an IPO filing or reported IPO plans · ${filed} filed · Source: ${window.IPO_SRC||'—'}`;
+  const cols = [
+    { l:'Company', cls:'co', f:c=>esc(c.name) },
+    { l:'IPO status', f:c=>esc(c.ipo.status==='Reported' ? 'IPO plans reported' : c.ipo.status) },
+    { l:'Last filing update', f:c=>fMon(c.ipo.updated+'-01') },
+    { l:'Forge price or recent valuation', r:1, f:c=>bn(c.ipo.val) },
+    { l:'Implied valuation', r:1, f:c=>c.impl==null ? NA : bn(c.impl) },
+    { l:'Tier', f:c=>esc(c.tier) },
+    { l:'Sector', f:c=>esc(c.sector) },
+  ];
+  document.querySelector('#tbl-ipo thead').innerHTML = headHtml(cols);
+  document.querySelector('#tbl-ipo tbody').innerHTML = d.length ? d.map(c=>rowHtml(cols, c)).join('')
+    : `<tr><td colspan="${cols.length}" class="empty">No companies in this filter have filed or reported IPO plans.</td></tr>`;
+}
+document.querySelector('#tbl-ipo tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
+
 function drawCov(rs) {
   const n = rs.length || 1, qr = window.QR || {};
   const items = [
@@ -804,6 +835,7 @@ function openDetail(c) {
     ['Augment', usd(c.px.a), ''],
     ['Forge', usd(c.px.f), ''],
     ['Liquidity score', c.liq==null?'—':c.liq.toFixed(0), c.rank?`#${c.rank} overall · #${c.srank} in sector`:''],
+    ...(c.ipo ? [['IPO status', esc(IPO_SHORT[c.ipo.status]||c.ipo.status), `updated ${fMon(c.ipo.updated+'-01')} · Forge ${bn(c.ipo.val)}`]] : []),
   ];
   let h = c.note ? `<p class="note">${esc(c.note)}</p>` : '';
   h += '<div class="facts">' + facts.map(([l,v,s])=>`<div class="fact"><div class="l">${l}</div><div class="v">${v}</div><div class="l">${s}</div></div>`).join('') + '</div>';
@@ -859,7 +891,7 @@ for (const c of UNI) {
   // A researched profile is liquidity evidence even with no venue quotes: scale, tenders, and the absence of quotes.
   const has = { va: recentPrem!=null || growth!=null, lq: c.nVen>0 || researched, dm: !!(c.setter || c.c50 || c.mom!=null) };
   const va = has.va ? wmean([[lin(recentPrem,-0.3,0.6),0.4], [lin(growth,0,1.5),0.3], [c.lrAge==null?null:lin(-c.lrAge,-36,-3),0.15],
-    [/S-1|filing/i.test(c.note||'') || tender24 ? 100 : 0, 0.15]]) : null;
+    [/filed/.test(c.ipo?.status||'') || tender24 ? 100 : c.ipo ? 50 : 0, 0.15]]) : null;
   const lq = has.lq ? wmean([[c.nVen/3*100,0.3], [c.nVen>=2 ? lin(-c.spread,-0.3,-0.03) : c.nVen===1 ? 40 : null, 0.25],
     [val ? lin(Math.log10(val),0,Math.log10(300)) : null, 0.3], [tender24==null ? null : tender24 ? 100 : 0, 0.15]]) : null;
   const dm = has.dm ? wmean([[c.setter ? lin(31-c.setter,0,30) : 0, 0.4], [c.c50 ? lin(51-c.c50,0,50) : 0, 0.3], [c.mom==null ? null : lin(c.mom,-0.2,0.3), 0.3]]) : null;
@@ -868,12 +900,16 @@ for (const c of UNI) {
   const sug = comp==null ? 'Watch'
     : comp>=60 && (lq??0)>=50 && val>=50 ? 'Anchor'
     : (lq??0) < 30 ? 'Tail'
-    : comp>=40 || (va??0)>=70 ? 'Conviction' : 'Tail';
-  c.ts = { va, lq, dm, comp, sug, growth };
+    : comp>=40 || (va??0)>=70 ? 'Conviction' : 'Watch';
+  // IPO floor: a company that has filed for an IPO or reported IPO plans is at least Conviction.
+  const sugF = c.ipo && ['Tail','Watch'].includes(sug) ? 'Conviction' : sug;
+  c.ts = { va, lq, dm, comp, sug: sugF, ipoFloor: sugF!==sug, growth };
 }
 // Watch: workbook-Tail companies the model cannot score yet are monitored, not held. They leave Watch
 // automatically once two pillars have data; team-assigned Anchor/Conviction and overrides are untouched.
-for (const c of UNI) if (c.tier0==='Tail' && c.ts.comp==null) c.tier0 = 'Watch';
+for (const c of UNI) if (c.tier0==='Tail' && c.ts.sug==='Watch') c.tier0 = 'Watch';
+// IPO floor applies to the confirmed tier too; team overrides still win.
+for (const c of UNI) if (c.ts.ipoFloor || (c.ipo && ['Tail','Watch'].includes(c.tier0))) c.tier0 = 'Conviction';
 applyTiers();
 
 const OVR_CATEGORIES = ['Regulatory','Geopolitical','Binary','Transfer restrictions','Data gap','Other'];
@@ -995,7 +1031,7 @@ function render() {
   document.getElementById('f-count').textContent = view === 'marquee'
     ? `${rs.filter(c=>c.mq).length} of ${UNI.filter(c=>c.mq).length} Marquee companies` : `${rs.length} of ${UNI.length} companies`;
   // Charts are only drawn while their view is visible; hidden canvases have no size.
-  if (view === 'analytics') { drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawCov(rs); }
+  if (view === 'analytics') { drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawIpo(rs); drawCov(rs); }
   if (view === 'marquee') drawMarquee(rs);
   if (view === 'universe') drawTable(rs);
   if (view === 'method') drawMethod(rs);
