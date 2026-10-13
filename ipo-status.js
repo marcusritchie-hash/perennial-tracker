@@ -11,5 +11,11 @@ window.IPO = {
   "kraken": {"status":"Confidentially filed","updated":"2026-04","val":10.9},
   "verkada": {"status":"Reported","updated":"2026-07","val":5.7},
   "oura": {"status":"S-1 publicly filed","updated":"2026-09","val":15},
-  "vastdata": {"status":"Reported","updated":"2026-04","val":30}
+  "vastdata": {"status":"Reported","updated":"2026-04","val":30},
+  "cohesity": {"status":"Reported","updated":"2025-09","val":null},
+  "upgrade": {"status":"Reported","updated":"2025-10","val":7.3},
+  "crossriverbank": {"status":"Reported","updated":"2026-02","val":null},
+  "falconx": {"status":"Confidentially filed","updated":"2026-05","val":8.0},
+  "agilityrobotics": {"status":"Reported","updated":"2026-06","val":2.1},
+  "harrys": {"status":"Confidentially filed","updated":"2024-03","val":1.7}
 };
