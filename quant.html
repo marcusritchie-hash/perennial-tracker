@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="quant-data.js"></script>
 <script src="quant-rounds.js" onerror="window.QR=null"></script>
+<script src="tier-overrides.js" onerror="window.TIER_OVR={}"></script>
 <style>
   :root {
     --purple: #702082;
@@ -87,6 +88,30 @@
   .btn:hover { border-color: var(--brand); }
 
   [hidden] { display: none !important; }
+
+  /* methodology */
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .tier-card h3, .pillar h3, .grid2 .panel h3 { font-family: var(--serif); font-weight: 400; font-size: 18px; color: var(--brand); margin-bottom: 6px; }
+  .tier-card p { font-weight: 300; margin-bottom: 8px; }
+  .tier-card b, .pillar b, .plain b { font-weight: 600; color: var(--ink); }
+  .tier-card .role { font-weight: 400; color: var(--muted); font-size: 12px; margin-bottom: 0; }
+  .pillar-hd { display: flex; justify-content: space-between; align-items: baseline; }
+  .pillar .wt { font-family: var(--serif); font-size: 22px; color: var(--brand); }
+  .pillar ul, ul.plain { list-style: none; }
+  .pillar li, ul.plain li { font-weight: 300; padding: 7px 0; border-top: 1px solid var(--line-soft); }
+  table.rules td { white-space: normal; }
+  #view-method .tbl-wrap tbody tr { cursor: default; }
+  #tbl-cal tbody tr { cursor: pointer; }
+  .edit-bar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .draft-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: 12px 0 0;
+    padding: 10px 14px; border-radius: 10px; background: color-mix(in srgb, var(--accent-light-purple) 45%, var(--surface));
+    border-left: 4px solid var(--purple); font-size: 12px; color: var(--ink); }
+  .draft-bar b { font-weight: 700; }
+  .draft-actions { display: flex; gap: 8px; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  #tbl-cal select.ed, #tbl-cal input.ed { font: 400 12px var(--sans); color: var(--ink); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; }
+  #tbl-cal input.ed { width: 100%; min-width: 260px; }
 
   /* view tabs */
   .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 4px; overflow-x: auto; }
@@ -177,7 +202,8 @@
     .hdr h1 { font-size: 26px; }
     .logo { width: 170px; }
     .kpis { grid-template-columns: repeat(2, 1fr); }
-    .grid2 { grid-template-columns: 1fr; }
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    #cal-kpis { grid-template-columns: repeat(2, 1fr) !important; }
     .facts { grid-template-columns: repeat(2, 1fr); }
     .cov { grid-template-columns: 140px 1fr 56px; }
     .fcount { margin-left: 0; width: 100%; }
@@ -207,7 +233,16 @@
     <button class="tab-btn" role="tab" data-view="analytics" type="button">Analytics</button>
     <button class="tab-btn" role="tab" data-view="marquee" type="button">Marquee list</button>
     <button class="tab-btn" role="tab" data-view="universe" type="button">Universe</button>
+    <button class="tab-btn" role="tab" data-view="method" type="button">Methodology</button>
   </nav>
+
+  <div class="draft-bar" id="draft-bar" role="status" hidden>
+    <span><b id="draft-n"></b> · visible only in this browser until the downloaded file is published</span>
+    <span class="draft-actions">
+      <button class="btn" id="dl-tiers" type="button">Download changes</button>
+      <button class="btn" id="discard-tiers" type="button">Discard</button>
+    </span>
+  </div>
 
   <div class="filters" role="group" aria-label="Filters">
     <div class="chips" id="f-tier"></div>
@@ -299,6 +334,114 @@
   </section>
   </div>
 
+  <div class="view" id="view-method" role="tabpanel" hidden>
+  <section>
+    <div class="sec-hd">
+      <h2>Tier methodology</h2>
+      <p>Every company in the universe sits in one of three tiers: Anchor, Conviction or Tail. The tier reflects three things: whether the company is compounding value, whether its shares can be bought and sold at size, and how strong investor demand is. Scores on these three pillars suggest a tier; the investment team confirms it, and any departure from the suggested tier is recorded with its reason.</p>
+    </div>
+    <div class="grid3">
+      <div class="card tier-card" style="border-top-color:var(--purple)">
+        <h3>Anchor</h3>
+        <p><b>Proven value creation, deep liquidity, strong demand.</b> Category leaders, typically valued at $50bn or more, quoted across several secondary venues and with a record of rising valuations.</p>
+        <p class="role">Portfolio role: core holdings that provide stability and the most reliable path to liquidity.</p>
+      </div>
+      <div class="card tier-card" style="border-top-color:var(--accent-purple)">
+        <h3>Conviction</h3>
+        <p><b>Strong value accretion with growing liquidity.</b> Companies compounding value quickly where secondary markets are still developing, or established names where one pillar lags.</p>
+        <p class="role">Portfolio role: higher-upside positions backed by a specific investment thesis.</p>
+      </div>
+      <div class="card tier-card" style="border-top-color:var(--mid-grey)">
+        <h3>Tail</h3>
+        <p><b>Early, thinly traded or carrying elevated risk.</b> Companies with limited secondary liquidity, unproven value accretion, or a risk that caps their tier.</p>
+        <p class="role">Portfolio role: smaller positions that add optionality, monitored for upgrade.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>The three pillars</h2><p>Each pillar is scored 0–100 from the measures below. A measure with no data is left out and the remaining measures are re-weighted, so missing data neither helps nor hurts.</p></div>
+    <div class="grid3">
+      <div class="panel pillar">
+        <div class="pillar-hd"><h3>Value accretion</h3><span class="wt">40%</span></div>
+        <p class="sub">Is the company compounding value?</p>
+        <ul>
+          <li><b>Secondary price vs last valuation</b> (40%): −30% scores 0, +60% scores 100. Only marks from the last 18 months count.</li>
+          <li><b>Valuation growth</b> (30%): annual growth in valuation across priced rounds over three years or more; 0% scores 0, 150% a year scores 100.</li>
+          <li><b>Freshness of the last valuation</b> (15%): a mark within 3 months scores 100, 36 months or older scores 0.</li>
+          <li><b>Path to realisation</b> (15%): an IPO filing or a company-run tender in the last 24 months scores 100.</li>
+        </ul>
+      </div>
+      <div class="panel pillar">
+        <div class="pillar-hd"><h3>Liquidity</h3><span class="wt">30%</span></div>
+        <p class="sub">Can positions be entered and exited at size?</p>
+        <ul>
+          <li><b>Venue coverage</b> (30%): number of venues quoting the company, out of Clarity, Augment and Forge.</li>
+          <li><b>Price agreement</b> (25%): gap between the highest and lowest venue price; 30% scores 0, 3% scores 100. A single venue scores 40.</li>
+          <li><b>Scale</b> (30%): valuation on a log scale; $1bn scores 0, $300bn scores 100.</li>
+          <li><b>Company liquidity programmes</b> (15%): a company-run tender or buyback in the last 24 months scores 100.</li>
+        </ul>
+      </div>
+      <div class="panel pillar">
+        <div class="pillar-hd"><h3>Demand</h3><span class="wt">30%</span></div>
+        <p class="sub">How strong is buyer interest?</p>
+        <ul>
+          <li><b>Setter 30 ranking</b> (40%): rank on the secondary market's most-demanded list; #1 scores 100, unranked scores 0.</li>
+          <li><b>Clarity 50 ranking</b> (30%): rank on Clarity's most-traded list; #1 scores 100, unranked scores 0.</li>
+          <li><b>Price momentum</b> (30%): change since our first verified secondary price; −20% scores 0, +30% scores 100.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>From scores to tiers</h2><p>The composite score weights the pillars 40 / 30 / 30. The suggested tier follows these rules, applied in order:</p></div>
+    <div class="tbl-wrap" style="max-height:none"><table class="rules">
+      <thead><tr><th>Suggested tier</th><th>Rule</th></tr></thead>
+      <tbody>
+        <tr><td class="co">Insufficient data</td><td>Fewer than two pillars are backed by data. The tier rests on the investment team's judgement until coverage improves.</td></tr>
+        <tr><td class="co">Anchor</td><td>Composite score of 60 or more, liquidity score of 50 or more, and valuation of $50bn or more.</td></tr>
+        <tr><td class="co">Tail</td><td>Liquidity score below 30, whatever the other pillars show.</td></tr>
+        <tr><td class="co">Conviction</td><td>Composite score of 40 or more, or a value accretion score of 70 or more.</td></tr>
+        <tr><td class="co">Tail</td><td>Everything else.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Risk overlay</h3>
+        <p class="sub" style="margin-bottom:8px">The overlay can only lower a tier, never raise it. It captures risks the three pillars cannot measure:</p>
+        <ul class="plain">
+          <li><b>Regulatory:</b> the business model's legal standing is unsettled, for example prediction markets or digital assets.</li>
+          <li><b>Geopolitical and structural:</b> export controls, sanctions exposure, or offshore holding structures.</li>
+          <li><b>Binary or technical:</b> value depends on an unproven technology milestone or a single outcome.</li>
+          <li><b>Transfer restrictions:</b> rights of first refusal or company consent that make positions hard to build or exit.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Governance and review</h3>
+        <ul class="plain">
+          <li><b>Investment team decides:</b> scores suggest a tier; the team confirms it. Every difference between the suggested and confirmed tier is recorded with its reason and date.</li>
+          <li><b>Quarterly review</b> of all tiers, plus an immediate review when a company raises a round, runs a tender, files for an IPO, or an overlay risk changes.</li>
+          <li><b>Data-limited companies</b> keep their team-assigned tier and are re-scored as secondary pricing and funding history are added.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Calibration</h2><p>Suggested tier from the scores compared with the tier currently assigned by the investment team. Filters above apply. Click a company for its detail.</p></div>
+    <div class="edit-bar">
+      <label class="tog"><input type="checkbox" id="edit-tiers"> Edit tiers</label>
+      <span class="sub">Changes apply to the whole dashboard immediately and are kept in this browser until published.</span>
+    </div>
+    <div class="kpis" id="cal-kpis" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="tbl-wrap"><table id="tbl-cal"><thead></thead><tbody></tbody></table></div>
+  </section>
+  </div>
+
   <section class="method">
     <div class="sec-hd"><h2>Methodology &amp; sources</h2></div>
     <ul>
@@ -330,7 +473,19 @@ const VENUES = [
 ];
 const DISP_TOP = 25;
 let dispAll = false;
-const TIERS = ['Anchor','Conviction','Tail','Unassigned'].filter(t => UNI.some(c => c.tier === t));
+// Confirmed tiers: workbook tier (tier0), replaced by the published overrides (tier-overrides.js),
+// replaced in turn by this browser's unpublished drafts from the Methodology tab's edit mode.
+const TIER_CHOICES = ['Anchor','Conviction','Tail'];
+const DRAFT_KEY = 'pq-tier-drafts';
+let tierDrafts = {};
+try { tierDrafts = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}') || {}; } catch {}
+const saveDrafts = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(tierDrafts)); } catch {} };
+// The decision in force for a company: a draft (null = draft removes the override) or the published override.
+const tierDecision = c => c.id in tierDrafts ? tierDrafts[c.id] : (window.TIER_OVR || {})[c.id] || null;
+for (const c of UNI) c.tier0 = c.tier;
+function applyTiers() { for (const c of UNI) c.tier = tierDecision(c)?.tier || c.tier0; }
+applyTiers();
+const TIERS = ['Anchor','Conviction','Tail','Unassigned'].filter(t => UNI.some(c => c.tier0 === t || c.tier === t));
 const STALE_MONTHS = 18;
 const ASOF = new Date(QD_ASOF + 'T00:00:00');
 
@@ -676,9 +831,133 @@ function drawDetail(c) {
     dp => `<b>${dp.dataset.label}</b><br>${usd(dp.raw.y)} · ${fDate(new Date(dp.raw.x).toISOString().slice(0,10))}`);
 }
 
+// ── tier model: value accretion / liquidity / demand → suggested tier (see the Methodology tab) ──
+const TIER_W = { va:0.4, lq:0.3, dm:0.3 };
+const YEAR_MS = 365.25*864e5;
+const lin = (x, lo, hi) => x==null || isNaN(x) ? null : Math.max(0, Math.min(100, (x-lo)/(hi-lo)*100));
+// Weighted mean of the measures that have data; missing measures drop out and the rest re-weight.
+const wmean = parts => { const p = parts.filter(([v]) => v!=null); if (!p.length) return null; const w = p.reduce((a,[,x])=>a+x,0); return p.reduce((a,[v,x])=>a+v*x,0)/w; };
+for (const c of UNI) {
+  const marks = [...(window.QR?.[c.id]?.rounds || [])].filter(r=>r.post!=null && r.type!=='Pending' && r.companyRun!==false).sort((a,b)=>a.date.localeCompare(b.date));
+  const last = marks[marks.length-1];
+  const base = last && [...marks].reverse().find(r => (new Date(last.date)-new Date(r.date))/YEAR_MS >= 3);
+  const growth = base ? Math.pow(last.post/base.post, 1/((new Date(last.date)-new Date(base.date))/YEAR_MS)) - 1 : null;
+  const tender24 = window.QR?.[c.id] ? marks.some(r => r.type==='Tender' && (ASOF-new Date(r.date))/YEAR_MS <= 2) : null;
+  const val = c.impl ?? c.curVal ?? c.lrEv;
+  const recentPrem = c.prem!=null && !c.stale ? c.prem : null;
+  const has = { va: recentPrem!=null || growth!=null, lq: c.nVen>0, dm: !!(c.setter || c.c50 || c.mom!=null) };
+  const va = has.va ? wmean([[lin(recentPrem,-0.3,0.6),0.4], [lin(growth,0,1.5),0.3], [c.lrAge==null?null:lin(-c.lrAge,-36,-3),0.15],
+    [/S-1|filing/i.test(c.note||'') || tender24 ? 100 : 0, 0.15]]) : null;
+  const lq = has.lq ? wmean([[c.nVen/3*100,0.3], [c.nVen>=2 ? lin(-c.spread,-0.3,-0.03) : 40, 0.25],
+    [val ? lin(Math.log10(val),0,Math.log10(300)) : null, 0.3], [tender24==null ? null : tender24 ? 100 : 0, 0.15]]) : null;
+  const dm = has.dm ? wmean([[c.setter ? lin(31-c.setter,0,30) : 0, 0.4], [c.c50 ? lin(51-c.c50,0,50) : 0, 0.3], [c.mom==null ? null : lin(c.mom,-0.2,0.3), 0.3]]) : null;
+  const enough = Object.values(has).filter(Boolean).length >= 2;
+  const comp = enough ? TIER_W.va*(va??0) + TIER_W.lq*(lq??0) + TIER_W.dm*(dm??0) : null;
+  const sug = comp==null ? 'Insufficient data'
+    : comp>=60 && (lq??0)>=50 && val>=50 ? 'Anchor'
+    : (lq??0) < 30 ? 'Tail'
+    : comp>=40 || (va??0)>=70 ? 'Conviction' : 'Tail';
+  c.ts = { va, lq, dm, comp, sug, growth };
+}
+
+const OVR_CATEGORIES = ['Regulatory','Geopolitical','Binary','Transfer restrictions','Data gap','Other'];
+let tierEdit = false;
+const hasReason = c => !!tierDecision(c)?.reason;
+const isDraft = c => c.id in tierDrafts;
+
+function drawMethod(rs) {
+  const status = c => { const d = tierDecision(c), tag = isDraft(c) ? ' (draft)' : '';
+    return c.ts.sug==='Insufficient data' ? [`Team judgement${tag}`, d?.reason ? `${d.category ? d.category+': ' : ''}${d.reason}` : 'data-limited']
+      : c.ts.sug===c.tier ? [`Agrees${tag}`, d?.reason || '']
+      : d?.reason ? [`Override${tag}`, `${d.category ? d.category+': ' : ''}${d.reason}`]
+      : ['To review', ''];
+  };
+  const scored = rs.filter(c=>c.ts.comp!=null), agree = scored.filter(c=>c.ts.sug===c.tier).length;
+  const review = scored.filter(c=>c.ts.sug!==c.tier && !hasReason(c)).length;
+  document.getElementById('cal-kpis').innerHTML = [
+    ['Scored', scored.length, `of ${rs.length} companies`],
+    ['Suggested = current', scored.length ? Math.round(agree/scored.length*100)+'%' : '—', `${agree} companies`],
+    ['To review', review, 'suggested tier differs, no reason recorded'],
+    ['Insufficient data', rs.length-scored.length, 'tier rests on team judgement'],
+  ].map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
+  const f0 = x => x==null ? NA : Math.round(x);
+  const cols = [
+    { l:'Company', cls:'co', f:c=>esc(c.name) },
+    { l:'Current tier', f:c=>`${esc(c.tier)}${c.tier!==c.tier0 ? ` <span class="flag">was ${esc(c.tier0)}</span>` : ''}` },
+    { l:'Suggested', f:c=>c.ts.sug===c.tier ? esc(c.ts.sug) : `<b>${esc(c.ts.sug)}</b>` },
+    { l:'Value accretion', r:1, f:c=>f0(c.ts.va) },
+    { l:'Liquidity', r:1, f:c=>f0(c.ts.lq) },
+    { l:'Demand', r:1, f:c=>f0(c.ts.dm) },
+    { l:'Composite', r:1, f:c=>f0(c.ts.comp) },
+  ];
+  if (tierEdit) {
+    const opt = (v, cur, label=v) => `<option value="${esc(v)}"${v===cur?' selected':''}>${esc(label)}</option>`;
+    cols.push(
+      { l:'Set tier', f:c=>{ const d=tierDecision(c); return `<select class="ed" data-f="tier" aria-label="Tier for ${esc(c.name)}">${opt('', d?.tier||'', `Workbook (${c.tier0})`)}${TIER_CHOICES.map(t=>opt(t, d?.tier||'')).join('')}</select>`; } },
+      { l:'Category', f:c=>{ const d=tierDecision(c); return `<select class="ed" data-f="category" aria-label="Override category for ${esc(c.name)}">${opt('', d?.category||'', '—')}${OVR_CATEGORIES.map(t=>opt(t, d?.category||'')).join('')}</select>`; } },
+      { l:'Reason', cls:'note-cell', f:c=>`<input class="ed" data-f="reason" type="text" value="${esc(tierDecision(c)?.reason||'')}" placeholder="Why the tier differs from the suggestion" aria-label="Reason for ${esc(c.name)}">` },
+    );
+  } else {
+    cols.push({ l:'Status', cls:'note-cell', f:c=>{ const [s,d]=status(c); return `${s}${d?` <span class="flag">${esc(d)}</span>`:''}`; } });
+  }
+  // Disagreements first, then by composite score; data-limited companies last. In edit mode rows keep a
+  // fixed order (composite score) so a row does not jump away while it is being edited.
+  const order = c => tierEdit ? 0 : c.ts.comp==null ? 3 : c.ts.sug!==c.tier && !hasReason(c) ? 0 : c.ts.sug!==c.tier ? 1 : 2;
+  const s = [...rs].sort((a,b)=>order(a)-order(b) || (b.ts.comp??-1)-(a.ts.comp??-1) || a.name.localeCompare(b.name));
+  document.querySelector('#tbl-cal thead').innerHTML = headHtml(cols);
+  document.querySelector('#tbl-cal tbody').innerHTML = s.map(c=>rowHtml(cols, c)).join('');
+  drawDraftBar();
+}
+
+// ── tier edit mode: changes apply live and are kept as drafts until published ──
+function drawDraftBar() {
+  const n = Object.keys(tierDrafts).length;
+  document.getElementById('draft-bar').hidden = !n;
+  document.getElementById('draft-n').textContent = `${n} unpublished tier ${n===1?'change':'changes'}`;
+  document.getElementById('dl-tiers').disabled = document.getElementById('discard-tiers').disabled = !n;
+}
+document.querySelector('#tbl-cal tbody').addEventListener('click', e=>{
+  if (e.target.closest('.ed')) return;
+  const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id));
+});
+document.querySelector('#tbl-cal tbody').addEventListener('change', e=>{
+  const el = e.target.closest('.ed'); if (!el) return;
+  const c = UNI.find(x=>x.id===el.closest('tr').dataset.id);
+  const d = { ...(tierDecision(c) || {}), [el.dataset.f]: el.value.trim(), date: new Date().toLocaleDateString('en-CA') };   // local YYYY-MM-DD
+  for (const k of ['tier','category','reason']) if (!d[k]) delete d[k];
+  const published = (window.TIER_OVR || {})[c.id];
+  if (!d.tier && !d.reason) { if (published) tierDrafts[c.id] = null; else delete tierDrafts[c.id]; }   // null: draft removes the published override
+  else tierDrafts[c.id] = d;
+  saveDrafts(); applyTiers(); render();
+});
+document.getElementById('edit-tiers').addEventListener('change', e=>{ tierEdit = e.target.checked; render(); });
+document.getElementById('discard-tiers').addEventListener('click', ()=>{
+  if (!confirm('Discard all unpublished tier changes in this browser?')) return;
+  tierDrafts = {}; saveDrafts(); applyTiers(); render();
+});
+// Published overrides with drafts merged in, written out as a replacement tier-overrides.js.
+document.getElementById('dl-tiers').addEventListener('click', ()=>{
+  const merged = { ...(window.TIER_OVR || {}) };
+  for (const [id, d] of Object.entries(tierDrafts)) { if (d) merged[id] = d; else delete merged[id]; }
+  const line = (id, d) => `  ${id}: { ${['tier','category','reason','date'].filter(k=>d[k]).map(k=>`${k}:${JSON.stringify(d[k])}`).join(', ')} },`;
+  const js = [
+    '// Confirmed tiers set by the investment team, and the reasons where they differ from the',
+    '// score-suggested tier. Keyed by quant-data.js id. Generated by the Methodology tab\'s',
+    '// "Download changes" button, or edited by hand.',
+    "//   tier:     'Anchor' | 'Conviction' | 'Tail' — omit to keep the workbook tier",
+    "//   category: 'Regulatory' | 'Geopolitical' | 'Binary' | 'Transfer restrictions' | 'Data gap' | 'Other'",
+    '//   reason:   one sentence, client-readable',
+    "//   date:     'YYYY-MM-DD' the decision was made",
+    'window.TIER_OVR = {', ...Object.entries(merged).map(([id,d])=>line(id,d)), '};', '' ].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([js], { type:'text/javascript' }));
+  a.download = 'tier-overrides.js'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+});
+
 // ── render ──
-// ── views: Analytics / Marquee list / Universe, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','universe'];
+// ── views: Analytics / Marquee list / Universe / Methodology, selected by the tabs and kept in the URL hash ──
+const VIEWS = ['analytics','marquee','universe','method'];
 let view = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'analytics';
 function setView(v) {
   view = VIEWS.includes(v) ? v : 'analytics';
@@ -701,6 +980,8 @@ function render() {
   if (view === 'analytics') { drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawCov(rs); }
   if (view === 'marquee') drawMarquee(rs);
   if (view === 'universe') drawTable(rs);
+  if (view === 'method') drawMethod(rs);
+  drawDraftBar();
 }
 document.getElementById('hdr-sub').textContent = `${UNI.length} companies · secondary prices from Clarity, Augment & Forge, refreshed ${fDate(QD_ASOF)} · all figures USD`;
 document.querySelectorAll('.asof').forEach(e=>e.textContent=fDate(QD_ASOF));
