@@ -355,7 +355,6 @@
     <select id="sort-sel" onchange="renderTable()">
       <option value="val">Valuation</option>
       <option value="chg">Change since last pull</option>
-      <option value="p1-rank">Clarity rank</option>
       <option value="price">Share price</option>
       <option value="spread">Platform spread</option>
       <option value="orders">Clarity orders</option>
@@ -405,7 +404,6 @@
       <div class="str-row" id="str-row">
         <div class="str-item">Structure: <b>—</b></div>
         <div class="str-item">ROFR: <b>—</b></div>
-        <div class="str-item">Clarity rank: <b>—</b></div>
         <div class="str-item">Clarity orders: <b>—</b></div>
       </div>
       <div class="chart-leg" id="det-leg"></div>
@@ -647,12 +645,6 @@ function getRows(){
   let rows=COS.map(c=>{ let rc=realChg(c); return {...c,_b:blended(c),_chg:rc?rc.pct:-Infinity,_sp:spread(c)}; });
   if(s==='val') rows.sort((a,b)=>b._b*b.shares-a._b*a.shares);
   else if(s==='chg') rows.sort((a,b)=>b._chg-a._chg);
-  else if(s==='p1-rank') rows.sort((a,b)=>{
-    if(a.p1rank===null&&b.p1rank===null) return 0;
-    if(a.p1rank===null) return 1;
-    if(b.p1rank===null) return -1;
-    return a.p1rank-b.p1rank;
-  });
   else if(s==='price') rows.sort((a,b)=>b._b-a._b);
   else if(s==='spread') rows.sort((a,b)=>b._sp-a._sp);
   else if(s==='orders') rows.sort((a,b)=>b.liveOrders-a.liveOrders);
@@ -764,7 +756,7 @@ function renderDetail(){
   // list each source that has a checked price, with its date
   let vs=[c.p1!=null&&'Clarity',c.p3!=null&&'Augment',c.p2!=null&&'Forge'].filter(Boolean);
   let vNote=' · verified '+REFRESH+' ('+vs.join(', ')+')'+(vs.length<2?' · single source':'');
-  document.getElementById('det-meta').textContent=c.sec+' · ~'+(c.shares/1e6).toFixed(0)+'M shares · '+fB(b*c.shares)+' implied cap'+vNote+(c.p1rank?' · Clarity #'+c.p1rank:'');
+  document.getElementById('det-meta').textContent=c.sec+' · ~'+(c.shares/1e6).toFixed(0)+'M shares · '+fB(b*c.shares)+' implied cap'+vNote;
 
   const card=(label,dot,col,v)=>`<div class="sc"><div class="sc-lbl"><div class="src-dot" style="width:6px;height:6px;border-radius:50%;background:${dot};flex-shrink:0;"></div>${label}</div>`+
     (v==null?`<div class="sc-price" style="font-size:13px;color:var(--text4);">—</div><div class="sc-note">No comparable price</div></div>`
@@ -800,7 +792,6 @@ function renderDetail(){
   document.getElementById('str-row').innerHTML=`
     <div class="str-item">Structure: <b style="color:${strCol}">${c.struct}</b></div>
     <div class="str-item">ROFR: <b>${c.rofr}</b></div>
-    <div class="str-item">Clarity rank: <b>${c.p1rank?'#'+c.p1rank:'Not in index'}</b></div>
     <div class="str-item">Clarity orders: <b>${s.liveOrders||'—'}</b></div>
     <div class="str-item">Approval wait: <b>${wait}</b></div>
   `;
