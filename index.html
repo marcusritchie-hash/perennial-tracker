@@ -383,7 +383,8 @@
         <th style="width:90px;" class="col-sp">Clarity/Augment spread</th>
         <th style="width:78px;" title="Blended price at each verified refresh (Aug–Oct 2026)">Trend</th>
         <th style="width:55px;" title="Clarity listings + bids, as at the last refresh">Clarity orders</th>
-        <th style="width:60px;">Structure</th>
+        <th style="width:55px;" title="Open resale orders on Augment (Collective SPV units)">Augment orders</th>
+        <th style="width:90px;" title="From Augment's order or offering terms where Augment has one; otherwise the earlier hand-entered value, shown in grey">Structure</th>
         <th></th>
       </tr></thead>
       <tbody id="tbody"></tbody>
@@ -440,6 +441,7 @@
 
   <div class="footer">
     <div id="src-lists"></div>
+    <b>Augment orders &amp; structure (13 Oct 2026):</b> everything on Augment is a unit in an Augment Collective SPV. Augment orders are open resale sell orders (unit transfers, direct ownership, 5% brokerage fee); Structure shows the share class behind them (Common or Preferred), or "New fund" where Augment is offering new units. Only Discord, Epic Games, Mercor and Polymarket have open orders, and Replit, Zipline, Higgsfield and PsiQuantum have offerings; for other companies Structure shows the earlier hand-entered value in grey, or a dash.<br>
     <b>Changed this update (12 Oct 2026):</b> the list grew from 30 to the top 50 pre-IPO companies by Augment valuation. Joined: ByteDance, Cognition AI, Prometheus, ElevenLabs, Skild AI, Harvey, Zipline, Helion Energy, Mercor, Sierra, Deel, Lovable, Physical Intelligence, Cohere, Gusto, Epic Games, Higgsfield, Whoop, Glean, Flock Safety, Abridge, Mercury, Redwood Materials. Left: Tanium, Lightmatter, Tenstorrent (below the top 50). Not included for lack of a second source on the same share basis: Thinking Machines, Shein, VAST Data, Mistral AI, Etched, Reflection AI, Brex, Notion, Relativity Space, Character.ai.<br>
     <b>Read this before using any number here.</b> Every price shown was read from its platform on 12 Oct 2026; a dash means that platform has no price, or quotes a different share basis and is left out. Each company needs Augment plus one other source, except Anthropic (Clarity no longer shows it), Waymo (Clarity only) and Neuralink (Augment only), which are noted as single-source in their detail panel. Implied market caps use share counts back-solved from Augment valuations and are approximations only. The ticking prices are <b>randomly simulated from these seed values</b> and do not represent real trading. Charts and Trend show only verified prices from each refresh (Augment 30 Jun is its end-of-quarter figure). Not financial advice. For accredited investors only.
   </div>
@@ -666,6 +668,7 @@ function renderTable(){
     let oneSrc=srcCount(c)<2?' title="Only one platform currently prices this company"':'';
     let spCls=!si?'':si.pct>30?'sprd-hi':si.pct>12?'sprd-med':'sprd-ok';
     let strCls=c.struct==='Direct'?'st-dir':c.struct==='SPV'?'st-spv':'st-mix';
+    let augS=augStructure(c.id);
     let rankBadgeCls=i<3?'rank-badge top3':'rank-badge';
     let tr=document.createElement('tr');
     if(c.id===selCo) tr.classList.add('sel');
@@ -680,7 +683,8 @@ function renderTable(){
       <td class="col-sp">${si?`<span class="sprd ${spCls}">${f$(si.abs)} <span style="opacity:.6;font-size:10px;">(${r2(si.pct,0)}%)</span></span>`:'<span style="color:var(--border2);">—</span>'}</td>
       <td><div class="spark-w"><canvas id="sp-${c.id}"></canvas></div></td>
       <td class="orders">${s.liveOrders>0?s.liveOrders:'—'}</td>
-      <td><span class="str-tag ${strCls}">${c.struct}</span></td>
+      <td class="orders">${augOrders(c.id)||'—'}</td>
+      <td>${augS?`<span class="str-tag st-spv" title="From Augment, ${AUG_AS_AT}">${augS}</span>`:c.struct&&c.struct!=='—'?`<span class="str-tag ${strCls}" style="opacity:.55" title="Hand-entered earlier, not from Augment">${c.struct}</span>`:'<span style="color:var(--border2);">—</span>'}</td>
       <td><button class="det-btn ${OB[c.id]?'det-btn-'+c.sc:''}" onclick="selCo_('${c.id}')">Detail →</button></td>
     `;
     tb.appendChild(tr);
@@ -789,11 +793,20 @@ function renderDetail(){
 
   let strCol=c.struct==='Direct'?'var(--green)':c.struct==='SPV'?'var(--amber)':'var(--blue)';
   let wait=c.rofr==='Very high'?'4–8 wks':c.rofr==='High'?'3–6 wks':c.rofr==='Moderate'?'2–4 wks':c.rofr==='Low'?'1–3 wks':'—';
+  let augS=augStructure(c.id), a=AUG[c.id];
+  let structItem=augS?`<div class="str-item" title="From Augment, ${AUG_AS_AT}">Structure: <b style="color:var(--amber)">${augS}</b></div>`
+    :`<div class="str-item" title="Hand-entered earlier, not from Augment">Structure: <b style="color:${strCol}">${c.struct}</b></div>`;
+  // One chip per Augment order / offering, with its terms.
+  let augItems='';
+  if(a&&a.orders) augItems=a.orders.map(o=>`<div class="str-item">Augment order: <b>${f$(o.price)}</b> · ${o.value>=1e6?fB(o.value):'$'+(o.value/1e3).toFixed(1)+'K'} · ${o.asset} · resale · ${o.exp}</div>`).join('');
+  if(a&&a.offering) augItems=`<div class="str-item">Augment offering: <b>${f$(a.offering.price)}</b>/unit · min ${a.offering.min} · ${a.offering.elig}</div>`;
   document.getElementById('str-row').innerHTML=`
-    <div class="str-item">Structure: <b style="color:${strCol}">${c.struct}</b></div>
+    ${structItem}
     <div class="str-item">ROFR: <b>${c.rofr}</b></div>
     <div class="str-item">Clarity orders: <b>${s.liveOrders||'—'}</b></div>
+    <div class="str-item">Augment orders: <b>${augOrders(c.id)||'—'}</b></div>
     <div class="str-item">Approval wait: <b>${wait}</b></div>
+    ${augItems}
   `;
 
   // Real history: one point per verified refresh, lines join a source's points across gaps.
@@ -883,6 +896,30 @@ function initAlCo(){
 // ── ORDER BOOK DATA ──
 // Individual listing/bid rows below are a 1 Apr 2026 snapshot and are NOT current.
 // Listing/bid TOTALS (tL/tB) refreshed 7 Aug 2026 from the Clarity platform where available.
+// ── AUGMENT ORDERS & OFFERINGS ──
+// Read from each company's Augment page on 13 Oct 2026 (49 of the 50 checked;
+// Waymo is not on Augment). Everything on Augment is a unit in an Augment
+// Collective SPV. Orders are resale sell orders ("Unit transfer", direct
+// ownership, 5% brokerage fee); offerings are new SPV units sold by Augment.
+const AUG_AS_AT='13 Oct 2026';
+const AUG = {
+  discord:    { orders:[{price:35,value:14000,asset:'Common',exp:'Until cancelled'},{price:38,value:15200,asset:'Common',exp:'1 Jan 2027'}] },
+  epic:       { orders:[{price:300,value:5700,asset:'Common',exp:'Until cancelled'}] },
+  mercor:     { orders:[{price:1900,value:87400,asset:'Series A Preferred',exp:'Until cancelled'}] },
+  polymarket: { orders:[{price:180,value:100080,asset:'Series A Preferred',exp:'Until cancelled'}] },
+  replit:     { offering:{price:251.99,min:'$10K',elig:'Qualified clients'} },
+  zipline:    { offering:{price:105,min:'$10K',elig:'Accredited investors'} },
+  higgsfield: { offering:{price:346.76,min:'$10K',elig:'Qualified purchasers'} },
+  psiquantum: { offering:{price:30,min:'$10K',elig:'Accredited investors'} },
+};
+const augOrders=(id)=>AUG[id]&&AUG[id].orders?AUG[id].orders.length:0;
+// Structure label from Augment terms, or null when Augment has no order or offering.
+function augStructure(id){
+  let a=AUG[id]; if(!a) return null;
+  if(a.orders){ let assets=[...new Set(a.orders.map(o=>/Preferred/.test(o.asset)?'Preferred':o.asset))]; return 'SPV · '+assets.join('/'); }
+  return 'SPV · New fund';
+}
+
 const OB = {
   ripple:    {tL:109,tB:12,L:[{id:'RIP-1D4',sh:9600,p:121,tr:'Direct',st:'Com'},{id:'RIP-53A',sh:1200,p:124,tr:'Direct',st:'Com'},{id:'RIP-86C',sh:10000,p:125,tr:'Direct',st:'Com'},{id:'RIP-C26',sh:4600,p:125,tr:'Direct',st:'Com'},{id:'RIP-F6E',sh:4000,p:125,tr:'Direct',st:'Com'}],B:[{id:'RIP-63A',sh:200,p:125.5,tr:'Direct',st:'Any'},{id:'RIP-533',sh:2000,p:125,tr:'Direct',st:'Pref'},{id:'RIP-29C',sh:1200,p:115,tr:'Direct',st:'Pref'},{id:'RIP-618',sh:500,p:110.01,tr:'Direct',st:'Any'}]},
   kraken:    {tL:55,tB:18,L:[{id:'KRA-13E',sh:2200,p:32,tr:'Direct',st:'Com'},{id:'KRA-65A',sh:800,p:32.5,tr:'Direct',st:'Com'},{id:'KRA-D3D',sh:3000,p:33,tr:'Direct',st:'Com'}],B:[{id:'KRA-130',sh:6426,p:36,tr:'Direct',st:'Com'}]},
