@@ -2,9 +2,10 @@
   [Parameter(Mandatory)] [string]$Xlsx,   # master workbook downloaded from the dashboard and edited in Excel
   [switch]$Apply                          # without -Apply: report the changes only; with it: rewrite the data files
 )
-# Imports the master Excel workbook (dashboard "Master Excel" button) back into the dashboard data files:
-#   quant-data.js  (Companies)          tier-overrides.js (Tier / Override columns)
-#   quant-rounds.js (Funding rounds, Shareholders, Profile notes)   ipo-status.js (IPO columns)
+# Imports the master Excel workbook (dashboard "Master Excel" button) back into the dashboard data files
+# (Universe, Marquee list, Calibration, IPO pipeline and Methodology sheets; Allocation sheets are not imported):
+#   quant-data.js  (Universe, Marquee list)   tier-overrides.js (Calibration)   method-config.js (Methodology)
+#   quant-rounds.js (Funding rounds, Shareholders, Profile notes)   ipo-status.js (IPO pipeline)
 # Removed companies are also appended to name-map.csv. Prices, shares and history for "tracker" rows stay
 # with the price tracker (index.html) and are not taken from the workbook.
 $ErrorActionPreference = 'Stop'
@@ -29,9 +30,10 @@ function Text($node) {   # text of a shared-string / inline-string item, includi
 $sst = @(); $ss = Xml 'xl\sharedStrings.xml'; if ($ss) { $sst = @($ss.sst.si | ForEach-Object { Text $_ }) }
 $wbx = Xml 'xl\workbook.xml'; $rels = Xml 'xl\_rels\workbook.xml.rels'
 function ColIdx($ref) { $n = 0; foreach ($ch in ($ref -replace '\d','').ToCharArray()) { $n = $n*26 + ([int][char]$ch - 64) }; $n - 1 }
-function Sheet($name) {   # rows as ordered hashtables keyed by the header row
+function HasSheet($name) { [bool]($wbx.workbook.sheets.sheet | Where-Object { $_.name -eq $name }) }
+function Sheet($name, [switch]$Optional) {   # rows as ordered hashtables keyed by the header row
   $s = $wbx.workbook.sheets.sheet | Where-Object { $_.name -eq $name }
-  if (-not $s) { throw "Sheet '$name' not found in the workbook" }
+  if (-not $s) { if ($Optional) { return $null }; throw "Sheet '$name' not found in the workbook" }
   $rid = $s.GetAttribute('id', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships')
   $target = ($rels.Relationships.Relationship | Where-Object { $_.Id -eq $rid }).Target -replace '^/?xl/',''
   $x = Xml ('xl\' + ($target -replace '/','\'))
@@ -53,7 +55,14 @@ function Sheet($name) {   # rows as ordered hashtables keyed by the header row
   }
   $out
 }
-$CO = Sheet 'Companies'; $RD = Sheet 'Funding rounds'; $SH = Sheet 'Shareholders'; $PR = Sheet 'Profile notes'
+# One sheet per dashboard page (Universe, Marquee list, Calibration, IPO pipeline, Methodology). Older workbooks kept
+# everything on one Companies sheet; when a page sheet is missing its columns are read from that sheet instead.
+$CO = if (HasSheet 'Universe') { Sheet 'Universe' } else { Sheet 'Companies' }
+$RD = Sheet 'Funding rounds'; $SH = Sheet 'Shareholders'; $PR = Sheet 'Profile notes'
+$MQS = if (HasSheet 'Marquee list') { @(Sheet 'Marquee list') } else { $null }
+$CAL = if (HasSheet 'Calibration') { @(Sheet 'Calibration') } else { $null }
+$IPS = if (HasSheet 'IPO pipeline') { @(Sheet 'IPO pipeline') } else { $null }
+$MET = if (HasSheet 'Methodology') { @(Sheet 'Methodology') } else { $null }
 Remove-Item $tmp -Recurse -Force
 
 # ── value helpers ──
@@ -76,6 +85,10 @@ function Pick($v, $allowed, $what) { $t = S $v; if (-not $t) { return $null }
   $m = $allowed | Where-Object { $_ -ieq $t } | Select-Object -First 1; if ($m) { return $m }
   $warn.Add("$what : '$t' is not one of: $($allowed -join ', '); left blank"); $null }
 function Js($o) { ($o | ConvertTo-Json -Depth 8 -Compress) }
+function Differs($a, $b) {   # numbers compare by value (9.0 = 9); everything else as text
+  $x = 0.0; $y = 0.0
+  if ($a -ne $null -and $b -ne $null -and [double]::TryParse("$a", [ref]$x) -and [double]::TryParse("$b", [ref]$y)) { return $x -ne $y }
+  "$a" -ne "$b" }
 function ReadJsJson($file, $var) {   # parse a data file written by this script: window.X = {json};
   $p = Join-Path $root $file; if (-not (Test-Path $p)) { return $null }
   $m = [regex]::Match([IO.File]::ReadAllText($p, [Text.Encoding]::UTF8), "window\.$var = (\{[\s\S]*?\});\s*(\r?\n|$)")
@@ -93,6 +106,23 @@ foreach ($p in @(@('tier-overrides.js',$oldOvr),@('quant-rounds.js',$oldQR),@('i
   if ($p[1] -eq $null) { $warn.Add("$($p[0]) is in the older hand-written format: it will be rewritten in full (a one-time format change), so its changes are not itemised below") } }
 function OldProp($obj, $id) { if ($obj -eq $null) { return $null }; $obj.PSObject.Properties[$id].Value }
 
+# ── page sheets keyed by company ID (or name, for companies added in this workbook without an ID) ──
+function Index($rows, $sheet) {
+  $ix = @{}; if ($rows -eq $null) { return $null }
+  foreach ($r in $rows) {
+    $i = S $r['ID']; $n = S $r['Company']; $k = if ($i) { "id:$i" } elseif ($n) { "name:$($n.ToLower())" } else { $null }
+    if (-not $k) { $warn.Add("${sheet}: a row has no ID or company; skipped"); continue }
+    if ($ix.Contains($k)) { $warn.Add("${sheet}: '$(if ($i) { $i } else { $n })' appears twice; second row ignored"); continue }
+    $ix[$k] = $r }
+  $ix
+}
+$ixMQ = Index $MQS 'Marquee list'; $ixCAL = Index $CAL 'Calibration'; $ixIPO = Index $IPS 'IPO pipeline'
+$used = @{}
+function Find($ix, $sheet, $id, $name) {   # the row for this company in a page sheet; @{} when it has none
+  foreach ($k in "id:$id", "name:$($name.ToLower())") { if ($ix.Contains($k)) { $used["$sheet|$k"] = 1; return $ix[$k] } }
+  @{}
+}
+
 # ── companies ──
 $seen = @{}; $newData = [ordered]@{}; $ovr = [ordered]@{}; $ipo = [ordered]@{}; $removed = @(); $nameToId = @{}
 function NewId($name) { $b = ($name -replace '\(.*?\)','' -replace '[^A-Za-z0-9]','').ToLower(); if (-not $b) { $b = 'co' }
@@ -100,10 +130,10 @@ function NewId($name) { $b = ($name -replace '\(.*?\)','' -replace '[^A-Za-z0-9]
 $rowNo = 1
 foreach ($r in $CO) {
   $rowNo++
-  $name = S $r['Company']; if (-not $name) { $warn.Add("Companies row ${rowNo}: no company name; row skipped"); continue }
+  $name = S $r['Company']; if (-not $name) { $warn.Add("Universe row ${rowNo}: no company name; row skipped"); continue }
   $id = S $r['ID']
-  if ($id -and -not $old.Contains($id)) { $warn.Add("Companies row ${rowNo} ($name): unknown ID '$id'; treated as a new company"); $id = $null }
-  if ($id -and $seen[$id]) { $warn.Add("Companies row ${rowNo} ($name): ID '$id' appears twice; second row skipped"); continue }
+  if ($id -and -not $old.Contains($id)) { $warn.Add("Universe row ${rowNo} ($name): unknown ID '$id'; treated as a new company"); $id = $null }
+  if ($id -and $seen[$id]) { $warn.Add("Universe row ${rowNo} ($name): ID '$id' appears twice; second row skipped"); continue }
   $isNew = -not $id; if ($isNew) { $id = NewId $name }
   $seen[$id] = 1; $nameToId[$name.ToLower()] = $id
   $action = S $r['Action']
@@ -116,10 +146,13 @@ foreach ($r in $CO) {
 
   $o = if ($isNew) { $null } else { $old[$id] }
   $tracker = $o -and $o.pxSrc -eq 'tracker'
+  $mr = if ($ixMQ -ne $null) { Find $ixMQ 'Marquee list' $id $name } else { $r }
+  $tr = if ($ixCAL -ne $null) { Find $ixCAL 'Calibration' $id $name } else { $r }
+  $ir = if ($ixIPO -ne $null) { Find $ixIPO 'IPO pipeline' $id $name } else { $r }
   $e = [ordered]@{
     id = $id; name = $name; region = S $r['Region']; hq = S $r['HQ']; sector = S $r['Sector']; sub = S $r['Sub-sector']
     tier = if ($o) { $o.tier } else { 'Tail' }   # stored base tier; the page's rules and overrides set the confirmed tier
-    listed = (S $r['Listed']) -ieq 'Y'; mq = N $r['Marquee rank'] "$name Marquee rank"
+    listed = (S $r['Listed']) -ieq 'Y'; mq = N $mr['Marquee rank'] "$name Marquee rank"
     aug = N $r['Augment Power 20 rank'] "$name Augment Power 20 rank"; c50 = N $r['Clarity 50 rank'] "$name Clarity 50 rank"
     forgeTraded = (S $r['Forge traded']) -ieq 'Y'
     lrEv = N $r['Last round valuation ($bn)'] "$name last round valuation"; lrName = S $r['Last round']; lrDate = D $r['Last round date'] "$name last round date"
@@ -141,16 +174,17 @@ foreach ($r in $CO) {
   if ($isNew) { $chg.Add("ADD     $name ($($e.sector), $($e.region)) as id '$id'") }
   else {
     foreach ($k in 'name','region','hq','sector','sub','listed','mq','aug','c50','forgeTraded','lrEv','lrName','lrDate','curVal','note','ctype','ccy','liq','shares') {
-      $a = $o.$k; $b = $e[$k]; if ("$a" -ne "$b") { $chg.Add("EDIT    $name · $k : '$a' → '$b'") } }
-    if (-not $tracker) { foreach ($k in 'c','a','f') { if ("$($o.px.$k)" -ne "$($e.px[$k])") { $chg.Add("EDIT    $name · price $k : '$($o.px.$k)' → '$($e.px[$k])'") } } }
+      $a = $o.$k; $b = $e[$k]; if (Differs $a $b) { $chg.Add("EDIT    $name · $k : '$a' → '$b'") } }
+    if (-not $tracker) { foreach ($k in 'c','a','f') { if (Differs $o.px.$k $e.px[$k]) { $chg.Add("EDIT    $name · price $k : '$($o.px.$k)' → '$($e.px[$k])'") } } }
   }
   $newData[$id] = $e
 
-  # tier decision: a tier differing from the rules' default, or any recorded reason, becomes an override
-  $tier = Pick $r['Tier'] $TIERS "$name Tier"; $def = S $r['Default tier (rules)']
-  $cat = Pick $r['Override category'] $CATS "$name Override category"; $why = S $r['Override reason']
-  $d = [ordered]@{}
-  if ($tier -and $tier -ne $def) { $d.tier = $tier; if (-not $why) { $warn.Add("$name : tier $tier differs from the rules ($def) but has no Override reason") } }
+  # tier decision: a tier differing from the rules' default, or any recorded reason, becomes an override. A tier the team
+  # already confirmed explicitly stays explicit even when it equals today's default, so a later rule change cannot move it.
+  $tier = Pick $tr['Tier'] $TIERS "$name Tier"; $def = S $tr['Default tier (rules)']
+  $cat = Pick $tr['Override category'] $CATS "$name Override category"; $why = S $tr['Override reason']
+  $d = [ordered]@{}; $prevTier = (OldProp $oldOvr $id).tier
+  if ($tier -and ($tier -ne $def -or $tier -eq $prevTier)) { $d.tier = $tier; if (-not $why -and $tier -ne $def) { $warn.Add("$name : tier $tier differs from the rules ($def) but has no Override reason") } }
   if ($cat) { $d.category = $cat }; if ($why) { $d.reason = $why }
   if ($d.Count) {
     $prev = OldProp $oldOvr $id
@@ -162,18 +196,38 @@ foreach ($r in $CO) {
     if ($pj -ne $nj) { $chg.Add("TIER    $name : '$pj' → '$nj'  (tier|category|reason)") } }
 
   # IPO pipeline
-  $st = Pick $r['IPO status'] $IPOS "$name IPO status"
-  if ($st) { $ip = [ordered]@{ status = $st; updated = D $r['IPO last update'] "$name IPO last update" -Month; val = N $r['IPO valuation ($bn)'] "$name IPO valuation" }
-    $tg = S $r['IPO target']; if ($tg) { $ip.target = $tg }; $ipo[$id] = $ip }
-  if ($oldIPO -ne $null) { $p = OldProp $oldIPO $id; $pj = if ($p) { Js $p } else { '' }; $nj = if ($ipo.Contains($id)) { Js $ipo[$id] } else { '' }
+  $st = Pick $ir['IPO status'] $IPOS "$name IPO status"
+  if ($st) { $ip = [ordered]@{ status = $st; updated = D $ir['IPO last update'] "$name IPO last update" -Month; val = N $ir['IPO valuation ($bn)'] "$name IPO valuation" }
+    $tg = S $ir['IPO target']; if ($tg) { $ip.target = $tg }; $ipo[$id] = $ip }
+  if ($oldIPO -ne $null) { $p = OldProp $oldIPO $id; $pj = if ($p) { (Js $p) -replace '(\d)\.0(?=[,}])','$1' } else { '' }; $nj = if ($ipo.Contains($id)) { Js $ipo[$id] } else { '' }
     if ($pj -ne $nj) { $chg.Add("IPO     $name : $pj → $nj") } }
 }
 foreach ($id in $old.Keys) { if (-not $seen[$id]) { $chg.Add("REMOVE  $($old[$id].name) — row deleted from the workbook (use Action = Remove next time)"); $removed += [pscustomobject]@{ id=$id; name=$old[$id].name; reason='Deleted from master workbook' } } }
 
+foreach ($p in @(@('Marquee list',$ixMQ),@('Calibration',$ixCAL),@('IPO pipeline',$ixIPO))) {
+  if ($p[1] -eq $null) { continue }
+  foreach ($k in $p[1].Keys) { if (-not $used["$($p[0])|$k"]) { $warn.Add("$($p[0]): '$($k -replace '^(id|name):','')' is not a company in Universe; row ignored") } } }
+
+# ── methodology parameters (method-config.js) ──
+$oldMet = ReadJsJson 'method-config.js' 'METHOD'; $metVals = [ordered]@{}
+if ($oldMet -ne $null) { foreach ($pp in $oldMet.PSObject.Properties) { $metVals[$pp.Name] = $pp.Value } }
+$metChanged = $false
+if ($MET -ne $null) {
+  foreach ($r in $MET) {
+    $k = S $r['Key']; if (-not $k) { continue }
+    if (-not $metVals.Contains($k)) { $warn.Add("Methodology: unknown key '$k'; ignored"); continue }
+    $v = N $r['Value'] "Methodology $k"; if ($v -eq $null) { $warn.Add("Methodology: $k has no value; kept at $($metVals[$k])"); continue }
+    if ([double]$metVals[$k] -ne $v) { $chg.Add("METHOD  $k ($(S $r['Parameter'])) : $($metVals[$k]) → $v"); $metVals[$k] = $v; $metChanged = $true } }
+  $sum = { param($keys) ($keys | ForEach-Object { [double]$metVals[$_] } | Measure-Object -Sum).Sum }
+  foreach ($g in @(@('Pillar weights', @('pillar.va','pillar.lq','pillar.dm')), @('Value accretion weights', @('va.prem.w','va.growth.w','va.fresh.w','va.path.w')),
+                   @('Liquidity weights', @('lq.venues.w','lq.spread.w','lq.scale.w','lq.tender.w')), @('Demand weights', @('dm.aug.w','dm.c50.w','dm.mom.w')))) {
+    $t = & $sum $g[1]; if ([math]::Abs($t - 100) -gt 0.01) { $warn.Add("Methodology: $($g[0]) add up to $t, not 100") } }
+}
+
 # ── funding profiles ──
 function RefId($row, $what) { $i = S $row['ID']; if ($i -and $newData.Contains($i)) { return $i }
   $n = S $row['Company']; if ($n -and $nameToId[$n.ToLower()]) { return $nameToId[$n.ToLower()] }
-  $warn.Add("$what : company '$i$(if($n){" / $n"})' not found in Companies; row skipped"); $null }
+  $warn.Add("$what : company '$i$(if($n){" / $n"})' not found in Universe; row skipped"); $null }
 function List($v, $sep) {   # leading comma keeps one- and zero-item lists as arrays (PowerShell unrolls them otherwise)
   $t = S $v; if (-not $t) { return , @() }; , @($t -split $sep | ForEach-Object { $_.Trim() } | Where-Object { $_ }) }
 $qr = [ordered]@{}
@@ -197,7 +251,8 @@ foreach ($r in $SH) { $id = RefId $r 'Shareholders'; if (-not $id) { continue }
     asOf = D $r['As of'] "$id holder as-of"; basis = S $r['Basis']; note = S $r['Note']; src = List $r['Sources'] '\s+' }
   if (-not $h.name) { $warn.Add("$id : a shareholder row has no name; skipped"); continue }
   $q = Prof $id; $q.holders += , $h }
-foreach ($id in @($qr.Keys)) { $qr[$id].rounds = @($qr[$id].rounds | Sort-Object { $_.date }) }
+# Sort by date, keeping the workbook's order for rounds on the same date (Sort-Object is not stable on its own).
+foreach ($id in @($qr.Keys)) { $i = 0; $qr[$id].rounds = @($qr[$id].rounds | ForEach-Object { [pscustomobject]@{ d = $_.date; i = $i++; r = $_ } } | Sort-Object d, i | ForEach-Object { $_.r }) }
 if ($oldQR -ne $null) {
   foreach ($id in ($qr.Keys + @($oldQR.PSObject.Properties.Name) | Select-Object -Unique)) {
     $p = OldProp $oldQR $id; $n = if ($qr.Contains($id)) { $qr[$id] } else { $null }
@@ -222,9 +277,13 @@ function Obj($dict) { if (-not $dict.Count) { return '{}' }; "{`n" + (($dict.Key
 $src = [regex]::Match([IO.File]::ReadAllText((Join-Path $root 'ipo-status.js'), [Text.Encoding]::UTF8), "IPO_SRC = ['""]([^'""]+)").Groups[1].Value
 if (-not $src) { $src = 'Perennial research' }
 [IO.File]::WriteAllText((Join-Path $root 'ipo-status.js'), ($hdr + "// IPO filing status per company. Keyed by company id.`nwindow.IPO_SRC = " + (ConvertTo-Json $src) + ";`nwindow.IPO = " + (Obj $ipo) + ";`n"), $utf8)
+if ($metChanged) {
+  $body = ($metVals.Keys | ForEach-Object { '  ' + (ConvertTo-Json $_) + ': ' + (ConvertTo-Json $metVals[$_]) }) -join ",`n"
+  [IO.File]::WriteAllText((Join-Path $root 'method-config.js'), ("// Tier-model parameters, edited through the master Excel's Methodology sheet (imported by .claude/work/import-master.ps1).`n// Units as in that sheet: weights and percentage bounds in %, months in months, valuations in US`$ billions, scores 0–100.`nwindow.METHOD = {`n" + $body + "`n};`n"), $utf8)
+}
 if ($removed.Count) {
   $map = Join-Path $PSScriptRoot 'name-map.csv'
   $add = $removed | ForEach-Object { '{0},drop,,{1}' -f ($_.name -replace ',',' '), ('"' + ($_.reason -replace '"',"'") + '"') }
   [IO.File]::AppendAllText($map, (($add -join "`n") + "`n"), $utf8)
 }
-""; "Written: quant-data.js, tier-overrides.js, quant-rounds.js, ipo-status.js$(if ($removed.Count) { ', name-map.csv' })"
+""; "Written: quant-data.js, tier-overrides.js, quant-rounds.js, ipo-status.js$(if ($metChanged) { ', method-config.js' })$(if ($removed.Count) { ', name-map.csv' })"

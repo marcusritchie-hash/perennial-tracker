@@ -11,6 +11,8 @@
 <script src="quant-rounds.js" onerror="window.QR=null"></script>
 <script src="tier-overrides.js" onerror="window.TIER_OVR={}"></script>
 <script src="ipo-status.js" onerror="window.IPO={}"></script>
+<script src="method-config.js" onerror="window.METHOD={}"></script>
+<script src="site-updated.js" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -203,6 +205,31 @@
 
   .tip { position: fixed; pointer-events: none; z-index: 50; background: var(--surface); color: var(--ink2); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 8px 10px; font-size: 12px; opacity: 0; transition: opacity .1s; max-width: 280px; }
 
+  /* allocation */
+  .al-set { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 18px; }
+  .al-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-top: 10px; }
+  .al-fields label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; font-weight: 600; color: var(--ink2); }
+  .al-fields label span { font-weight: 400; color: var(--muted); }
+  .al-in { font: 400 13px var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; width: 100%; font-variant-numeric: tabular-nums; }
+  .al-in:focus { outline: 2px solid var(--accent-purple); outline-offset: 0; }
+  td .al-in { width: 96px; padding: 4px 6px; font-size: 12px; text-align: right; }
+  #view-alloc tbody tr { cursor: default; }
+  #view-alloc td.co a { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--muted); }
+  .al-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .al-tools .sub { margin-left: 4px; }
+  ul.al-warn { list-style: none; margin: 0 0 16px; }
+  .al-warn li { padding: 8px 12px; margin-bottom: 6px; border-radius: 8px; border-left: 4px solid var(--accent-pink); background: var(--surface); box-shadow: var(--shadow); font-size: 12px; color: var(--ink); }
+  .al-warn li.info-note { border-left-color: var(--accent-purple); }
+  tr.al-total td { font-weight: 700; color: var(--ink); border-top: 2px solid var(--brand); background: var(--surface) !important; }
+  tr.al-off td { color: var(--muted); }
+  tr.al-hi td { background: color-mix(in srgb, var(--accent-light-purple) 35%, var(--surface)) !important; font-weight: 600; }
+  .mix { display: grid; grid-template-columns: 150px 1fr 52px; gap: 7px 10px; align-items: center; font-size: 12px; }
+  .mix .cov-bar.over span { background: var(--accent-pink); }
+  .stat-list { list-style: none; }
+  .stat-list li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line-soft); }
+  .stat-list li b { font-family: var(--serif); font-weight: 400; font-size: 16px; color: var(--brand); font-variant-numeric: tabular-nums; }
+  @media (max-width: 1100px) { .al-set { grid-template-columns: 1fr 1fr; } }
+
   @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 760px) {
     .app { padding: 20px 16px 48px; }
@@ -211,7 +238,7 @@
     .hdr h1 { font-size: 26px; }
     .logo { width: 170px; }
     .kpis { grid-template-columns: repeat(2, 1fr); }
-    .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+    .grid2, .grid3, .grid4, .al-set { grid-template-columns: 1fr; }
     #cal-kpis { grid-template-columns: repeat(2, 1fr) !important; }
     .facts { grid-template-columns: repeat(2, 1fr); }
     .cov { grid-template-columns: 140px 1fr 56px; }
@@ -242,6 +269,7 @@
   <nav class="tabs" role="tablist" aria-label="Views">
     <button class="tab-btn" role="tab" data-view="analytics" type="button">Analytics</button>
     <button class="tab-btn" role="tab" data-view="marquee" type="button">Marquee list</button>
+    <button class="tab-btn" role="tab" data-view="alloc" type="button">Allocation</button>
     <button class="tab-btn" role="tab" data-view="universe" type="button">Universe</button>
     <button class="tab-btn" role="tab" data-view="method" type="button">Methodology</button>
   </nav>
@@ -339,6 +367,59 @@
   </section>
   </div>
 
+  <div class="view" id="view-alloc" role="tabpanel" hidden>
+  <section>
+    <div class="sec-hd">
+      <h2>Allocation sensitivity</h2>
+      <p>How a capital raise would be spread across selected Marquee companies. Each company's share follows its tier weight, limited by the stock available to buy and the fund's portfolio rules; anything that cannot be placed stays as cash. The sensitivities below show how the result responds to exit outcomes, entry price and the tier weights themselves. Illustrative only: not a forecast, and not investment advice.</p>
+    </div>
+    <div class="al-tools">
+      <button class="btn" id="al-dl" type="button">⤓ Download scenario</button>
+      <button class="btn" id="al-ul" type="button">⤒ Upload scenario</button>
+      <input type="file" id="al-file" accept=".xlsx,.xls" hidden>
+      <button class="btn" id="al-reset" type="button">Reset to defaults</button>
+      <span class="sub">Settings are kept in this browser. Download the scenario to share it or keep a record.</span>
+    </div>
+    <div class="al-set" id="al-set"></div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Choose companies</h2><p>Tick the Marquee companies to hold. Enter the stock available to buy in each (from brokers and the desk); leave it blank to assume the full amount can be bought. A base-case override replaces the global base case for that company only.</p></div>
+    <div class="al-tools">
+      <button class="btn" data-pick="5" type="button">Top 5 by Marquee rank</button>
+      <button class="btn" data-pick="10" type="button">Top 10</button>
+      <button class="btn" data-pick="0" type="button">Clear</button>
+      <span class="sub" id="al-pick-n"></span>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-al-pick"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Allocation</h2><p id="al-sub"></p></div>
+    <div class="kpis" id="al-kpis"></div>
+    <ul class="al-warn" id="al-warn"></ul>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-al"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Sensitivity</h2><p>Exit cases are moves from today's average secondary price. With entry at today's price, they are moves from the entry price; paying more or less than today's price shifts every case. Multiples on the raise include undeployed cash and the reserve at face value.</p></div>
+    <div class="grid2">
+      <div class="panel"><h3>Exit outcomes</h3><div class="sub">Current allocation, at the entry price set above</div><div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-al-exit"><thead></thead><tbody></tbody></table></div></div>
+      <div class="panel"><h3>Entry price</h3><div class="sub">Multiple on capital deployed if we pay above or below today's secondary price</div><div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-al-entry"><thead></thead><tbody></tbody></table></div></div>
+    </div>
+    <div class="panel" style="margin-top:18px"><h3>Tier-weight sensitivity</h3><div class="sub">The same companies, stock limits and rules under different tier weightings. The highlighted row is the current setting.</div><div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-al-wt"><thead></thead><tbody></tbody></table></div></div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Portfolio shape</h2><p>Shares of capital deployed.</p></div>
+    <div class="grid3">
+      <div class="panel"><h3>Concentration</h3><ul class="stat-list" id="al-conc"></ul></div>
+      <div class="panel"><h3>Sector mix</h3><div class="sub" id="al-sec-sub"></div><div class="mix" id="al-sec"></div></div>
+      <div class="panel"><h3>Path to exit</h3><div class="sub">IPO status of the companies held</div><div class="mix" id="al-exitpath"></div><h3 style="margin-top:16px">Region mix</h3><div class="mix" id="al-reg" style="margin-top:8px"></div></div>
+    </div>
+  </section>
+  </div>
+
   <div class="view" id="view-universe" role="tabpanel" hidden>
   <section>
     <div class="sec-hd">
@@ -383,48 +464,48 @@
     <div class="sec-hd"><h2>The three pillars</h2><p>Each pillar is scored 0–100 from the measures below. A measure with no data is left out and the remaining measures are re-weighted, so missing data neither helps nor hurts.</p></div>
     <div class="grid3">
       <div class="panel pillar">
-        <div class="pillar-hd"><h3>Value accretion</h3><span class="wt">40%</span></div>
+        <div class="pillar-hd"><h3>Value accretion</h3><span class="wt"><m-v k="pillar.va"></m-v>%</span></div>
         <p class="sub">Is the company compounding value?</p>
         <ul>
-          <li><b>Secondary price vs last valuation</b> (40%): −30% scores 0, +60% scores 100. Only marks from the last 18 months count.</li>
-          <li><b>Valuation growth</b> (30%): annual growth in valuation across priced rounds over three years or more, or since the first priced round if that is at least a year earlier; 0% scores 0, 150% a year scores 100.</li>
-          <li><b>Freshness of the last valuation</b> (15%): a mark within 3 months scores 100, 36 months or older scores 0.</li>
-          <li><b>Path to realisation</b> (15%): an IPO filing (public or confidential) or a company-run tender in the last 24 months scores 100; reported IPO plans score 50.</li>
+          <li><b>Secondary price vs last valuation</b> (<m-v k="va.prem.w"></m-v>%): <m-v k="va.prem.lo" s></m-v>% scores 0, <m-v k="va.prem.hi" s></m-v>% scores 100. Only marks from the last <m-v k="data.staleMonths"></m-v> months count.</li>
+          <li><b>Valuation growth</b> (<m-v k="va.growth.w"></m-v>%): annual growth in valuation across priced rounds over three years or more, or since the first priced round if that is at least a year earlier; <m-v k="va.growth.lo"></m-v>% scores 0, <m-v k="va.growth.hi"></m-v>% a year scores 100.</li>
+          <li><b>Freshness of the last valuation</b> (<m-v k="va.fresh.w"></m-v>%): a mark within <m-v k="va.fresh.full"></m-v> months scores 100, <m-v k="va.fresh.zero"></m-v> months or older scores 0.</li>
+          <li><b>Path to realisation</b> (<m-v k="va.path.w"></m-v>%): an IPO filing (public or confidential) or a company-run tender in the last <m-v k="va.path.tenderMonths"></m-v> months scores <m-v k="va.path.filed"></m-v>; reported IPO plans score <m-v k="va.path.plans"></m-v>.</li>
         </ul>
       </div>
       <div class="panel pillar">
-        <div class="pillar-hd"><h3>Liquidity</h3><span class="wt">30%</span></div>
+        <div class="pillar-hd"><h3>Liquidity</h3><span class="wt"><m-v k="pillar.lq"></m-v>%</span></div>
         <p class="sub">Can positions be entered and exited at size?</p>
         <ul>
-          <li><b>Venue coverage</b> (30%): number of venues quoting the company, out of Clarity, Augment and Forge.</li>
-          <li><b>Price agreement</b> (25%): gap between the highest and lowest venue price; 30% scores 0, 3% scores 100. A single venue scores 40.</li>
-          <li><b>Scale</b> (30%): valuation on a log scale; $1bn scores 0, $300bn scores 100.</li>
-          <li><b>Company liquidity programmes</b> (15%): a company-run tender or buyback in the last 24 months scores 100.</li>
+          <li><b>Venue coverage</b> (<m-v k="lq.venues.w"></m-v>%): number of venues quoting the company, out of Clarity, Augment and Forge.</li>
+          <li><b>Price agreement</b> (<m-v k="lq.spread.w"></m-v>%): gap between the highest and lowest venue price; <m-v k="lq.spread.zero"></m-v>% scores 0, <m-v k="lq.spread.full"></m-v>% scores 100. A single venue scores <m-v k="lq.spread.single"></m-v>.</li>
+          <li><b>Scale</b> (<m-v k="lq.scale.w"></m-v>%): valuation on a log scale; $<m-v k="lq.scale.lo"></m-v>bn scores 0, $<m-v k="lq.scale.hi"></m-v>bn scores 100.</li>
+          <li><b>Company liquidity programmes</b> (<m-v k="lq.tender.w"></m-v>%): a company-run tender or buyback in the last <m-v k="va.path.tenderMonths"></m-v> months scores 100.</li>
         </ul>
         <p class="sub" style="margin-top:8px">Companies with a researched funding history are scored on liquidity even if no venue quotes them; the absence of quotes counts as zero coverage.</p>
       </div>
       <div class="panel pillar">
-        <div class="pillar-hd"><h3>Demand</h3><span class="wt">30%</span></div>
+        <div class="pillar-hd"><h3>Demand</h3><span class="wt"><m-v k="pillar.dm"></m-v>%</span></div>
         <p class="sub">How strong is buyer interest?</p>
         <ul>
-          <li><b>Augment Power 20</b> (35%): Augment's quarterly ranking of market activity, price trend and company growth; #1 scores 100, #20 scores 5, an honourable mention scores 25, unranked scores 0.</li>
-          <li><b>Clarity Liquidity Index</b> (35%): rank among the 50 most liquid companies on Clarity (formerly Hiive); #1 scores 100, unranked scores 0.</li>
-          <li><b>Price momentum</b> (30%): change since our first verified secondary price; −20% scores 0, +30% scores 100.</li>
+          <li><b>Augment Power 20</b> (<m-v k="dm.aug.w"></m-v>%): Augment's quarterly ranking of market activity, price trend and company growth; #1 scores 100, #20 scores 5, an honourable mention scores <m-v k="dm.aug.hm"></m-v>, unranked scores 0.</li>
+          <li><b>Clarity Liquidity Index</b> (<m-v k="dm.c50.w"></m-v>%): rank among the 50 most liquid companies on Clarity (formerly Hiive); #1 scores 100, unranked scores 0.</li>
+          <li><b>Price momentum</b> (<m-v k="dm.mom.w"></m-v>%): change since our first verified secondary price; <m-v k="dm.mom.lo" s></m-v>% scores 0, <m-v k="dm.mom.hi" s></m-v>% scores 100.</li>
         </ul>
       </div>
     </div>
   </section>
 
   <section>
-    <div class="sec-hd"><h2>From scores to tiers</h2><p>The composite score weights the pillars 40 / 30 / 30. The suggested tier follows these rules, applied in order:</p></div>
+    <div class="sec-hd"><h2>From scores to tiers</h2><p>The composite score weights the pillars <m-v k="pillar.va"></m-v> / <m-v k="pillar.lq"></m-v> / <m-v k="pillar.dm"></m-v>. The suggested tier follows these rules, applied in order:</p></div>
     <div class="tbl-wrap" style="max-height:none"><table class="rules">
       <thead><tr><th>Suggested tier</th><th>Rule</th></tr></thead>
       <tbody>
         <tr><td class="co">Conviction (IPO)</td><td>A company that has filed for an IPO, publicly or confidentially, or has reported IPO plans is at least Conviction, whatever its scores. The IPO path is the driver.</td></tr>
-        <tr><td class="co">Watch</td><td>Fewer than two pillars are backed by data. The company is monitored, not held, until it can be scored. Companies the investment team has placed in Anchor or Conviction keep that tier.</td></tr>
-        <tr><td class="co">Anchor</td><td>Composite score of 60 or more, liquidity score of 50 or more, and valuation of $50bn or more.</td></tr>
-        <tr><td class="co">Tail</td><td>Liquidity score below 30, whatever the other pillars show.</td></tr>
-        <tr><td class="co">Conviction</td><td>Composite score of 40 or more, or a value accretion score of 70 or more.</td></tr>
+        <tr><td class="co">Watch</td><td>Fewer than <m-v k="rule.minPillars"></m-v> pillars are backed by data. The company is monitored, not held, until it can be scored. Companies the investment team has placed in Anchor or Conviction keep that tier.</td></tr>
+        <tr><td class="co">Anchor</td><td>Composite score of <m-v k="rule.anchor.comp"></m-v> or more, liquidity score of <m-v k="rule.anchor.lq"></m-v> or more, and valuation of $<m-v k="rule.anchor.val"></m-v>bn or more.</td></tr>
+        <tr><td class="co">Tail</td><td>Liquidity score below <m-v k="rule.tail.lq"></m-v>, whatever the other pillars show.</td></tr>
+        <tr><td class="co">Conviction</td><td>Composite score of <m-v k="rule.conv.comp"></m-v> or more, or a value accretion score of <m-v k="rule.conv.va"></m-v> or more.</td></tr>
         <tr><td class="co">Watch</td><td>Everything else: scored, but too weak on value accretion and demand to hold. Monitored, not held.</td></tr>
       </tbody>
     </table></div>
@@ -510,7 +591,31 @@ for (const c of UNI) c.tier0 = c.tier;
 function applyTiers() { for (const c of UNI) c.tier = tierDecision(c)?.tier || c.tier0; }
 applyTiers();
 const TIERS = ['Anchor','Conviction','Tail','Watch','Unassigned'].filter(t => t!=='Unassigned' || UNI.some(c => c.tier0 === t || c.tier === t));
-const STALE_MONTHS = 18;
+// Tier-model parameters: values from method-config.js (the master Excel's Methodology sheet), these defaults otherwise.
+// Units as shown in the sheet: weights and percentage bounds in %, months, US$ billions, or scores 0–100.
+const METHOD_SPEC = [
+  ['Pillar weights','pillar.va','Value accretion','% of composite',40], ['Pillar weights','pillar.lq','Liquidity','% of composite',30], ['Pillar weights','pillar.dm','Demand','% of composite',30],
+  ['Value accretion','va.prem.w','Secondary price vs last valuation: weight','% of pillar',40], ['Value accretion','va.prem.lo','Secondary price vs last valuation: scores 0 at','% premium',-30], ['Value accretion','va.prem.hi','Secondary price vs last valuation: scores 100 at','% premium',60],
+  ['Value accretion','va.growth.w','Valuation growth: weight','% of pillar',30], ['Value accretion','va.growth.lo','Valuation growth: scores 0 at','% a year',0], ['Value accretion','va.growth.hi','Valuation growth: scores 100 at','% a year',150],
+  ['Value accretion','va.fresh.w','Freshness of last valuation: weight','% of pillar',15], ['Value accretion','va.fresh.full','Freshness: scores 100 within','months',3], ['Value accretion','va.fresh.zero','Freshness: scores 0 at or beyond','months',36],
+  ['Value accretion','va.path.w','Path to realisation: weight','% of pillar',15], ['Value accretion','va.path.filed','Path: score for an IPO filing or recent company tender','score 0–100',100], ['Value accretion','va.path.plans','Path: score for reported IPO plans','score 0–100',50], ['Value accretion','va.path.tenderMonths','Path and liquidity: a company tender counts if within','months',24],
+  ['Liquidity','lq.venues.w','Venue coverage: weight','% of pillar',30],
+  ['Liquidity','lq.spread.w','Price agreement: weight','% of pillar',25], ['Liquidity','lq.spread.zero','Price agreement: scores 0 at a venue gap of','%',30], ['Liquidity','lq.spread.full','Price agreement: scores 100 at a venue gap of','%',3], ['Liquidity','lq.spread.single','Price agreement: score with a single venue','score 0–100',40],
+  ['Liquidity','lq.scale.w','Scale: weight','% of pillar',30], ['Liquidity','lq.scale.lo','Scale: scores 0 at','US$ bn',1], ['Liquidity','lq.scale.hi','Scale: scores 100 at','US$ bn',300],
+  ['Liquidity','lq.tender.w','Company liquidity programmes: weight','% of pillar',15],
+  ['Demand','dm.aug.w','Augment Power 20: weight','% of pillar',35], ['Demand','dm.aug.hm','Augment Power 20: score for an honourable mention','score 0–100',25],
+  ['Demand','dm.c50.w','Clarity Liquidity Index: weight','% of pillar',35],
+  ['Demand','dm.mom.w','Price momentum: weight','% of pillar',30], ['Demand','dm.mom.lo','Price momentum: scores 0 at','% change',-20], ['Demand','dm.mom.hi','Price momentum: scores 100 at','% change',30],
+  ['Tier rules','rule.minPillars','Pillars with data needed to score','count',2],
+  ['Tier rules','rule.anchor.comp','Anchor: minimum composite score','score 0–100',60], ['Tier rules','rule.anchor.lq','Anchor: minimum liquidity score','score 0–100',50], ['Tier rules','rule.anchor.val','Anchor: minimum valuation','US$ bn',50],
+  ['Tier rules','rule.tail.lq','Tail: liquidity score below','score 0–100',30],
+  ['Tier rules','rule.conv.comp','Conviction: minimum composite score','score 0–100',40], ['Tier rules','rule.conv.va','Conviction: or minimum value accretion score','score 0–100',70],
+  ['Data','data.staleMonths','A last round older than this is stale','months',18],
+].map(([sec,k,l,u,d]) => ({ sec, k, l, u, d }));
+const M = Object.fromEntries(METHOD_SPEC.map(p => [p.k, Number.isFinite(+window.METHOD?.[p.k]) ? +window.METHOD[p.k] : p.d]));
+const mp = k => M[k]/100;
+document.querySelectorAll('m-v').forEach(e => { const v = M[e.getAttribute('k')]; e.textContent = (e.hasAttribute('s') && v>0 ? '+' : '') + String(v).replace('-','−'); });
+const STALE_MONTHS = M['data.staleMonths'];
 const ASOF = new Date(QD_ASOF + 'T00:00:00');
 
 // ── helpers ──
@@ -893,7 +998,7 @@ function drawDetail(c) {
 }
 
 // ── tier model: value accretion / liquidity / demand → suggested tier (see the Methodology tab) ──
-const TIER_W = { va:0.4, lq:0.3, dm:0.3 };
+const TIER_W = { va:mp('pillar.va'), lq:mp('pillar.lq'), dm:mp('pillar.dm') };
 const YEAR_MS = 365.25*864e5;
 const lin = (x, lo, hi) => x==null || isNaN(x) ? null : Math.max(0, Math.min(100, (x-lo)/(hi-lo)*100));
 // Weighted mean of the measures that have data; missing measures drop out and the rest re-weight.
@@ -906,24 +1011,25 @@ for (const c of UNI) {
   const base = last && ([...marks].reverse().find(r => yrsTo(r) >= 3) || marks.find(r => yrsTo(r) >= 1));
   const growth = base ? Math.pow(last.post/base.post, 1/yrsTo(base)) - 1 : null;
   const researched = !!window.QR?.[c.id];
-  const tender24 = window.QR?.[c.id] ? marks.some(r => r.type==='Tender' && (ASOF-new Date(r.date))/YEAR_MS <= 2) : null;
+  const tender24 = window.QR?.[c.id] ? marks.some(r => r.type==='Tender' && (ASOF-new Date(r.date))/YEAR_MS <= M['va.path.tenderMonths']/12) : null;
   const val = c.impl ?? c.curVal ?? c.lrEv;
   const recentPrem = c.prem!=null && !c.stale ? c.prem : null;
   // A researched profile is liquidity evidence even with no venue quotes: scale, tenders, and the absence of quotes.
   const has = { va: recentPrem!=null || growth!=null, lq: c.nVen>0 || researched, dm: !!(c.aug || c.c50 || c.mom!=null) };
-  const va = has.va ? wmean([[lin(recentPrem,-0.3,0.6),0.4], [lin(growth,0,1.5),0.3], [c.lrAge==null?null:lin(-c.lrAge,-36,-3),0.15],
-    [/filed/.test(c.ipo?.status||'') || tender24 ? 100 : c.ipo ? 50 : 0, 0.15]]) : null;
-  const lq = has.lq ? wmean([[c.nVen/3*100,0.3], [c.nVen>=2 ? lin(-c.spread,-0.3,-0.03) : c.nVen===1 ? 40 : null, 0.25],
-    [val ? lin(Math.log10(val),0,Math.log10(300)) : null, 0.3], [tender24==null ? null : tender24 ? 100 : 0, 0.15]]) : null;
-  // Venue demand lists: Augment Power 20 (21 = honourable mention, scores 25), Clarity Liquidity Index top 50.
-  const augS = !c.aug ? 0 : c.aug<=20 ? lin(21-c.aug,0,20) : 25;
-  const dm = has.dm ? wmean([[augS, 0.35], [c.c50 ? lin(51-c.c50,0,50) : 0, 0.35], [c.mom==null ? null : lin(c.mom,-0.2,0.3), 0.3]]) : null;
-  const enough = Object.values(has).filter(Boolean).length >= 2;
+  const va = has.va ? wmean([[lin(recentPrem,mp('va.prem.lo'),mp('va.prem.hi')), mp('va.prem.w')], [lin(growth,mp('va.growth.lo'),mp('va.growth.hi')), mp('va.growth.w')],
+    [c.lrAge==null?null:lin(-c.lrAge,-M['va.fresh.zero'],-M['va.fresh.full']), mp('va.fresh.w')],
+    [/filed/.test(c.ipo?.status||'') || tender24 ? M['va.path.filed'] : c.ipo ? M['va.path.plans'] : 0, mp('va.path.w')]]) : null;
+  const lq = has.lq ? wmean([[c.nVen/3*100, mp('lq.venues.w')], [c.nVen>=2 ? lin(-c.spread,-mp('lq.spread.zero'),-mp('lq.spread.full')) : c.nVen===1 ? M['lq.spread.single'] : null, mp('lq.spread.w')],
+    [val ? lin(Math.log10(val),Math.log10(M['lq.scale.lo']),Math.log10(M['lq.scale.hi'])) : null, mp('lq.scale.w')], [tender24==null ? null : tender24 ? 100 : 0, mp('lq.tender.w')]]) : null;
+  // Venue demand lists: Augment Power 20 (21 = honourable mention), Clarity Liquidity Index top 50.
+  const augS = !c.aug ? 0 : c.aug<=20 ? lin(21-c.aug,0,20) : M['dm.aug.hm'];
+  const dm = has.dm ? wmean([[augS, mp('dm.aug.w')], [c.c50 ? lin(51-c.c50,0,50) : 0, mp('dm.c50.w')], [c.mom==null ? null : lin(c.mom,mp('dm.mom.lo'),mp('dm.mom.hi')), mp('dm.mom.w')]]) : null;
+  const enough = Object.values(has).filter(Boolean).length >= M['rule.minPillars'];
   const comp = enough ? TIER_W.va*(va??0) + TIER_W.lq*(lq??0) + TIER_W.dm*(dm??0) : null;
   const sug = comp==null ? 'Watch'
-    : comp>=60 && (lq??0)>=50 && val>=50 ? 'Anchor'
-    : (lq??0) < 30 ? 'Tail'
-    : comp>=40 || (va??0)>=70 ? 'Conviction' : 'Watch';
+    : comp>=M['rule.anchor.comp'] && (lq??0)>=M['rule.anchor.lq'] && val>=M['rule.anchor.val'] ? 'Anchor'
+    : (lq??0) < M['rule.tail.lq'] ? 'Tail'
+    : comp>=M['rule.conv.comp'] || (va??0)>=M['rule.conv.va'] ? 'Conviction' : 'Watch';
   // IPO floor: a company that has filed for an IPO or reported IPO plans is at least Conviction.
   const sugF = c.ipo && ['Tail','Watch'].includes(sug) ? 'Conviction' : sug;
   c.ts = { va, lq, dm, comp, sug: sugF, ipoFloor: sugF!==sug, growth };
@@ -961,10 +1067,10 @@ function drawMethod(rs) {
     { d:DEF.company, l:'Company', cls:'co', f:c=>esc(c.name) },
     { d:'The tier confirmed by the investment team. "was X" shows the tier the rules gave before the team decision.', l:'Current tier', f:c=>`${esc(c.tier)}${c.tier!==c.tier0 ? ` <span class="flag">was ${esc(c.tier0)}</span>` : ''}` },
     { d:'The tier the methodology rules give from the scores, before any team decision. "not scored" means fewer than two pillars have data.', l:'Suggested', f:c=>c.ts.comp==null && c.tier!=='Watch' ? '<span class="flag">not scored</span>' : c.ts.sug===c.tier ? esc(c.ts.sug) : `<b>${esc(c.ts.sug)}</b>` },
-    { d:'0–100: is the company compounding value? Secondary price vs last valuation (40%), valuation growth (30%), freshness of the last valuation (15%), path to realisation: IPO filing or company tender (15%).', l:'Value accretion', r:1, f:c=>f0(c.ts.va) },
-    { d:'0–100: can positions be entered and exited at size? Venue coverage (30%), price agreement between venues (25%), scale (30%), company-run tenders (15%).', l:'Liquidity', r:1, f:c=>f0(c.ts.lq) },
-    { d:'0–100: how strong is buyer interest? Augment Power 20 (35%), Clarity Liquidity Index (35%), secondary price momentum (30%).', l:'Demand', r:1, f:c=>f0(c.ts.dm) },
-    { d:'Overall score: 40% value accretion + 30% liquidity + 30% demand. A pillar without data counts as 0.', l:'Composite', r:1, f:c=>f0(c.ts.comp) },
+    { d:`0–100: is the company compounding value? Secondary price vs last valuation (${M['va.prem.w']}%), valuation growth (${M['va.growth.w']}%), freshness of the last valuation (${M['va.fresh.w']}%), path to realisation: IPO filing or company tender (${M['va.path.w']}%).`, l:'Value accretion', r:1, f:c=>f0(c.ts.va) },
+    { d:`0–100: can positions be entered and exited at size? Venue coverage (${M['lq.venues.w']}%), price agreement between venues (${M['lq.spread.w']}%), scale (${M['lq.scale.w']}%), company-run tenders (${M['lq.tender.w']}%).`, l:'Liquidity', r:1, f:c=>f0(c.ts.lq) },
+    { d:`0–100: how strong is buyer interest? Augment Power 20 (${M['dm.aug.w']}%), Clarity Liquidity Index (${M['dm.c50.w']}%), secondary price momentum (${M['dm.mom.w']}%).`, l:'Demand', r:1, f:c=>f0(c.ts.dm) },
+    { d:`Overall score: ${M['pillar.va']}% value accretion + ${M['pillar.lq']}% liquidity + ${M['pillar.dm']}% demand. A pillar without data counts as 0.`, l:'Composite', r:1, f:c=>f0(c.ts.comp) },
   ];
   if (tierEdit) {
     const opt = (v, cur, label=v) => `<option value="${esc(v)}"${v===cur?' selected':''}>${esc(label)}</option>`;
@@ -1027,9 +1133,271 @@ document.getElementById('dl-tiers').addEventListener('click', ()=>{
   setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
 });
 
+// ── allocation sensitivity: spread a raise across chosen Marquee companies by tier weight, within available
+// stock and the portfolio rules, then stress the result. Settings live in this browser and in downloaded scenarios. ──
+const AL_KEY = 'pq-alloc';
+const AL_FIELDS = [
+  { g:'Fund', k:'raise', l:'Capital raised', u:'$m', d:200, step:10 },
+  { g:'Fund', k:'reserve', l:'Reserve for fees and follow-ons', u:'% of raise', d:5, step:1 },
+  { g:'Fund', k:'maxPos', l:'Maximum position', u:'% of investable', d:25, step:1 },
+  { g:'Fund', k:'minTicket', l:'Minimum ticket', u:'$m', d:5, step:1 },
+  { g:'Fund', k:'sectorCap', l:'Sector cap', u:'% of investable', d:40, step:5 },
+  { g:'Tier weights', k:'wAnchor', l:'Anchor', u:'weight', d:3, step:0.5 },
+  { g:'Tier weights', k:'wConviction', l:'Conviction', u:'weight', d:2, step:0.5 },
+  { g:'Tier weights', k:'wTail', l:'Tail', u:'weight', d:1, step:0.5 },
+  { g:'Tier weights', k:'wWatch', l:'Watch', u:'weight (monitored, not held)', d:0, step:0.5 },
+  { g:'Exit cases', k:'bear', l:'Bear case', u:'% vs today\'s price', d:-40, step:5 },
+  { g:'Exit cases', k:'base', l:'Base case', u:'% vs today\'s price', d:50, step:5 },
+  { g:'Exit cases', k:'bull', l:'Bull case', u:'% vs today\'s price', d:150, step:5 },
+  { g:'Exit cases', k:'entry', l:'Entry price', u:'% vs today\'s price', d:0, step:5 },
+];
+const AL_GROUPS = { 'Fund':'Fund rules', 'Tier weights':'Tier weights', 'Exit cases':'Exit cases and entry price' };
+const AL_PRESETS = [['4 : 2 : 1',4,2,1],['3 : 2 : 1',3,2,1],['2 : 1 : 0.5',2,1,0.5],['3 : 2 : 2',3,2,2],['Equal weight',1,1,1]];
+const mqAll = () => UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq);
+const alDefault = () => ({ s:Object.fromEntries(AL_FIELDS.map(f=>[f.k,f.d])), sel:mqAll().slice(0,5).map(c=>c.id), cap:{}, ovr:{} });
+let al = alDefault();
+try { const v = JSON.parse(localStorage.getItem(AL_KEY) || 'null'); if (v?.s) al = { ...alDefault(), ...v, s:{ ...alDefault().s, ...v.s } }; } catch {}
+const alSave = () => { try { localStorage.setItem(AL_KEY, JSON.stringify(al)); } catch {} };
+const fm = x => x==null || isNaN(x) ? '—' : '$' + (Math.abs(x) >= 100 ? x.toFixed(0) : x.toFixed(1)) + 'm';
+const fx = x => x==null || isNaN(x) ? '—' : x.toFixed(2) + '×';
+const fp = x => x==null || isNaN(x) ? '—' : (x*100).toFixed(1) + '%';
+const numOr = (v, d=null) => v==='' || v==null || isNaN(+v) ? d : +v;
+
+// Water-filling: each company gets rem × weight ÷ total weight of the companies still open; a company that would
+// exceed its limit (available stock or maximum position) is fixed at the limit and the rest re-shared. A sector over
+// its cap has its open companies scaled down to fit. Companies below the minimum ticket are dropped one at a time
+// (smallest first) and the whole allocation re-run.
+function allocate(s, ids, wts) {
+  const W = wts || { Anchor:s.wAnchor, Conviction:s.wConviction, Tail:s.wTail, Watch:s.wWatch };
+  const inv = Math.max(0, s.raise * (1 - s.reserve/100));
+  const posCap = inv * s.maxPos/100, secCap = inv * s.sectorCap/100;
+  const rs = ids.map(id => UNI.find(c=>c.id===id)).filter(Boolean).map(c => {
+    const cap = numOr(al.cap[c.id]);
+    return { c, w:Math.max(0, +W[c.tier] || 0), cap: cap==null ? Infinity : Math.max(0, cap), capSet: cap!=null, amt:0, why:'' };
+  });
+  const sumW = rs.reduce((a,r)=>a+r.w, 0);
+  rs.forEach(r => r.target = sumW ? inv*r.w/sumW : 0);
+  const out = new Set(rs.filter(r=>r.w===0));
+  out.forEach(r => r.why = `Tier weight for ${r.c.tier} is 0`);
+  for (let pass = 0; pass < 40; pass++) {
+    const fixed = new Set(); let rem = inv;
+    rs.filter(r=>!out.has(r)).forEach(r => { r.amt = 0; r.why = ''; });
+    for (let it = 0; it < 80; it++) {
+      const open = rs.filter(r=>!out.has(r) && !fixed.has(r));
+      const ow = open.reduce((a,r)=>a+r.w, 0);
+      if (!open.length || ow <= 0 || rem <= 1e-9) { open.forEach(r=>r.amt=0); break; }
+      open.forEach(r => r.amt = rem*r.w/ow);
+      let changed = false;
+      for (const sec of new Set(open.map(r=>r.c.sector))) {
+        const inSec = rs.filter(r=>!out.has(r) && r.c.sector===sec);
+        if (inSec.reduce((a,r)=>a+r.amt,0) <= secCap + 1e-9) continue;
+        const room = Math.max(0, secCap - inSec.filter(r=>fixed.has(r)).reduce((a,r)=>a+r.amt,0));
+        const fr = inSec.filter(r=>!fixed.has(r)), frSum = fr.reduce((a,r)=>a+r.amt,0);
+        for (const r of fr) {
+          const lim = Math.min(r.cap, posCap);
+          r.amt = Math.min(lim, frSum ? r.amt*room/frSum : 0);
+          r.why = r.amt >= lim - 1e-9 && lim < Infinity ? (r.cap <= posCap ? 'Limited by available stock' : 'Capped at maximum position') : 'Held back by sector cap';
+          fixed.add(r); rem -= r.amt; changed = true;
+        }
+      }
+      if (changed) continue;
+      for (const r of open) {
+        const lim = Math.min(r.cap, posCap);
+        if (r.amt > lim + 1e-9) { r.amt = lim; r.why = r.cap <= posCap ? 'Limited by available stock' : 'Capped at maximum position'; fixed.add(r); rem -= lim; changed = true; }
+      }
+      if (!changed) break;
+    }
+    const small = rs.filter(r=>!out.has(r) && r.amt < s.minTicket - 1e-9).sort((a,b)=>a.amt-b.amt);
+    if (!small.length) break;
+    small[0].why = `Below the ${fm(s.minTicket)} minimum ticket`; out.add(small[0]);
+  }
+  out.forEach(r => r.amt = 0);
+  const deployed = rs.reduce((a,r)=>a+r.amt, 0);
+  return { rs, inv, deployed, cash: inv - deployed, reserve: s.raise - inv, posCap, secCap };
+}
+// Exit value of each holding and of the fund, for exit move m (fraction vs today's price) and entry move e.
+const exitMove = (r, k, s) => k==='base' && numOr(al.ovr[r.c.id])!=null ? numOr(al.ovr[r.c.id])/100 : s[k]/100;
+function outcome(A, s, k, entry = s.entry/100) {
+  const held = A.rs.filter(r=>r.amt>0);
+  const val = held.reduce((a,r)=>a + r.amt*(1+exitMove(r,k,s))/(1+entry), 0);
+  return { val, onDeployed: A.deployed ? val/A.deployed : null, onRaise: s.raise ? (val + A.cash + A.reserve)/s.raise : null, gain: val - A.deployed };
+}
+const shapeOf = A => {
+  const held = A.rs.filter(r=>r.amt>0).sort((a,b)=>b.amt-a.amt), d = A.deployed || 1;
+  const p = held.map(r=>r.amt/d);
+  return { n:held.length, top1:p[0]||0, top3:p.slice(0,3).reduce((a,b)=>a+b,0), eff: p.length ? 1/p.reduce((a,x)=>a+x*x,0) : 0 };
+};
+
+function drawAllocSettings() {
+  document.getElementById('al-set').innerHTML = Object.entries(AL_GROUPS).map(([g, title]) =>
+    `<div class="panel"><h3>${title}</h3><div class="al-fields">` + AL_FIELDS.filter(f=>f.g===g).map(f =>
+      `<label>${f.l}<input class="al-in" type="number" step="${f.step||1}" data-k="${f.k}" value="${al.s[f.k]}"><span>${esc(f.u)}</span></label>`).join('')
+    + `</div></div>`).join('');
+}
+const PICK_COLS = [
+  { l:'Hold' }, { d:'Position on the Marquee Access Fund list.', l:'Marquee rank', r:1 }, { d:DEF.company, l:'Company' }, { d:DEF.tier, l:'Tier' }, { l:'Sector' },
+  { d:'Average indicative secondary price across Clarity, Augment and Forge (USD).', l:'Secondary price', r:1 }, { d:DEF.curVal, l:'Current valuation', r:1 },
+  { d:DEF.ipo, l:'IPO status' },
+  { d:'US$ millions of stock we can actually buy, from brokers and the desk. Blank means no limit is applied.', l:'Available stock ($m)', r:1 },
+  { d:'Replaces the global base case for this company, as a % move from today\'s secondary price. Blank uses the global base case.', l:'Base case override (%)', r:1 },
+];
+function drawAllocPick() {
+  document.querySelector('#tbl-al-pick thead').innerHTML = headHtml(PICK_COLS);
+  document.querySelector('#tbl-al-pick tbody').innerHTML = mqAll().map(c => `<tr data-id="${c.id}">
+    <td><input type="checkbox" class="al-pick" ${al.sel.includes(c.id)?'checked':''} aria-label="Hold ${esc(c.name)}"></td>
+    <td class="r num">${c.mq}</td><td class="co"><a href="#" class="al-open">${esc(c.name)}</a></td><td>${esc(c.tier)}</td><td>${esc(c.sector)}</td>
+    <td class="r num">${c.bl==null ? NA : usd(c.bl)}</td><td class="r num">${(c.impl ?? c.curVal)==null ? NA : bn(c.impl ?? c.curVal)}</td>
+    <td>${c.ipo ? IPO_SHORT[c.ipo.status]||esc(c.ipo.status) : NA}</td>
+    <td class="r"><input class="al-in" type="number" min="0" step="1" data-cap value="${al.cap[c.id] ?? ''}" placeholder="no limit" aria-label="Available stock for ${esc(c.name)}, US$ millions"></td>
+    <td class="r"><input class="al-in" type="number" step="5" data-ovr value="${al.ovr[c.id] ?? ''}" placeholder="${al.s.base}" aria-label="Base case override for ${esc(c.name)}, %"></td></tr>`).join('');
+}
+const AL_COLS = [
+  { d:DEF.company, l:'Company' }, { d:DEF.tier, l:'Tier' }, { l:'Sector' },
+  { d:'Tier weight from the settings above.', l:'Weight', r:1 },
+  { d:'Share of investable capital by tier weight alone, before stock limits and rules.', l:'Weight share ($m)', r:1 },
+  { d:'Stock available to buy, as entered above.', l:'Available ($m)', r:1 },
+  { d:'Capital allocated after stock limits, the maximum position, the sector cap and the minimum ticket.', l:'Allocated ($m)', r:1 },
+  { d:'Allocated capital as a share of investable capital (raise less reserve).', l:'% of investable', r:1 },
+  { d:'Today\'s average secondary price adjusted by the entry price setting.', l:'Entry price', r:1 },
+  { d:'Allocated capital ÷ entry price.', l:'Shares bought', r:1 },
+  { d:'Value of the holding in the bear, base and bull cases, US$ millions.', l:'Bear ($m)', r:1 }, { l:'Base ($m)', r:1 }, { l:'Bull ($m)', r:1 },
+  { d:'Why the allocation differs from the weight share.', l:'Note' },
+];
+function drawAlloc() {
+  const s = al.s, A = allocate(s, al.sel), sh = shapeOf(A), e = s.entry/100;
+  const cases = ['bear','base','bull'].map(k => ({ k, l:k[0].toUpperCase()+k.slice(1), ...outcome(A, s, k) }));
+  document.getElementById('al-pick-n').textContent = `${al.sel.length} of ${mqAll().length} Marquee companies selected`;
+  document.getElementById('al-sub').textContent = `${fm(s.raise)} raised · ${fm(A.reserve)} reserve · ${fm(A.inv)} investable · tier weights Anchor ${s.wAnchor} : Conviction ${s.wConviction} : Tail ${s.wTail} : Watch ${s.wWatch}`;
+  const base = cases[1];
+  document.getElementById('al-kpis').innerHTML = [
+    ['Investable', fm(A.inv), `after ${fm(A.reserve)} reserve`],
+    ['Deployed', fm(A.deployed), A.inv ? `${fp(A.deployed/A.inv)} of investable` : ''],
+    ['Undeployed cash', fm(A.cash), A.cash > 0.05 ? 'cannot be placed under current limits' : 'fully placed'],
+    ['Companies held', sh.n, `of ${al.sel.length} selected · effective ${sh.eff.toFixed(1)}`],
+    ['Largest position', fp(sh.top1), `top 3: ${fp(sh.top3)} of deployed`],
+    ['Base case', fx(base.onRaise), `on the raise · ${fx(base.onDeployed)} on deployed`],
+  ].map(([l,v,x])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${x}</div></div>`).join('');
+
+  const w = [];
+  if (!al.sel.length) w.push('No companies selected. Tick companies in the table above, or use Top 5 / Top 10.');
+  if (A.cash > 0.05) w.push(`${fm(A.cash)} cannot be placed: the selected companies hit their stock limits, the ${s.maxPos}% maximum position or the ${s.sectorCap}% sector cap. Add companies, find more stock or relax a rule.`);
+  if (sh.n && sh.n * s.maxPos < 100) w.push(`With ${sh.n} companies and a ${s.maxPos}% maximum position, at most ${sh.n*s.maxPos}% of investable capital can be deployed.`);
+  const noCap = A.rs.filter(r=>r.amt>0 && !r.capSet);
+  if (noCap.length) w.push(`No available stock entered for ${noCap.map(r=>esc(r.c.name)).join(', ')}: the model assumes the full allocation can be bought.`);
+  const noPx = A.rs.filter(r=>r.amt>0 && r.c.bl==null);
+  if (noPx.length) w.push(`No USD secondary price for ${noPx.map(r=>esc(r.c.name)).join(', ')}: shares bought are not shown; exit cases still apply to the capital.`);
+  document.getElementById('al-warn').innerHTML = w.map(x=>`<li>⚠ ${x}</li>`).join('');
+
+  document.querySelector('#tbl-al thead').innerHTML = headHtml(AL_COLS);
+  const ord = [...A.rs].sort((a,b)=>b.amt-a.amt || a.c.mq-b.c.mq);
+  const row = r => { const c = r.c, px = c.bl==null ? null : c.bl*(1+e), m = k => r.amt*(1+exitMove(r,k,s))/(1+e);
+    return `<tr data-id="${c.id}" class="${r.amt>0?'':'al-off'}"><td class="co"><a href="#" class="al-open">${esc(c.name)}</a></td><td>${esc(c.tier)}</td><td>${esc(c.sector)}</td>
+      <td class="r num">${r.w}</td><td class="r num">${fm(r.target)}</td><td class="r num">${r.capSet ? fm(r.cap) : NA}</td>
+      <td class="r num"><b>${fm(r.amt)}</b></td><td class="r num">${A.inv ? fp(r.amt/A.inv) : '—'}</td>
+      <td class="r num">${px==null ? NA : usd(px)}</td><td class="r num">${px && r.amt ? Math.round(r.amt*1e6/px).toLocaleString('en-US') : NA}</td>
+      <td class="r num">${fm(m('bear'))}</td><td class="r num">${fm(m('base'))}${numOr(al.ovr[c.id])!=null ? ' <span class="flag">override</span>' : ''}</td><td class="r num">${fm(m('bull'))}</td>
+      <td class="flag">${esc(r.why)}</td></tr>`; };
+  document.querySelector('#tbl-al tbody').innerHTML = ord.map(row).join('') + (A.rs.length ? `<tr class="al-total"><td>Total</td><td></td><td></td><td></td><td class="r num">${fm(A.inv)}</td><td></td>
+    <td class="r num">${fm(A.deployed)}</td><td class="r num">${A.inv ? fp(A.deployed/A.inv) : '—'}</td><td></td><td></td>
+    ${cases.map(x=>`<td class="r num">${fm(x.val)}</td>`).join('')}<td class="flag">${A.cash>0.05 ? fm(A.cash)+' undeployed' : ''}</td></tr>` : '');
+
+  document.querySelector('#tbl-al-exit thead').innerHTML = headHtml([{l:'Case'},{l:'Move vs today',r:1},{d:'Exit value of the holdings, US$ millions.',l:'Value ($m)',r:1},{l:'Gain ($m)',r:1},{d:'Exit value ÷ capital deployed.',l:'× deployed',r:1},{d:'(Exit value + undeployed cash + reserve) ÷ capital raised.',l:'× raise',r:1}]);
+  document.querySelector('#tbl-al-exit tbody').innerHTML = cases.map(x=>`<tr><td class="co">${x.l}</td><td class="r num">${pct(s[x.k]/100)}</td><td class="r num">${fm(x.val)}</td><td class="r num">${fm(x.gain)}</td><td class="r num">${fx(x.onDeployed)}</td><td class="r num">${fx(x.onRaise)}</td></tr>`).join('');
+
+  document.querySelector('#tbl-al-entry thead').innerHTML = headHtml([{l:'Entry vs today',r:1},{d:'Shares bought relative to buying at today\'s price.',l:'Shares bought',r:1},{l:'Bear',r:1},{l:'Base',r:1},{l:'Bull',r:1}]);
+  const entries = [...new Set([-30,-20,-10,0,10,20,30, s.entry])].sort((a,b)=>a-b);
+  document.querySelector('#tbl-al-entry tbody').innerHTML = entries.map(en => `<tr class="${en===s.entry?'al-hi':''}"><td class="r num">${pct(en/100)}</td><td class="r num">${pct(1/(1+en/100)-1)}</td>`
+    + ['bear','base','bull'].map(k=>`<td class="r num">${fx(outcome(A, s, k, en/100).onDeployed)}</td>`).join('') + '</tr>').join('');
+
+  document.querySelector('#tbl-al-wt thead').innerHTML = headHtml([{l:'Anchor : Conviction : Tail'},{l:'Deployed ($m)',r:1},{l:'Undeployed ($m)',r:1},{l:'Companies held',r:1},{d:'1 ÷ sum of squared weights: the number of equal-sized positions with the same concentration.',l:'Effective holdings',r:1},{l:'Largest position',r:1},{l:'Bear × raise',r:1},{l:'Base × raise',r:1},{l:'Bull × raise',r:1}]);
+  const cur = ['Current setting', s.wAnchor, s.wConviction, s.wTail];
+  const presets = AL_PRESETS.some(p=>p[1]===s.wAnchor && p[2]===s.wConviction && p[3]===s.wTail) ? AL_PRESETS : [cur, ...AL_PRESETS];
+  document.querySelector('#tbl-al-wt tbody').innerHTML = presets.map(([l,a,cv,t]) => {
+    const B = allocate(s, al.sel, { Anchor:a, Conviction:cv, Tail:t, Watch:s.wWatch }), q = shapeOf(B);
+    const hi = a===s.wAnchor && cv===s.wConviction && t===s.wTail;
+    return `<tr class="${hi?'al-hi':''}"><td class="co">${esc(l)}${l==='Current setting' ? ` <span class="flag">${a} : ${cv} : ${t}</span>` : ''}</td><td class="r num">${fm(B.deployed)}</td><td class="r num">${fm(B.cash)}</td><td class="r num">${q.n}</td><td class="r num">${q.eff.toFixed(1)}</td><td class="r num">${fp(q.top1)}</td>`
+      + ['bear','base','bull'].map(k=>`<td class="r num">${fx(outcome(B, s, k).onRaise)}</td>`).join('') + '</tr>'; }).join('');
+
+  const held = A.rs.filter(r=>r.amt>0), d = A.deployed || 1;
+  document.getElementById('al-conc').innerHTML = [
+    ['Companies held', sh.n], ['Effective holdings', sh.eff.toFixed(1)], ['Largest position', fp(sh.top1)], ['Top 3 positions', fp(sh.top3)],
+    ['Anchor share', fp(held.filter(r=>r.c.tier==='Anchor').reduce((a,r)=>a+r.amt,0)/d)], ['Undeployed cash', fm(A.cash)],
+  ].map(([l,v])=>`<li><span>${l}</span><b>${v}</b></li>`).join('');
+  const mix = (el, groups, cap) => { document.getElementById(el).innerHTML = Object.entries(groups).sort((a,b)=>b[1]-a[1]).map(([k,v]) =>
+    `<span>${esc(k)}</span><div class="cov-bar ${cap!=null && v/(A.inv||1) > cap+1e-9 ? 'over' : ''}"><span style="width:${(v/d*100).toFixed(1)}%"></span></div><span class="num r" style="text-align:right">${fp(v/d)}</span>`).join('') || '<span class="empty" style="grid-column:1/-1">Nothing deployed</span>'; };
+  const by = f => held.reduce((a,r)=>(a[f(r.c)]=(a[f(r.c)]||0)+r.amt, a), {});
+  document.getElementById('al-sec-sub').textContent = `Sector cap ${s.sectorCap}% of investable (${fm(A.secCap)})`;
+  mix('al-sec', by(c=>c.sector), s.sectorCap/100);
+  mix('al-reg', by(c=>c.region));
+  mix('al-exitpath', by(c => !c.ipo ? 'No IPO path disclosed' : /filed/i.test(c.ipo.status) ? 'IPO filed' : 'IPO plans reported'));
+}
+
+// The scenario as Excel sheets, for the scenario download and the master Excel.
+function alSheets() {
+  const s = al.s, A = allocate(s, al.sel), e = s.entry/100;
+  const set = AL_FIELDS.map(f=>({ 'Setting':f.l, 'Value':s[f.k], 'Unit':f.u, 'Key':f.k }));
+  const cos = mqAll().map(c=>({ 'ID':c.id, 'Company':c.name, 'Marquee rank':c.mq, 'Tier':c.tier, 'Sector':c.sector,
+    'Hold':al.sel.includes(c.id)?'Y':'', 'Available stock ($m)':al.cap[c.id] ?? '', 'Base case override (%)':al.ovr[c.id] ?? '' }));
+  const res = [...A.rs].sort((a,b)=>b.amt-a.amt).map(r => { const px = r.c.bl==null ? null : r.c.bl*(1+e), m = k => +(r.amt*(1+exitMove(r,k,s))/(1+e)).toFixed(2);
+    return { 'Company':r.c.name, 'Tier':r.c.tier, 'Sector':r.c.sector, 'Weight':r.w, 'Weight share ($m)':+r.target.toFixed(2), 'Allocated ($m)':+r.amt.toFixed(2),
+      '% of investable':A.inv ? +(r.amt/A.inv*100).toFixed(2) : '', 'Entry price ($)':px==null ? '' : +px.toFixed(2), 'Shares bought':px && r.amt ? Math.round(r.amt*1e6/px) : '',
+      'Bear ($m)':m('bear'), 'Base ($m)':m('base'), 'Bull ($m)':m('bull'), 'Note':r.why }; });
+  const W = { 'Setting':34, 'Unit':30, 'Company':24, 'Sector':26, 'Note':36 };
+  return [['Allocation settings', xlSheet(set, W)], ['Allocation companies', xlSheet(cos, W)], ['Allocation (read-only)', xlSheet(res, W)]];
+}
+function alRefresh() { alSave(); drawAlloc(); }
+function initAlloc() {
+  drawAllocSettings(); drawAllocPick();
+  const v = document.getElementById('view-alloc');
+  v.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.k) { const f = AL_FIELDS.find(x=>x.k===t.dataset.k); al.s[f.k] = numOr(t.value, f.d); if (f.k==='base') document.querySelectorAll('[data-ovr]').forEach(i=>i.placeholder=al.s.base); }
+    else if ('cap' in t.dataset || 'ovr' in t.dataset) { const id = t.closest('tr').dataset.id, m = 'cap' in t.dataset ? al.cap : al.ovr; t.value==='' ? delete m[id] : m[id] = +t.value; }
+    else return;
+    alRefresh();
+  });
+  v.addEventListener('change', e => {
+    if (!e.target.classList.contains('al-pick')) return;
+    const id = e.target.closest('tr').dataset.id;
+    al.sel = e.target.checked ? mqAll().map(c=>c.id).filter(x => x===id || al.sel.includes(x)) : al.sel.filter(x=>x!==id);
+    alRefresh();
+  });
+  v.addEventListener('click', e => {
+    const a = e.target.closest('.al-open'); if (a) { e.preventDefault(); openDetail(UNI.find(c=>c.id===a.closest('tr').dataset.id)); return; }
+    const p = e.target.closest('[data-pick]'); if (p) { al.sel = mqAll().slice(0, +p.dataset.pick).map(c=>c.id); drawAllocPick(); alRefresh(); }
+  });
+  document.getElementById('al-reset').onclick = () => { if (!confirm('Reset all allocation settings, selections and stock limits to the defaults?')) return; al = alDefault(); drawAllocSettings(); drawAllocPick(); alRefresh(); };
+  document.getElementById('al-dl').onclick = async () => {
+    try { await loadXLSX(); } catch { return alert('Could not load the Excel library.'); }
+    const wb = XLSX.utils.book_new();
+    for (const [name, ws] of alSheets()) XLSX.utils.book_append_sheet(wb, ws, name);
+    XLSX.writeFile(wb, `Perennial-Allocation-Scenario-${new Date().toLocaleDateString('en-CA')}.xlsx`);
+  };
+  document.getElementById('al-ul').onclick = () => document.getElementById('al-file').click();
+  document.getElementById('al-file').onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try {
+      await loadXLSX();
+      const wb = XLSX.read(await f.arrayBuffer(), { type:'array' });
+      // A scenario file or the master Excel (Allocation settings / Allocation companies); older scenario files used Settings / Companies.
+      const ws = (a, b) => wb.Sheets[a] || (wb.Sheets['Settings'] ? wb.Sheets[b] : null);
+      const S = XLSX.utils.sheet_to_json(ws('Allocation settings', 'Settings') || {}), C = XLSX.utils.sheet_to_json(ws('Allocation companies', 'Companies') || {});
+      if (!S.length && !C.length) throw new Error('no Allocation settings or Allocation companies sheet found');
+      const n = alDefault();
+      for (const r of S) { const fd = AL_FIELDS.find(x => x.k===r['Key'] || x.l===r['Setting']); if (fd) n.s[fd.k] = numOr(r['Value'], fd.d); }
+      if (C.length) { n.sel = []; for (const r of C) { const id = r['ID']; if (!UNI.some(c=>c.id===id && c.mq)) continue;
+        if (String(r['Hold']||'').trim().toUpperCase()==='Y') n.sel.push(id);
+        const cp = numOr(r['Available stock ($m)']), ov = numOr(r['Base case override (%)']);
+        if (cp!=null) n.cap[id] = cp; if (ov!=null) n.ovr[id] = ov; }
+        n.sel = mqAll().map(c=>c.id).filter(id=>n.sel.includes(id)); }
+      al = n; drawAllocSettings(); drawAllocPick(); alRefresh();
+    } catch (err) { alert('Could not read the scenario file: ' + (err?.message || err)); }
+  };
+}
+
 // ── render ──
-// ── views: Analytics / Marquee list / Universe / Methodology, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','universe','method'];
+// ── views: Analytics / Marquee list / Allocation / Universe / Methodology, selected by the tabs and kept in the URL hash ──
+const VIEWS = ['analytics','marquee','alloc','universe','method'];
 let view = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'analytics';
 function setView(v) {
   view = VIEWS.includes(v) ? v : 'analytics';
@@ -1037,6 +1405,7 @@ function setView(v) {
   document.querySelectorAll('.tab-btn').forEach(b => b.setAttribute('aria-selected', b.dataset.view === view));
   document.getElementById('tog-stale').hidden = view !== 'analytics';   // only the analytics statistics use it
   document.getElementById('tog-mq').hidden = view === 'marquee';
+  document.querySelector('.filters').hidden = view === 'alloc';   // the allocation works on its own selection
   if (location.hash.slice(1) !== view) history.replaceState(null, '', '#'+view);
   tipEl.style.opacity = 0;
   render();
@@ -1051,54 +1420,94 @@ function render() {
   // Charts are only drawn while their view is visible; hidden canvases have no size.
   if (view === 'analytics') { drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawIpo(rs); drawCov(rs); }
   if (view === 'marquee') drawMarquee(rs);
+  if (view === 'alloc') drawAlloc();
   if (view === 'universe') drawTable(rs);
   if (view === 'method') drawMethod(rs);
   drawDraftBar();
 }
-document.getElementById('hdr-sub').textContent = `${UNI.length} companies · secondary prices from Clarity, Augment & Forge, refreshed ${fDate(QD_ASOF)} · all figures USD`;
+document.getElementById('hdr-sub').textContent = `${UNI.length} companies · secondary prices from Clarity, Augment & Forge, refreshed ${fDate(QD_ASOF)}${window.SITE_UPDATED ? ` · dashboard updated ${fDate(window.SITE_UPDATED)}` : ''} · all figures USD`;
 document.querySelectorAll('.asof').forEach(e=>e.textContent=fDate(QD_ASOF));
 
 // theme
-// ── master Excel export: everything the dashboard is built from, laid out for editing in Excel and
-// re-importing with .claude/work/import-master.ps1. Column headers are the import contract — keep them in sync.
+// ── master Excel export: one sheet per dashboard page, laid out for editing in Excel and re-importing with
+// .claude/work/import-master.ps1. Each value is editable in exactly one sheet; "(read-only)" sheets are recalculated
+// by the dashboard. Column headers are the import contract — keep them in sync with the script.
 const MASTER_README = [
   ['Perennial Unicorn Analytics — master data'],
   [],
   ['How to use'],
-  ['1. Edit the Companies, Funding rounds, Shareholders and Profile notes sheets.'],
+  ['1. Edit any sheet not marked read-only. Each value is edited in one sheet only.'],
   ['2. Save the file (keep it as .xlsx) and upload it to Claude, asking for the master file to be imported.'],
   ['3. Claude lists every change for you to approve, then updates the dashboard and commits.'],
+  ['4. Allocation sheets are private: load them with "Upload scenario" on the Allocation tab. They are never published.'],
+  [],
+  ['Sheets', 'Dashboard page · what you can change'],
+  ['Analytics (read-only)', 'Analytics · premiums, spreads and momentum, recalculated from the prices and rounds in Universe and Funding rounds.'],
+  ['IPO pipeline', 'Analytics → IPO pipeline · IPO status, last update, target year and valuation. Add a row (ID + status) to add a company; delete the row to remove it.'],
+  ['Marquee list', 'Marquee list · which companies are on the list and their order. Add a row with the company ID to add; delete the row to remove.'],
+  ['Allocation settings / companies', 'Allocation · fund rules, tier weights, exit cases, chosen companies, available stock. Loaded on the page, not imported.'],
+  ['Allocation (read-only)', 'Allocation · the resulting allocation at the time of export.'],
+  ['Universe', 'Universe · the company master: names, sectors, regions, last rounds, valuations, prices, shares, venue ranks, notes. Add or remove companies here.'],
+  ['Methodology', 'Methodology · every weight, scoring range and tier threshold. The Methodology page text updates to match.'],
+  ['Calibration', 'Methodology → Calibration · the confirmed tier and the reason for any difference from the rules.'],
+  ['Funding rounds, Shareholders, Profile notes', 'Company detail pop-ups · funding history, key shareholders and share-count notes.'],
   [],
   ['Rules'],
-  ['ID', 'Never change an existing ID; it links a company across sheets. For a new company leave ID blank — Claude will assign one.'],
-  ['Action', 'Leave blank to keep a company. Enter Remove (and an Action reason) to drop it, e.g. after an IPO or acquisition.'],
-  ['Tier', 'The confirmed tier: Anchor, Conviction, Tail or Watch. If it differs from "Default tier (rules)", give an Override category and reason.'],
-  ['Default tier (rules)', 'Read-only: the tier the methodology rules give before any team decision.'],
+  ['ID', 'Never change an existing ID; it links a company across sheets. For a new company leave ID blank in Universe — Claude will assign one.'],
+  ['Action', 'Universe only. Leave blank to keep a company. Enter Remove (and an Action reason) to drop it, e.g. after an IPO or acquisition.'],
+  ['Tier', 'Calibration. Anchor, Conviction, Tail or Watch. If it differs from "Default tier (rules)", give an Override category and reason.'],
   ['Override category', 'Regulatory, Geopolitical, Binary, Transfer restrictions, Data gap or Other.'],
+  ['Methodology weights', 'Weights within a pillar, and the three pillar weights, should each add up to 100.'],
   ['Prices', 'Rows with Price source "tracker" get prices from the price tracker; edits to their prices are ignored. Other rows can be edited.'],
   ['Valuations', 'In US$ billions. Funding round amounts are in US$ millions.'],
   ['Dates', 'YYYY-MM-DD (or YYYY-MM for IPO last update). Excel dates are also accepted.'],
   ['Lists', 'Lead investors separated by semicolons; sources separated by spaces or new lines.'],
   ['Funding rounds', 'Type: Equity, Strategic, Convertible, Tender, Debt or Pending (reported, not closed). Company-run = N for investor-to-investor sales.'],
-  ['Add / remove rows', 'Rounds and shareholders: add a row with the company ID to add; delete the row to remove.'],
   [],
   [`Exported ${new Date().toLocaleString('en-AU')} · ${UNI.length} companies · data as of ${fDate(QD_ASOF)}`],
 ];
+// SheetJS is only needed for Excel downloads and uploads, so it loads on first use.
+const loadXLSX = () => window.XLSX ? Promise.resolve() : new Promise((ok, fail) => { const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
+// A sheet from row objects; columns sized to their header unless a width is given.
+function xlSheet(rows, widths = {}) {
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const keys = rows.length ? Object.keys(rows[0]) : [];
+  ws['!cols'] = keys.map(k => ({ wch: widths[k] ?? Math.min(40, Math.max(9, k.length + 2)) }));
+  if (rows.length) ws['!autofilter'] = { ref: ws['!ref'] };
+  return ws;
+}
 function masterWorkbook() {
   const ovr = window.TIER_OVR || {};
-  const num = x => x==null || x==='' ? '' : x;
-  const companies = UNI.map(c => { const b = c.base, o = ovr[c.id] || {}, ip = window.IPO?.[c.id] || {};
+  const num = x => x==null || x==='' || (typeof x==='number' && !isFinite(x)) ? '' : x;
+  const r1 = x => x==null ? '' : +x.toFixed(1);
+  const analytics = UNI.map(c => ({
+    'ID': c.id, 'Company': c.name, 'Tier': c.tier, 'Sector': c.sector, 'Region': c.region,
+    'Venues quoting': c.nVen, 'Average secondary price ($)': c.bl==null ? '' : +c.bl.toFixed(2), 'Implied valuation ($bn)': c.impl==null ? '' : +c.impl.toFixed(2),
+    'Valuation used for premium': c.lrTender ? 'Company tender' : c.lrEv!=null ? 'Last round' : '', 'Last round valuation ($bn)': num(c.lrEv), 'Last round date': c.lrDate||'',
+    'Round age (months)': r1(c.lrAge), 'Stale round': c.stale ? 'Y' : '', 'Premium vs last round (%)': c.prem==null ? '' : +(c.prem*100).toFixed(1),
+    'Venue spread (%)': c.spread==null ? '' : +(c.spread*100).toFixed(1), 'Momentum (%)': c.mom==null ? '' : +(c.mom*100).toFixed(1), 'Momentum since': c.momFrom||'',
+    'Liquidity score': num(c.liq), 'Overall rank': num(c.rank), 'Sector rank': num(c.srank), 'IPO status': c.ipo?.status||'' }));
+  const ipo = UNI.filter(c=>window.IPO?.[c.id]).map(c => { const ip = window.IPO[c.id];
+    return { 'ID': c.id, 'Company': c.name, 'IPO status': ip.status||'', 'IPO last update': ip.updated||'', 'IPO target': ip.target||'', 'IPO valuation ($bn)': num(ip.val),
+      'Tier (read-only)': c.tier, 'Sector (read-only)': c.sector }; });
+  const marquee = UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq).map(c => ({ 'Marquee rank': c.mq, 'ID': c.id, 'Company': c.name,
+    'Tier (read-only)': c.tier, 'Sector (read-only)': c.sector, 'Current valuation ($bn, read-only)': (c.impl ?? c.curVal)==null ? '' : +(c.impl ?? c.curVal).toFixed(1) }));
+  const universe = UNI.map(c => { const b = c.base;
     return {
       'ID': c.id, 'Company': c.name, 'Action': '', 'Action reason': '',
       'Sector': b.sector||'', 'Sub-sector': b.sub||'', 'Region': b.region||'', 'HQ': b.hq||'',
-      'Tier': c.tier, 'Default tier (rules)': c.tier0, 'Override category': o.category||'', 'Override reason': o.reason||'',
-      'Marquee rank': num(c.mq), 'Last round': b.lrName||'', 'Last round date': b.lrDate||'',
+      'Last round': b.lrName||'', 'Last round date': b.lrDate||'',
       'Last round valuation ($bn)': num(b.lrEv), 'Current valuation ($bn)': num(b.curVal), 'Shares outstanding': num(b.shares),
       'Clarity price': num(b.px.c), 'Augment price': num(b.px.a), 'Forge price': num(b.px.f), 'Price currency': b.ccy||'USD',
       'Price source': b.pxSrc||'', 'Liquidity score': num(b.liq), 'Augment Power 20 rank': num(b.aug), 'Clarity 50 rank': num(b.c50),
       'Forge traded': b.forgeTraded ? 'Y' : '', 'Listed': b.listed ? 'Y' : '', 'Clarity price type': b.ctype||'', 'Notes': b.note||'',
-      'IPO status': ip.status||'', 'IPO last update': ip.updated||'', 'IPO target': ip.target||'', 'IPO valuation ($bn)': num(ip.val),
     }; });
+  const method = METHOD_SPEC.map(p => ({ 'Section': p.sec, 'Parameter': p.l, 'Value': M[p.k], 'Unit': p.u, 'Default': p.d, 'Key': p.k }));
+  const calib = UNI.map(c => { const o = ovr[c.id] || {};
+    return { 'ID': c.id, 'Company': c.name, 'Tier': c.tier, 'Default tier (rules)': c.tier0, 'Override category': o.category||'', 'Override reason': o.reason||'',
+      'Suggested tier (read-only)': c.ts.comp==null ? 'not scored' : c.ts.sug, 'Value accretion (read-only)': r1(c.ts.va), 'Liquidity (read-only)': r1(c.ts.lq),
+      'Demand (read-only)': r1(c.ts.dm), 'Composite (read-only)': r1(c.ts.comp), 'Override date (read-only)': o.date||'' }; });
   const nameOf = id => UNI.find(c=>c.id===id)?.name || id;
   const rounds = [], holders = [], profiles = [];
   for (const [id, q] of Object.entries(window.QR || {})) {
@@ -1113,22 +1522,27 @@ function masterWorkbook() {
     profiles.push({ 'ID': id, 'Company': nameOf(id), 'Researched': q.researched||'', 'Splits note': q.splits||'',
       'Share count': num(q.shares?.value), 'Share count as of': q.shares?.asOf||'', 'Share count basis': q.shares?.basis||'', 'Share count note': q.shares?.note||'' });
   }
-  const sheet = (rows, widths) => { const ws = XLSX.utils.json_to_sheet(rows); ws['!cols'] = widths.map(w=>({ wch:w })); return ws; };
+  const W = { 'Company':24, 'Notes':50, 'Override reason':50, 'Note':50, 'Sources':50, 'Sub-sector':24, 'Lead investors':36, 'Parameter':52, 'Splits note':60, 'Shareholder':32, 'Round':28 };
   const wb = XLSX.utils.book_new();
-  const rm = XLSX.utils.aoa_to_sheet(MASTER_README); rm['!cols'] = [{wch:22},{wch:120}];
+  const rm = XLSX.utils.aoa_to_sheet(MASTER_README); rm['!cols'] = [{wch:34},{wch:130}];
   XLSX.utils.book_append_sheet(wb, rm, 'Read me');
-  XLSX.utils.book_append_sheet(wb, sheet(companies, [14,26,9,24,20,22,14,12,11,12,16,50,8,22,12,10,10,14,10,10,10,8,10,9,9,9,8,7,22,50,20,12,9,10]), 'Companies');
-  XLSX.utils.book_append_sheet(wb, sheet(rounds, [14,20,12,30,12,11,12,11,10,36,10,10,50,50]), 'Funding rounds');
-  XLSX.utils.book_append_sheet(wb, sheet(holders, [14,20,36,14,9,12,10,50,50]), 'Shareholders');
-  XLSX.utils.book_append_sheet(wb, sheet(profiles, [14,20,12,60,14,14,12,50]), 'Profile notes');
+  XLSX.utils.book_append_sheet(wb, xlSheet(analytics, W), 'Analytics (read-only)');
+  XLSX.utils.book_append_sheet(wb, xlSheet(ipo, W), 'IPO pipeline');
+  XLSX.utils.book_append_sheet(wb, xlSheet(marquee, W), 'Marquee list');
+  for (const [name, ws] of alSheets()) XLSX.utils.book_append_sheet(wb, ws, name);
+  XLSX.utils.book_append_sheet(wb, xlSheet(universe, W), 'Universe');
+  XLSX.utils.book_append_sheet(wb, xlSheet(method, W), 'Methodology');
+  XLSX.utils.book_append_sheet(wb, xlSheet(calib, W), 'Calibration');
+  XLSX.utils.book_append_sheet(wb, xlSheet(rounds, W), 'Funding rounds');
+  XLSX.utils.book_append_sheet(wb, xlSheet(holders, W), 'Shareholders');
+  XLSX.utils.book_append_sheet(wb, xlSheet(profiles, W), 'Profile notes');
   return wb;
 }
 document.getElementById('xlsx-btn').addEventListener('click', async e => {
   const btn = e.currentTarget, label = btn.textContent;
   btn.disabled = true; btn.textContent = 'Preparing…';
   try {
-    if (!window.XLSX) await new Promise((ok, fail) => { const s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
+    await loadXLSX();
     XLSX.writeFile(masterWorkbook(), `Perennial-Universe-Master-${new Date().toLocaleDateString('en-CA')}.xlsx`);
   } catch (err) { alert('Could not build the Excel file: ' + (err?.message || err)); }
   finally { btn.disabled = false; btn.textContent = label; }
@@ -1159,6 +1573,7 @@ themeBtn.onclick = () => {
 };
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
 addEventListener('scroll', ()=>tipEl.style.opacity=0, {passive:true});
+initAlloc();
 setView(view);
 </script>
 </body>

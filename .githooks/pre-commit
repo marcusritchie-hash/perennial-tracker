@@ -1,0 +1,6 @@
+#!/bin/sh
+# Stamps the dashboard with the date of every commit (site-updated.js), so the page shows when it was last updated.
+# Enabled with: git config core.hooksPath .githooks
+d=$(date +%Y-%m-%d)
+printf '// Written by .githooks/pre-commit on every commit; do not edit.\nwindow.SITE_UPDATED = "%s";\n' "$d" > site-updated.js
+git add site-updated.js
