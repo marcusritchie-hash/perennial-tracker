@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261014105058"></script>
-<script src="quant-rounds.js?v=20261014105058" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261014105058" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261014105058" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261014105058" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261014105058" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261014123326"></script>
+<script src="quant-rounds.js?v=20261014123326" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261014123326" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261014123326" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261014123326" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261014123326" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -501,12 +501,10 @@
     <div class="tbl-wrap" style="max-height:none"><table class="rules">
       <thead><tr><th>Suggested tier</th><th>Rule</th></tr></thead>
       <tbody>
-        <tr><td class="co">Conviction (IPO)</td><td>A company that has filed for an IPO, publicly or confidentially, or has reported IPO plans is at least Conviction, whatever its scores. The IPO path is the driver.</td></tr>
         <tr><td class="co">Watch</td><td>Fewer than <m-v k="rule.minPillars"></m-v> pillars are backed by data. The company is monitored, not held, until it can be scored. Companies the investment team has placed in Anchor or Conviction keep that tier.</td></tr>
         <tr><td class="co">Anchor</td><td>Composite score of <m-v k="rule.anchor.comp"></m-v> or more, liquidity score of <m-v k="rule.anchor.lq"></m-v> or more, and valuation of $<m-v k="rule.anchor.val"></m-v>bn or more.</td></tr>
         <tr><td class="co">Tail</td><td>Liquidity score below <m-v k="rule.tail.lq"></m-v>, whatever the other pillars show.</td></tr>
         <tr><td class="co">Conviction</td><td>Composite score of <m-v k="rule.conv.comp"></m-v> or more, or a value accretion score of <m-v k="rule.conv.va"></m-v> or more.</td></tr>
-        <tr><td class="co">Watch</td><td>Everything else: scored, but too weak on value accretion and demand to hold. Monitored, not held.</td></tr>
       </tbody>
     </table></div>
   </section>

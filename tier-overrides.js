@@ -17,7 +17,7 @@ window.TIER_OVR = {
   "psiquantum": {"tier":"Conviction","category":"Other","reason":"Marquee list company placed in Conviction by the investment team.","date":"2026-10-13"},
   "apptronik": {"tier":"Conviction","category":"Other","reason":"Upgraded from Tail: strong liquidity and rising valuations.","date":"2026-10-13"},
   "kalshi": {"tier":"Conviction","category":"Other","reason":"Upgraded from Tail: strong secondary demand and liquidity; regulatory risk remains under review.","date":"2026-10-13"},
-  "neuralink": {"category":"Binary","reason":"Kept at Tail: value depends on clinical and regulatory milestones.","date":"2026-10-13"},
+  "neuralink": {"tier":"Conviction","reason":"Conviction: Augment Power 20 #6 with a 128% Q2 price gain; the model also suggests Conviction. Clinical and regulatory milestones remain a binary risk.","date":"2026-10-14"},
   "1x": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: OpenAI- and EQT-backed humanoid leader; not yet traded on secondary venues, with SoftBank majority-stake talks pending.","date":"2026-10-13"},
   "helion": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: recent $15.5bn round led by Thrive Capital; Clarity Liquidity Index #28 now gives it a demand score.","date":"2026-10-13"},
   "machindustries": {"tier":"Conviction","category":"Data gap","reason":"Kept at Conviction: rapid valuation growth ($0.3bn to $3.7bn since 2023) backed by Sequoia, Bedrock and Ribbit; not yet traded on secondary venues.","date":"2026-10-13"},
