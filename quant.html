@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261015080350"></script>
-<script src="quant-rounds.js?v=20261015080350" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261015080350" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261015080350" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261015080350" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261015080350" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261015084124"></script>
+<script src="quant-rounds.js?v=20261015084124" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261015084124" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261015084124" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261015084124" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261015084124" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -395,7 +395,7 @@
   <section>
     <div class="sec-hd">
       <h2>Investment Bucket Allocation for Capital</h2>
-      <p>Investable capital is split between two buckets, each with its own mandate. A Marquee company with an IPO filing or reported IPO plans fits Crossover; one with no IPO path disclosed fits Private Growth. Change any company's bucket under Choose companies. Within each bucket, positions follow tier weights between the bucket's cheque sizes. Click a company to hold it or take it out.</p>
+      <p>Investable capital is split between two buckets, each with its own mandate. A Marquee company with an IPO filing or reported IPO plans fits Crossover; one with no IPO path disclosed fits Private Growth. Change any company's bucket under Choose companies. Within each bucket, positions follow tier weights between the bucket's cheque sizes. Each company grows at its bucket's base growth a year (or the team's own figure for it) for the bucket's years to exit; the base growth starts where the base case just meets the bottom of the mandate's return range. Click a company to hold it or take it out.</p>
     </div>
     <div class="bk-grid" id="bk-grid"></div>
   </section>
@@ -416,7 +416,7 @@
   </section>
 
   <section>
-    <div class="sec-hd"><h2>Choose companies</h2><p>Tick the Marquee companies to hold. Enter the stock available to buy in each (from brokers and the desk); leave it blank to assume the full amount can be bought. A base-case override replaces the global base case for that company only.</p></div>
+    <div class="sec-hd"><h2>Choose companies</h2><p>Tick the Marquee companies to hold. Enter the stock available to buy in each (from brokers and the desk); leave it blank to assume the full amount can be bought. Growth is each company's base-case growth, % a year to exit: blank uses its bucket's base growth (shown greyed); Base × is what that growth compounds to by exit.</p></div>
     <div class="al-tools">
       <button class="btn" data-pick="fill" type="button">Fill bucket minimums</button>
       <button class="btn" data-pick="5" type="button">Top 5 by Marquee rank</button>
@@ -435,7 +435,7 @@
   </section>
 
   <section>
-    <div class="sec-hd"><h2>Sensitivity</h2><p>Exit cases are moves from today's average secondary price. With entry at today's price, they are moves from the entry price; paying more or less than today's price shifts every case. Multiples on the raise include undeployed cash and the reserve at face value.</p></div>
+    <div class="sec-hd"><h2>Sensitivity</h2><p>Each company grows from today's average secondary price at its base growth a year, compounded over its bucket's years to exit; the bear and bull cases take the spread off or add it on, every year. Paying more or less than today's price shifts every case. Multiples on the raise include undeployed cash and the reserve at face value.</p></div>
     <div class="grid2">
       <div class="panel"><h3>Exit outcomes</h3><div class="sub">Current allocation, at the entry price set above</div><div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-al-exit"><thead></thead><tbody></tbody></table></div></div>
       <div class="panel"><h3>Entry price</h3><div class="sub">Multiple on capital deployed if we pay above or below today's secondary price</div><div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-al-entry"><thead></thead><tbody></tbody></table></div></div>
@@ -1196,11 +1196,14 @@ const AL_FIELDS = [
   { g:'Tier weights', k:'wConviction', l:'Conviction', u:'weight', d:2, step:0.5 },
   { g:'Tier weights', k:'wTail', l:'Tail', u:'weight', d:1, step:0.5 },
   { g:'Tier weights', k:'wWatch', l:'Watch', u:'weight (monitored, not held)', d:0, step:0.5 },
-  { g:'Exit cases', k:'bear', l:'Bear case', u:'% vs today\'s price', d:-40, step:5 },
-  { g:'Exit cases', k:'base', l:'Base case', u:'% vs today\'s price', d:50, step:5 },
-  { g:'Exit cases', k:'bull', l:'Bull case', u:'% vs today\'s price', d:150, step:5 },
+  { g:'Exit cases', k:'spread', l:'Bear / bull spread', u:'points a year below / above the base growth', d:20, step:5 },
   { g:'Exit cases', k:'entry', l:'Entry price', u:'% vs today\'s price', d:0, step:5 },
   { g:'Buckets', k:'gShare', l:'Private Growth share', u:'% of investable', d:50, step:5 },
+  // Base growth defaults meet the bottom of each mandate's return range: 1.443^3 ≈ 3.0×, 1.311^1.5 ≈ 1.5×.
+  { g:'Buckets', k:'gRate', l:'Private Growth base growth', u:'% a year', d:44.3, step:1 },
+  { g:'Buckets', k:'gYears', l:'Private Growth years to exit', u:'years', d:3, step:0.5 },
+  { g:'Buckets', k:'xRate', l:'Crossover base growth', u:'% a year', d:31.1, step:1 },
+  { g:'Buckets', k:'xYears', l:'Crossover years to exit', u:'years', d:1.5, step:0.5 },
   { g:'Buckets', k:'gMin', l:'Private Growth cheque from', u:'$m', d:10, step:1 },
   { g:'Buckets', k:'gMax', l:'Private Growth cheque up to', u:'$m', d:30, step:1 },
   { g:'Buckets', k:'gNmin', l:'Private Growth companies, minimum', u:'companies', d:10, step:1 },
@@ -1215,9 +1218,9 @@ const AL_GROUPS = { 'Fund':'Fund rules', 'Tier weights':'Tier weights', 'Exit ca
 // liquidity and return expectations are the mandate's and are compared with the base case.
 const BUCKETS = {
   G: { n:1, name:'Private Growth', short:'Private Growth', liq:'2–4 years', ret:[3,5], fit:'no IPO path disclosed',
-       k:{ min:'gMin', max:'gMax', nMin:'gNmin', nMax:'gNmax' } },
+       k:{ min:'gMin', max:'gMax', nMin:'gNmin', nMax:'gNmax', rate:'gRate', yrs:'gYears' } },
   X: { n:2, name:'Crossover (Pre-IPO + IPO)', short:'Crossover', liq:'1–2 years', ret:[1.5,2], fit:'IPO filed or IPO plans reported',
-       extra:'Includes IPO participation on existing or new holdings', k:{ min:'xMin', max:'xMax', nMin:'xNmin', nMax:'xNmax' } },
+       extra:'Includes IPO participation on existing or new holdings', k:{ min:'xMin', max:'xMax', nMin:'xNmin', nMax:'xNmax', rate:'xRate', yrs:'xYears' } },
 };
 const bucketShare = (s, b) => Math.min(100, Math.max(0, b==='G' ? s.gShare : 100 - s.gShare));
 // A company's bucket: the team's choice where set, otherwise Crossover with an IPO filing or reported plans.
@@ -1227,9 +1230,11 @@ const mqAll = () => UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq);
 // The top companies by Marquee rank in each bucket, up to the bucket's minimum company count.
 const bucketFill = (s, bkt) => { const m = mqAll(); return m.filter(c => ['G','X'].some(b => bucketOf(c, bkt)===b
   && m.filter(x=>bucketOf(x, bkt)===b).indexOf(c) < s[BUCKETS[b].k.nMin])).map(c=>c.id); };
-const alDefault = () => { const s = Object.fromEntries(AL_FIELDS.map(f=>[f.k,f.d])); return { s, sel:bucketFill(s, {}), cap:{}, ovr:{}, bkt:{} }; };
+const alDefault = () => { const s = Object.fromEntries(AL_FIELDS.map(f=>[f.k,f.d])); return { s, sel:bucketFill(s, {}), cap:{}, gro:{}, bkt:{} }; };
 let al = alDefault();
-try { const v = JSON.parse(localStorage.getItem(AL_KEY) || 'null'); if (v?.s) al = { ...alDefault(), ...v, s:{ ...alDefault().s, ...v.s } }; } catch {}
+// Saved settings from before annual growth (bear/base/bull % moves and per-company move overrides) are dropped.
+try { const v = JSON.parse(localStorage.getItem(AL_KEY) || 'null'); if (v?.s) { const d = alDefault(), { ovr, ...rest } = v;
+  al = { ...d, ...rest, s:Object.fromEntries(AL_FIELDS.map(f => [f.k, v.s[f.k] ?? d.s[f.k]])) }; } } catch {}
 const alSave = () => { try { localStorage.setItem(AL_KEY, JSON.stringify(al)); } catch {} };
 const fm = x => x==null || isNaN(x) ? '—' : '$' + (Math.abs(x) >= 100 ? x.toFixed(0) : x.toFixed(1)) + 'm';
 const fx = x => x==null || isNaN(x) ? '—' : x.toFixed(2) + '×';
@@ -1303,8 +1308,15 @@ function bucketAllocate(s, ids, wts, b, inv, fundInv, secRoom) {
   const deployed = rs.reduce((a,r)=>a+r.amt, 0);
   return { rs, inv, deployed, cash: inv - deployed, n: rs.filter(r=>r.amt>0).length };
 }
-// Exit value of each holding and of the fund, for exit move m (fraction vs today's price) and entry move e.
-const exitMove = (r, k, s) => k==='base' && numOr(al.ovr[r.c.id])!=null ? numOr(al.ovr[r.c.id])/100 : s[k]/100;
+// Growth to exit: each company grows at an annual rate (its own, if the team set one, otherwise its bucket's base rate),
+// with bear and bull the spread below and above, compounded over its bucket's years to exit.
+const CASE_SHIFT = { bear:-1, base:0, bull:1 };
+const growthOf = (c, s, b = bucketOf(c)) => numOr(al.gro[c.id]) ?? s[BUCKETS[b].k.rate];
+const caseRate = (c, k, s, b) => Math.max(-100, growthOf(c, s, b) + CASE_SHIFT[k] * s.spread) / 100;
+const exitMult = (c, k, s, b = bucketOf(c)) => Math.pow(1 + caseRate(c, k, s, b), s[BUCKETS[b].k.yrs]);
+const caseRates = (s, k) => ['G','X'].map(b => `${BUCKETS[b].short} ${+Math.max(-100, s[BUCKETS[b].k.rate] + CASE_SHIFT[k]*s.spread).toFixed(1)}%`).join(' · ');
+// Exit value of each holding and of the fund, as a move from today's price (fraction), with entry move e.
+const exitMove = (r, k, s) => exitMult(r.c, k, s, r.b) - 1;
 function outcome(A, s, k, entry = s.entry/100) {
   const held = A.rs.filter(r=>r.amt>0);
   const val = held.reduce((a,r)=>a + r.amt*(1+exitMove(r,k,s))/(1+entry), 0);
@@ -1326,8 +1338,9 @@ function drawAllocSettings() {
     <div class="bk-hd"><span class="bk-num">${B.n}</span><div><h3 id="bk-${b}-t"></h3><div class="sub" id="bk-${b}-s"></div></div></div>
     <ul class="bk-list" id="bk-${b}-m"></ul>
     <div class="al-fields">${b==='G' ? alInput(fd('gShare'), 'Share of investable') : `<label>Share of investable<input class="al-in" id="bk-X-share" type="number" disabled><span>% · the rest</span></label>`}
-      ${alInput(fd(B.k.min), 'Cheque from')}${alInput(fd(B.k.max), 'Cheque up to')}
-      <label></label>${alInput(fd(B.k.nMin), 'Companies, minimum')}${alInput(fd(B.k.nMax), 'Companies, maximum')}</div>
+      ${alInput(fd(B.k.rate), 'Base growth')}${alInput(fd(B.k.yrs), 'Years to exit')}
+      ${alInput(fd(B.k.min), 'Cheque from')}${alInput(fd(B.k.max), 'Cheque up to')}<label></label>
+      ${alInput(fd(B.k.nMin), 'Companies, minimum')}${alInput(fd(B.k.nMax), 'Companies, maximum')}</div>
     <ul class="stat-list" id="bk-${b}-k"></ul>
     <h4 id="bk-${b}-fh"></h4><div class="chips" id="bk-${b}-f"></div></div>`).join('');
 }
@@ -1346,7 +1359,8 @@ function drawBuckets(A) {
     document.getElementById(`bk-${b}-k`).innerHTML = [
       ['Companies held', ok(P.n >= nMin && P.n <= nMax, `${P.n} of ${nMin}–${nMax}`)],
       ['Deployed', `<b>${fm(P.deployed)}${P.cash > 0.05 ? ` <span class="flag">${fm(P.cash)} undeployed</span>` : ''}</b>`],
-      ['Base case on deployed', ok(base.onDeployed!=null && base.onDeployed >= B.ret[0], `${fx(base.onDeployed)} vs ${B.ret[0]}–${B.ret[1]}× target`)],
+      ['Base growth', `<b>${+s[B.k.rate].toFixed(1)}% a year × ${s[B.k.yrs]} years = ${fx(Math.pow(1 + s[B.k.rate]/100, s[B.k.yrs]))}</b>`],
+      ['Base case on deployed', ok(base.onDeployed!=null && base.onDeployed >= B.ret[0] - 1e-9, `${fx(base.onDeployed)} vs ${B.ret[0]}–${B.ret[1]}× target`)],
     ].map(([l,v])=>`<li><span>${l}</span>${v}</li>`).join('');
     document.getElementById(`bk-${b}-fh`).textContent = `Marquee companies that fit (${B.fit}): ${fits.length} · ${sel} held`;
     document.getElementById(`bk-${b}-f`).innerHTML = fits.map(c => `<button type="button" class="chip ${al.sel.includes(c.id)?'on':''}" data-tog="${c.id}" aria-pressed="${al.sel.includes(c.id)}"
@@ -1360,7 +1374,8 @@ const PICK_COLS = [
   { d:DEF.ipo, l:'IPO status' },
   { d:'Investment bucket. Auto places a company with an IPO filing or reported IPO plans in Crossover and the rest in Private Growth; choose a bucket to override.', l:'Bucket' },
   { d:'US$ millions of stock we can actually buy, from brokers and the desk. Blank means no limit is applied.', l:'Available stock ($m)', r:1 },
-  { d:'Replaces the global base case for this company, as a % move from today\'s secondary price. Blank uses the global base case.', l:'Base case override (%)', r:1 },
+  { d:'Base-case growth for this company, % a year to exit. Blank uses its bucket\'s base growth (shown greyed). Bear and bull are the spread below and above.', l:'Growth (% a year)', r:1 },
+  { d:'Base-case multiple at exit: (1 + growth) ^ years to exit for its bucket, before any entry-price adjustment.', l:'Base ×', r:1 },
 ];
 function drawAllocPick() {
   document.querySelector('#tbl-al-pick thead').innerHTML = headHtml(PICK_COLS);
@@ -1372,7 +1387,17 @@ function drawAllocPick() {
     <td><select class="al-in" data-bkt aria-label="Bucket for ${esc(c.name)}">${[['', `Auto · ${BUCKETS[c.ipo ? 'X' : 'G'].short}`], ['G', BUCKETS.G.short], ['X', BUCKETS.X.short]]
       .map(([v,l])=>`<option value="${v}" ${(al.bkt[c.id]||'')===v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
     <td class="r"><input class="al-in" type="number" min="0" step="1" data-cap value="${al.cap[c.id] ?? ''}" placeholder="no limit" aria-label="Available stock for ${esc(c.name)}, US$ millions"></td>
-    <td class="r"><input class="al-in" type="number" step="5" data-ovr value="${al.ovr[c.id] ?? ''}" placeholder="${al.s.base}" aria-label="Base case override for ${esc(c.name)}, %"></td></tr>`).join('');
+    <td class="r"><input class="al-in" type="number" step="1" data-gro value="${al.gro[c.id] ?? ''}" aria-label="Base-case growth for ${esc(c.name)}, % a year"></td>
+    <td class="r num al-x"></td></tr>`).join('');
+  pickDerived();
+}
+// The parts of Choose companies that follow the settings: each company's default growth (its bucket's) and base multiple.
+function pickDerived() {
+  document.querySelectorAll('#tbl-al-pick tbody tr[data-id]').forEach(tr => {
+    const c = UNI.find(x=>x.id===tr.dataset.id), B = BUCKETS[bucketOf(c)];
+    tr.querySelector('[data-gro]').placeholder = +al.s[B.k.rate].toFixed(1);
+    tr.querySelector('.al-x').textContent = fx(exitMult(c, 'base', al.s));
+  });
 }
 const AL_COLS = [
   { d:DEF.company, l:'Company' }, { d:'Investment bucket the company is allocated from.', l:'Bucket' }, { d:DEF.tier, l:'Tier' }, { l:'Sector' },
@@ -1383,6 +1408,9 @@ const AL_COLS = [
   { d:'Allocated capital as a share of investable capital (raise less reserve).', l:'% of investable', r:1 },
   { d:'Today\'s average secondary price adjusted by the entry price setting.', l:'Entry price', r:1 },
   { d:'Allocated capital ÷ entry price.', l:'Shares bought', r:1 },
+  { d:'Base-case growth, % a year to exit: the team\'s figure where marked "set", otherwise the bucket\'s base growth.', l:'Growth (% a year)', r:1 },
+  { d:'Years to exit for the company\'s bucket.', l:'Years', r:1 },
+  { d:'Base-case multiple on the capital invested: (1 + growth) ^ years, adjusted for the entry price.', l:'Base ×', r:1 },
   { d:'Value of the holding in the bear, base and bull cases, US$ millions.', l:'Bear ($m)', r:1 }, { l:'Base ($m)', r:1 }, { l:'Bull ($m)', r:1 },
   { d:'Why the allocation differs from the weight share.', l:'Note' },
 ];
@@ -1424,14 +1452,16 @@ function drawAlloc() {
       <td class="r num">${r.w}</td><td class="r num">${fm(r.target)}</td><td class="r num">${r.capSet ? fm(r.cap) : NA}</td>
       <td class="r num"><b>${fm(r.amt)}</b></td><td class="r num">${A.inv ? fp(r.amt/A.inv) : '—'}</td>
       <td class="r num">${px==null ? NA : usd(px)}</td><td class="r num">${px && r.amt ? Math.round(r.amt*1e6/px).toLocaleString('en-US') : NA}</td>
-      <td class="r num">${fm(m('bear'))}</td><td class="r num">${fm(m('base'))}${numOr(al.ovr[c.id])!=null ? ' <span class="flag">override</span>' : ''}</td><td class="r num">${fm(m('bull'))}</td>
+      <td class="r num">${+growthOf(c, s, r.b).toFixed(1)}%${numOr(al.gro[c.id])!=null ? ' <span class="flag">set</span>' : ''}</td><td class="r num">${s[BUCKETS[r.b].k.yrs]}</td>
+      <td class="r num">${fx(exitMult(c, 'base', s, r.b)/(1+e))}</td>
+      <td class="r num">${fm(m('bear'))}</td><td class="r num">${fm(m('base'))}</td><td class="r num">${fm(m('bull'))}</td>
       <td class="flag">${esc(r.why)}</td></tr>`; };
   document.querySelector('#tbl-al tbody').innerHTML = ord.map(row).join('') + (A.rs.length ? `<tr class="al-total"><td>Total</td><td></td><td></td><td></td><td></td><td class="r num">${fm(A.inv)}</td><td></td>
-    <td class="r num">${fm(A.deployed)}</td><td class="r num">${A.inv ? fp(A.deployed/A.inv) : '—'}</td><td></td><td></td>
+    <td class="r num">${fm(A.deployed)}</td><td class="r num">${A.inv ? fp(A.deployed/A.inv) : '—'}</td><td></td><td></td><td></td><td></td><td class="r num">${fx(cases[1].onDeployed)}</td>
     ${cases.map(x=>`<td class="r num">${fm(x.val)}</td>`).join('')}<td class="flag">${A.cash>0.05 ? fm(A.cash)+' undeployed' : ''}</td></tr>` : '');
 
-  document.querySelector('#tbl-al-exit thead').innerHTML = headHtml([{l:'Case'},{l:'Move vs today',r:1},{d:'Exit value of the holdings, US$ millions.',l:'Value ($m)',r:1},{l:'Gain ($m)',r:1},{d:'Exit value ÷ capital deployed.',l:'× deployed',r:1},{d:'(Exit value + undeployed cash + reserve) ÷ capital raised.',l:'× raise',r:1}]);
-  document.querySelector('#tbl-al-exit tbody').innerHTML = cases.map(x=>`<tr><td class="co">${x.l}</td><td class="r num">${pct(s[x.k]/100)}</td><td class="r num">${fm(x.val)}</td><td class="r num">${fm(x.gain)}</td><td class="r num">${fx(x.onDeployed)}</td><td class="r num">${fx(x.onRaise)}</td></tr>`).join('');
+  document.querySelector('#tbl-al-exit thead').innerHTML = headHtml([{l:'Case'},{d:'Bucket base growth, % a year, shifted by the bear / bull spread. Companies with their own growth shift by the same spread.',l:'Growth a year'},{d:'Exit value of the holdings, US$ millions.',l:'Value ($m)',r:1},{l:'Gain ($m)',r:1},{d:'Exit value ÷ capital deployed.',l:'× deployed',r:1},{d:'(Exit value + undeployed cash + reserve) ÷ capital raised.',l:'× raise',r:1}]);
+  document.querySelector('#tbl-al-exit tbody').innerHTML = cases.map(x=>`<tr><td class="co">${x.l}</td><td>${caseRates(s, x.k)}</td><td class="r num">${fm(x.val)}</td><td class="r num">${fm(x.gain)}</td><td class="r num">${fx(x.onDeployed)}</td><td class="r num">${fx(x.onRaise)}</td></tr>`).join('');
 
   document.querySelector('#tbl-al-entry thead').innerHTML = headHtml([{l:'Entry vs today',r:1},{d:'Shares bought relative to buying at today\'s price.',l:'Shares bought',r:1},{l:'Bear',r:1},{l:'Base',r:1},{l:'Bull',r:1}]);
   const entries = [...new Set([-30,-20,-10,0,10,20,30, s.entry])].sort((a,b)=>a-b);
@@ -1470,7 +1500,7 @@ function alSheets() {
     { h:'Value', e:true, v:f=>s[f.k], d:'The value used on the Allocation tab.' }, { h:'Unit', e:false, v:f=>f.u, w:30 },
     { h:'Key', e:false, v:f=>f.k, w:14, d:'Links the row to the page. Do not change.' },
   ], AL_FIELDS);
-  const pick = PICK_COLS.map(k => k.l);   // page headers: Hold, Marquee rank, Company, Tier, Sector, Secondary price, Current valuation, IPO status, Bucket, Available stock ($m), Base case override (%)
+  const pick = PICK_COLS.map(k => k.l);   // page headers: Hold, Marquee rank, Company, Tier, Sector, Secondary price, Current valuation, IPO status, Bucket, Available stock ($m), Growth (% a year), Base ×
   const companies = xlTable([
     { h:pick[0], e:true, v:c=>al.sel.includes(c.id) ? 'Y' : '', d:'Y to hold the company in this scenario.' },
     { h:pick[1], e:false, v:c=>c.mq, z:XZ.int }, { h:pick[2], e:false, v:c=>c.name, w:24 }, { h:pick[3], e:false, v:c=>c.tier }, { h:pick[4], e:false, v:c=>c.sector, w:26 },
@@ -1479,7 +1509,8 @@ function alSheets() {
     { h:pick[8], e:true, v:c=>al.bkt[c.id] ? BUCKETS[al.bkt[c.id]].short : `Auto · ${BUCKETS[bucketOf(c, {})].short}`, w:24,
       d:'Private Growth or Crossover to set the bucket; Auto (or blank) places companies with an IPO filing or reported IPO plans in Crossover and the rest in Private Growth.' },
     { h:pick[9], e:true, v:c=>al.cap[c.id], z:XZ.m, d:'US$ millions of stock that can actually be bought. Blank = no limit.' },
-    { h:pick[10], e:true, v:c=>al.ovr[c.id], z:XZ.pctn, d:'Replaces the global base case for this company, as a % move from today\'s secondary price. Blank = global.' },
+    { h:pick[10], e:true, v:c=>al.gro[c.id], d:'Base-case growth for this company, % a year to exit. Blank = its bucket\'s base growth.' },
+    { h:pick[11], e:false, v:c=>exitMult(c, 'base', s), z:XZ.mult, d:'Base-case multiple at exit: (1 + growth) ^ years to exit, before any entry-price adjustment.' },
     { h:'ID', e:false, v:c=>c.id, w:16, d:'Links the row to the page. Do not change.' },
   ], mqAll());
   const held = A.rs.filter(r=>r.amt>0), d = A.deployed || 1;
@@ -1501,18 +1532,20 @@ function alSheets() {
       { h:'Companies held', v:([b])=>A.bk[b].n }, { h:'Mandate (companies)', v:([b,B])=>`${s[B.k.nMin]}–${s[B.k.nMax]}` },
       { h:'Marquee companies that fit', v:([b])=>mqAll().filter(c=>bucketOf(c)===b).length },
       { h:'Cheque size', v:([b,B])=>`${fm(s[B.k.min])} to ${fm(s[B.k.max])}`, w:18 }, { h:'Time to liquidity', v:([b,B])=>B.liq },
-      { h:'Return expectation', v:([b,B])=>`${B.ret[0]}–${B.ret[1]}×` }, { h:'Base case × deployed', v:([b])=>outcome(A.bk[b], s, 'base').onDeployed, z:XZ.mult } ],
+      { h:'Base growth (% a year)', v:([b,B])=>s[B.k.rate] }, { h:'Years to exit', v:([b,B])=>s[B.k.yrs] }, { h:'Return expectation', v:([b,B])=>`${B.ret[0]}–${B.ret[1]}×` }, { h:'Base case × deployed', v:([b])=>outcome(A.bk[b], s, 'base').onDeployed, z:XZ.mult } ],
       rows:Object.entries(BUCKETS) },
     { cols:[
       { h:'Company', v:r=>r.c.name, w:24 }, { h:'Bucket', v:r=>r.b ? BUCKETS[r.b].short : '' }, { h:'Tier', v:r=>r.c.tier }, { h:'Sector', v:r=>r.c.sector, w:26 }, { h:'Weight', v:r=>r.w },
       { h:'Weight share ($m)', v:r=>r.target, z:XZ.m }, { h:'Available ($m)', v:r=>r.capSet ? r.cap : null, z:XZ.m }, { h:'Allocated ($m)', v:r=>r.amt, z:XZ.m },
       { h:'% of investable', v:r=>A.inv ? r.amt/A.inv : null, z:XZ.share }, { h:'Entry price', v:r=>r.c.bl==null ? null : r.c.bl*(1+e), z:XZ.usd },
       { h:'Shares bought', v:r=>r.c.bl && r.amt ? Math.round(r.amt*1e6/(r.c.bl*(1+e))) : null, z:XZ.int },
+      { h:'Growth (% a year)', v:r=>r.total ? null : growthOf(r.c, s, r.b) }, { h:'Years', v:r=>r.total ? null : s[BUCKETS[r.b].k.yrs] },
+      { h:'Base ×', v:r=>r.total ? cases[1].onDeployed : exitMult(r.c, 'base', s, r.b)/(1+e), z:XZ.mult },
       ...['bear','base','bull'].map(k => ({ h:`${k[0].toUpperCase()+k.slice(1)} ($m)`, v:r=>r.total ? A.rs.reduce((a,x)=>a+mv(k)(x),0) : mv(k)(r), z:XZ.m })),
       { h:'Note', v:r=>r.why, w:36 } ],
       rows:[...[...A.rs].sort((a,b)=>a.b.localeCompare(b.b) || b.amt-a.amt || a.c.mq-b.c.mq), { total:true, c:{ name:'Total' }, target:A.inv, amt:A.deployed, why:A.cash>0.05 ? `${fm(A.cash)} undeployed` : '' }] },
     { title:'Exit outcomes', sub:'Current allocation, at the entry price set', cols:[
-      { h:'Case', v:x=>x.l }, { h:'Move vs today', v:x=>s[x.k]/100, z:XZ.pct0 }, { h:'Value ($m)', v:x=>x.val, z:XZ.m }, { h:'Gain ($m)', v:x=>x.gain, z:XZ.m },
+      { h:'Case', v:x=>x.l }, { h:'Growth a year', v:x=>caseRates(s, x.k), w:34 }, { h:'Value ($m)', v:x=>x.val, z:XZ.m }, { h:'Gain ($m)', v:x=>x.gain, z:XZ.m },
       { h:'× deployed', v:x=>x.onDeployed, z:XZ.mult }, { h:'× raise', v:x=>x.onRaise, z:XZ.mult } ], rows:cases },
     { title:'Entry price', sub:'Multiple on capital deployed if we pay above or below today\'s secondary price', cols:[
       { h:'Entry vs today', v:x=>x/100, z:XZ.pct0 }, { h:'Shares bought', v:x=>1/(1+x/100)-1, z:XZ.pct0 },
@@ -1533,14 +1566,14 @@ function alSheets() {
   ]);
   return [['Allocation settings', settings], ['Allocation companies', companies], ['Allocation (read-only)', results]];
 }
-function alRefresh() { alSave(); drawAlloc(); }
+function alRefresh() { alSave(); pickDerived(); drawAlloc(); }
 function initAlloc() {
   drawAllocSettings(); drawAllocPick();
   const v = document.getElementById('view-alloc');
   v.addEventListener('input', e => {
     const t = e.target;
-    if (t.dataset.k) { const f = AL_FIELDS.find(x=>x.k===t.dataset.k); al.s[f.k] = numOr(t.value, f.d); if (f.k==='base') document.querySelectorAll('[data-ovr]').forEach(i=>i.placeholder=al.s.base); }
-    else if ('cap' in t.dataset || 'ovr' in t.dataset) { const id = t.closest('tr').dataset.id, m = 'cap' in t.dataset ? al.cap : al.ovr; t.value==='' ? delete m[id] : m[id] = +t.value; }
+    if (t.dataset.k) { const f = AL_FIELDS.find(x=>x.k===t.dataset.k); al.s[f.k] = numOr(t.value, f.d); }
+    else if ('cap' in t.dataset || 'gro' in t.dataset) { const id = t.closest('tr').dataset.id, m = 'cap' in t.dataset ? al.cap : al.gro; t.value==='' ? delete m[id] : m[id] = +t.value; }
     else if ('bkt' in t.dataset) { const id = t.closest('tr').dataset.id; t.value ? al.bkt[id] = t.value : delete al.bkt[id]; }
     else return;
     alRefresh();
@@ -1581,8 +1614,8 @@ function initAlloc() {
         if (String(r['Hold']||'').trim().toUpperCase()==='Y') n.sel.push(id);
         const bt = String(r['Bucket']||'').trim().toLowerCase();
         if (!bt.startsWith('auto')) { if (/^(private )?growth/.test(bt)) n.bkt[id] = 'G'; else if (/^crossover/.test(bt)) n.bkt[id] = 'X'; }
-        const cp = numOr(r['Available stock ($m)']), ov = numOr(r['Base case override (%)']);
-        if (cp!=null) n.cap[id] = cp; if (ov!=null) n.ovr[id] = ov; }
+        const cp = numOr(r['Available stock ($m)']), gr = numOr(r['Growth (% a year)']);
+        if (cp!=null) n.cap[id] = cp; if (gr!=null) n.gro[id] = gr; }
         n.sel = mqAll().map(c=>c.id).filter(id=>n.sel.includes(id)); }
       al = n; drawAllocSettings(); drawAllocPick(); alRefresh();
     } catch (err) { alert('Could not read the scenario file: ' + (err?.message || err)); }
@@ -1646,7 +1679,7 @@ const MASTER_README = [
   ['Methodology', 'Methodology · every weight, scoring range and tier threshold. The Methodology page text updates to match.'],
   ['Calibration', 'Methodology → Calibration · Current tier, Category and Reason.'],
   ['Allocation settings', 'Allocation → bucket cards and settings panels · bucket shares, cheque sizes and company counts, fund rules, tier weights, exit cases and entry price.'],
-  ['Allocation companies', 'Allocation → Choose companies · Hold (Y), bucket, available stock and base-case override.'],
+  ['Allocation companies', 'Allocation → Choose companies · Hold (Y), bucket, available stock and growth (% a year).'],
   ['Allocation (read-only)', 'Allocation · headline figures, the investment buckets, the allocation table, sensitivities and portfolio shape.'],
   ['Funding rounds, Shareholders, Profile notes', 'Company detail pop-ups · funding history, key shareholders and share-count notes.'],
   [],
