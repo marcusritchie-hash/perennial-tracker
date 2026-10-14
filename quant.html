@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261014131736"></script>
-<script src="quant-rounds.js?v=20261014131736" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261014131736" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261014131736" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261014131736" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261014131736" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261015080350"></script>
+<script src="quant-rounds.js?v=20261015080350" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261015080350" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261015080350" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261015080350" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261015080350" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -215,6 +215,23 @@
   td .al-in { width: 96px; padding: 4px 6px; font-size: 12px; text-align: right; }
   #view-alloc tbody tr { cursor: default; }
   #view-alloc td.co a { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--muted); }
+  .bk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .bk-card { border-top: 3px solid var(--accent-purple); }
+  .bk-card.bk-X { border-top-color: var(--purple); }
+  .bk-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .bk-num { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-purple); color: #fff; font: 400 15px var(--serif); }
+  .bk-X .bk-num { background: var(--purple); }
+  .bk-hd h3 { font: 400 18px var(--serif); color: var(--ink); margin: 0; }
+  .bk-hd .sub { margin: 0; }
+  .bk-list { margin: 0 0 12px 18px; padding: 0; font-size: 13px; color: var(--ink2); line-height: 1.7; min-height: 8.5em; }   /* five lines, so both cards line up */
+  .bk-card .al-fields { grid-template-columns: repeat(3, 1fr); margin-bottom: 14px; }
+  .bk-card h4 { font: 600 12px var(--sans); color: var(--ink); margin: 12px 0 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font: 400 12px var(--sans); color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+  .chip:hover { border-color: var(--accent-purple); }
+  .chip.on { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .chip:focus-visible { outline: 2px solid var(--accent-purple); outline-offset: 1px; }
+  .bk-ok { color: var(--purple); } .bk-bad { color: var(--neg); }
   .al-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
   .al-tools .sub { margin-left: 4px; }
   ul.al-warn { list-style: none; margin: 0 0 16px; }
@@ -238,7 +255,7 @@
     .hdr h1 { font-size: 26px; }
     .logo { width: 170px; }
     .kpis { grid-template-columns: repeat(2, 1fr); }
-    .grid2, .grid3, .grid4, .al-set { grid-template-columns: 1fr; }
+    .grid2, .grid3, .grid4, .al-set, .bk-grid { grid-template-columns: 1fr; }
     #cal-kpis { grid-template-columns: repeat(2, 1fr) !important; }
     .facts { grid-template-columns: repeat(2, 1fr); }
     .cov { grid-template-columns: 140px 1fr 56px; }
@@ -377,6 +394,14 @@
   <div class="view" id="view-alloc" role="tabpanel" hidden>
   <section>
     <div class="sec-hd">
+      <h2>Investment Bucket Allocation for Capital</h2>
+      <p>Investable capital is split between two buckets, each with its own mandate. A Marquee company with an IPO filing or reported IPO plans fits Crossover; one with no IPO path disclosed fits Private Growth. Change any company's bucket under Choose companies. Within each bucket, positions follow tier weights between the bucket's cheque sizes. Click a company to hold it or take it out.</p>
+    </div>
+    <div class="bk-grid" id="bk-grid"></div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
       <h2>Allocation sensitivity</h2>
       <p>How a capital raise would be spread across selected Marquee companies. Each company's share follows its tier weight, limited by the stock available to buy and the fund's portfolio rules; anything that cannot be placed stays as cash. The sensitivities below show how the result responds to exit outcomes, entry price and the tier weights themselves. Illustrative only: not a forecast, and not investment advice.</p>
     </div>
@@ -393,6 +418,7 @@
   <section>
     <div class="sec-hd"><h2>Choose companies</h2><p>Tick the Marquee companies to hold. Enter the stock available to buy in each (from brokers and the desk); leave it blank to assume the full amount can be bought. A base-case override replaces the global base case for that company only.</p></div>
     <div class="al-tools">
+      <button class="btn" data-pick="fill" type="button">Fill bucket minimums</button>
       <button class="btn" data-pick="5" type="button">Top 5 by Marquee rank</button>
       <button class="btn" data-pick="10" type="button">Top 10</button>
       <button class="btn" data-pick="0" type="button">Clear</button>
@@ -1174,11 +1200,34 @@ const AL_FIELDS = [
   { g:'Exit cases', k:'base', l:'Base case', u:'% vs today\'s price', d:50, step:5 },
   { g:'Exit cases', k:'bull', l:'Bull case', u:'% vs today\'s price', d:150, step:5 },
   { g:'Exit cases', k:'entry', l:'Entry price', u:'% vs today\'s price', d:0, step:5 },
+  { g:'Buckets', k:'gShare', l:'Private Growth share', u:'% of investable', d:50, step:5 },
+  { g:'Buckets', k:'gMin', l:'Private Growth cheque from', u:'$m', d:10, step:1 },
+  { g:'Buckets', k:'gMax', l:'Private Growth cheque up to', u:'$m', d:30, step:1 },
+  { g:'Buckets', k:'gNmin', l:'Private Growth companies, minimum', u:'companies', d:10, step:1 },
+  { g:'Buckets', k:'gNmax', l:'Private Growth companies, maximum', u:'companies', d:20, step:1 },
+  { g:'Buckets', k:'xMin', l:'Crossover cheque from', u:'$m', d:20, step:1 },
+  { g:'Buckets', k:'xMax', l:'Crossover cheque up to', u:'$m', d:100, step:1 },
+  { g:'Buckets', k:'xNmin', l:'Crossover companies, minimum', u:'companies', d:5, step:1 },
+  { g:'Buckets', k:'xNmax', l:'Crossover companies, maximum', u:'companies', d:10, step:1 },
 ];
-const AL_GROUPS = { 'Fund':'Fund rules', 'Tier weights':'Tier weights', 'Exit cases':'Exit cases and entry price' };
+const AL_GROUPS = { 'Fund':'Fund rules', 'Tier weights':'Tier weights', 'Exit cases':'Exit cases and entry price', 'Buckets':'Investment buckets' };
+// The two investment buckets. Settings keys hold the editable share, cheque sizes and company counts; the time to
+// liquidity and return expectations are the mandate's and are compared with the base case.
+const BUCKETS = {
+  G: { n:1, name:'Private Growth', short:'Private Growth', liq:'2–4 years', ret:[3,5], fit:'no IPO path disclosed',
+       k:{ min:'gMin', max:'gMax', nMin:'gNmin', nMax:'gNmax' } },
+  X: { n:2, name:'Crossover (Pre-IPO + IPO)', short:'Crossover', liq:'1–2 years', ret:[1.5,2], fit:'IPO filed or IPO plans reported',
+       extra:'Includes IPO participation on existing or new holdings', k:{ min:'xMin', max:'xMax', nMin:'xNmin', nMax:'xNmax' } },
+};
+const bucketShare = (s, b) => Math.min(100, Math.max(0, b==='G' ? s.gShare : 100 - s.gShare));
+// A company's bucket: the team's choice where set, otherwise Crossover with an IPO filing or reported plans.
+const bucketOf = (c, bkt = al.bkt) => bkt[c.id] || (c.ipo ? 'X' : 'G');
 const AL_PRESETS = [['4 : 2 : 1',4,2,1],['3 : 2 : 1',3,2,1],['2 : 1 : 0.5',2,1,0.5],['3 : 2 : 2',3,2,2],['Equal weight',1,1,1]];
 const mqAll = () => UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq);
-const alDefault = () => ({ s:Object.fromEntries(AL_FIELDS.map(f=>[f.k,f.d])), sel:mqAll().slice(0,5).map(c=>c.id), cap:{}, ovr:{} });
+// The top companies by Marquee rank in each bucket, up to the bucket's minimum company count.
+const bucketFill = (s, bkt) => { const m = mqAll(); return m.filter(c => ['G','X'].some(b => bucketOf(c, bkt)===b
+  && m.filter(x=>bucketOf(x, bkt)===b).indexOf(c) < s[BUCKETS[b].k.nMin])).map(c=>c.id); };
+const alDefault = () => { const s = Object.fromEntries(AL_FIELDS.map(f=>[f.k,f.d])); return { s, sel:bucketFill(s, {}), cap:{}, ovr:{}, bkt:{} }; };
 let al = alDefault();
 try { const v = JSON.parse(localStorage.getItem(AL_KEY) || 'null'); if (v?.s) al = { ...alDefault(), ...v, s:{ ...alDefault().s, ...v.s } }; } catch {}
 const alSave = () => { try { localStorage.setItem(AL_KEY, JSON.stringify(al)); } catch {} };
@@ -1187,17 +1236,32 @@ const fx = x => x==null || isNaN(x) ? '—' : x.toFixed(2) + '×';
 const fp = x => x==null || isNaN(x) ? '—' : (x*100).toFixed(1) + '%';
 const numOr = (v, d=null) => v==='' || v==null || isNaN(+v) ? d : +v;
 
-// Water-filling: each company gets rem × weight ÷ total weight of the companies still open; a company that would
-// exceed its limit (available stock or maximum position) is fixed at the limit and the rest re-shared. A sector over
-// its cap has its open companies scaled down to fit. Companies below the minimum ticket are dropped one at a time
-// (smallest first) and the whole allocation re-run.
+// The raise less the reserve is split between the buckets, and each bucket is allocated on its own (bucketAllocate).
+// The sector cap is fund-wide: Crossover, with the fewer and larger names, is placed first and Private Growth gets the
+// room left in each sector.
 function allocate(s, ids, wts) {
-  const W = wts || { Anchor:s.wAnchor, Conviction:s.wConviction, Tail:s.wTail, Watch:s.wWatch };
-  const inv = Math.max(0, s.raise * (1 - s.reserve/100));
-  const posCap = inv * s.maxPos/100, secCap = inv * s.sectorCap/100;
+  const inv = Math.max(0, s.raise * (1 - s.reserve/100)), secCap = inv * s.sectorCap/100;
+  const bk = {}, used = {};
+  for (const b of ['X','G']) {
+    bk[b] = bucketAllocate(s, ids.filter(id => bucketOf(UNI.find(c=>c.id===id) || {})===b), wts, b, inv * bucketShare(s, b)/100, inv, sec => Math.max(0, secCap - (used[sec] || 0)));
+    bk[b].rs.forEach(r => used[r.c.sector] = (used[r.c.sector] || 0) + r.amt);
+  }
+  const rs = [...bk.G.rs, ...bk.X.rs], deployed = bk.G.deployed + bk.X.deployed;
+  return { rs, inv, deployed, cash: inv - deployed, reserve: s.raise - inv, posCap: inv * s.maxPos/100, secCap, bk };
+}
+// Water-filling within one bucket: each company gets rem × weight ÷ total weight of the companies still open; a company
+// that would exceed its limit (available stock, the bucket's largest cheque or the fund's maximum position) is fixed at
+// the limit and the rest re-shared. A sector over the room it has left under the fund's sector cap (secRoom) has its
+// open companies scaled down to fit. Companies below the minimum cheque are dropped one at a time (smallest first) and
+// the bucket re-run.
+function bucketAllocate(s, ids, wts, b, inv, fundInv, secRoom) {
+  const W = wts || { Anchor:s.wAnchor, Conviction:s.wConviction, Tail:s.wTail, Watch:s.wWatch }, B = BUCKETS[b];
+  const fundCap = fundInv * s.maxPos/100, chqMax = s[B.k.max], posCap = Math.min(fundCap, chqMax);
+  const minChq = Math.max(s.minTicket, s[B.k.min]);
+  const capWhy = r => r.cap <= posCap ? 'Limited by available stock' : chqMax <= fundCap ? `At the ${fm(chqMax)} largest ${B.short} cheque` : 'Capped at maximum position';
   const rs = ids.map(id => UNI.find(c=>c.id===id)).filter(Boolean).map(c => {
     const cap = numOr(al.cap[c.id]);
-    return { c, w:Math.max(0, +W[c.tier] || 0), cap: cap==null ? Infinity : Math.max(0, cap), capSet: cap!=null, amt:0, why:'' };
+    return { c, b, w:Math.max(0, +W[c.tier] || 0), cap: cap==null ? Infinity : Math.max(0, cap), capSet: cap!=null, amt:0, why:'' };
   });
   const sumW = rs.reduce((a,r)=>a+r.w, 0);
   rs.forEach(r => r.target = sumW ? inv*r.w/sumW : 0);
@@ -1214,30 +1278,30 @@ function allocate(s, ids, wts) {
       let changed = false;
       for (const sec of new Set(open.map(r=>r.c.sector))) {
         const inSec = rs.filter(r=>!out.has(r) && r.c.sector===sec);
-        if (inSec.reduce((a,r)=>a+r.amt,0) <= secCap + 1e-9) continue;
-        const room = Math.max(0, secCap - inSec.filter(r=>fixed.has(r)).reduce((a,r)=>a+r.amt,0));
+        if (inSec.reduce((a,r)=>a+r.amt,0) <= secRoom(sec) + 1e-9) continue;
+        const room = Math.max(0, secRoom(sec) - inSec.filter(r=>fixed.has(r)).reduce((a,r)=>a+r.amt,0));
         const fr = inSec.filter(r=>!fixed.has(r)), frSum = fr.reduce((a,r)=>a+r.amt,0);
         for (const r of fr) {
           const lim = Math.min(r.cap, posCap);
           r.amt = Math.min(lim, frSum ? r.amt*room/frSum : 0);
-          r.why = r.amt >= lim - 1e-9 && lim < Infinity ? (r.cap <= posCap ? 'Limited by available stock' : 'Capped at maximum position') : 'Held back by sector cap';
+          r.why = r.amt >= lim - 1e-9 && lim < Infinity ? capWhy(r) : 'Held back by sector cap';
           fixed.add(r); rem -= r.amt; changed = true;
         }
       }
       if (changed) continue;
       for (const r of open) {
         const lim = Math.min(r.cap, posCap);
-        if (r.amt > lim + 1e-9) { r.amt = lim; r.why = r.cap <= posCap ? 'Limited by available stock' : 'Capped at maximum position'; fixed.add(r); rem -= lim; changed = true; }
+        if (r.amt > lim + 1e-9) { r.amt = lim; r.why = capWhy(r); fixed.add(r); rem -= lim; changed = true; }
       }
       if (!changed) break;
     }
-    const small = rs.filter(r=>!out.has(r) && r.amt < s.minTicket - 1e-9).sort((a,b)=>a.amt-b.amt);
+    const small = rs.filter(r=>!out.has(r) && r.amt < minChq - 1e-9).sort((a,b)=>a.amt-b.amt);
     if (!small.length) break;
-    small[0].why = `Below the ${fm(s.minTicket)} minimum ticket`; out.add(small[0]);
+    small[0].why = `Below the ${fm(minChq)} smallest ${B.short} cheque`; out.add(small[0]);
   }
   out.forEach(r => r.amt = 0);
   const deployed = rs.reduce((a,r)=>a+r.amt, 0);
-  return { rs, inv, deployed, cash: inv - deployed, reserve: s.raise - inv, posCap, secCap };
+  return { rs, inv, deployed, cash: inv - deployed, n: rs.filter(r=>r.amt>0).length };
 }
 // Exit value of each holding and of the fund, for exit move m (fraction vs today's price) and entry move e.
 const exitMove = (r, k, s) => k==='base' && numOr(al.ovr[r.c.id])!=null ? numOr(al.ovr[r.c.id])/100 : s[k]/100;
@@ -1252,16 +1316,49 @@ const shapeOf = A => {
   return { n:held.length, top1:p[0]||0, top3:p.slice(0,3).reduce((a,b)=>a+b,0), eff: p.length ? 1/p.reduce((a,x)=>a+x*x,0) : 0 };
 };
 
+const alInput = (f, l = f.l) => `<label>${l}<input class="al-in" type="number" step="${f.step||1}" data-k="${f.k}" value="${al.s[f.k]}"><span>${esc(f.u)}</span></label>`;
 function drawAllocSettings() {
-  document.getElementById('al-set').innerHTML = Object.entries(AL_GROUPS).map(([g, title]) =>
-    `<div class="panel"><h3>${title}</h3><div class="al-fields">` + AL_FIELDS.filter(f=>f.g===g).map(f =>
-      `<label>${f.l}<input class="al-in" type="number" step="${f.step||1}" data-k="${f.k}" value="${al.s[f.k]}"><span>${esc(f.u)}</span></label>`).join('')
-    + `</div></div>`).join('');
+  document.getElementById('al-set').innerHTML = Object.entries(AL_GROUPS).filter(([g])=>g!=='Buckets').map(([g, title]) =>
+    `<div class="panel"><h3>${title}</h3><div class="al-fields">` + AL_FIELDS.filter(f=>f.g===g).map(f => alInput(f)).join('') + `</div></div>`).join('');
+  // Bucket cards: the inputs are drawn once here (so typing keeps focus); drawBuckets fills in the rest.
+  const fd = k => AL_FIELDS.find(f=>f.k===k);
+  document.getElementById('bk-grid').innerHTML = Object.entries(BUCKETS).map(([b, B]) => `<div class="panel bk-card bk-${b}">
+    <div class="bk-hd"><span class="bk-num">${B.n}</span><div><h3 id="bk-${b}-t"></h3><div class="sub" id="bk-${b}-s"></div></div></div>
+    <ul class="bk-list" id="bk-${b}-m"></ul>
+    <div class="al-fields">${b==='G' ? alInput(fd('gShare'), 'Share of investable') : `<label>Share of investable<input class="al-in" id="bk-X-share" type="number" disabled><span>% · the rest</span></label>`}
+      ${alInput(fd(B.k.min), 'Cheque from')}${alInput(fd(B.k.max), 'Cheque up to')}
+      <label></label>${alInput(fd(B.k.nMin), 'Companies, minimum')}${alInput(fd(B.k.nMax), 'Companies, maximum')}</div>
+    <ul class="stat-list" id="bk-${b}-k"></ul>
+    <h4 id="bk-${b}-fh"></h4><div class="chips" id="bk-${b}-f"></div></div>`).join('');
+}
+function drawBuckets(A) {
+  const s = al.s;
+  for (const [b, B] of Object.entries(BUCKETS)) {
+    const P = A.bk[b], sh = bucketShare(s, b), fits = mqAll().filter(c=>bucketOf(c)===b), sel = fits.filter(c=>al.sel.includes(c.id)).length;
+    const nMin = s[B.k.nMin], nMax = s[B.k.nMax], base = outcome(P, s, 'base');
+    document.getElementById(`bk-${b}-t`).textContent = `${B.name} – ${+sh.toFixed(1)}% allocation`;
+    document.getElementById(`bk-${b}-s`).textContent = `${fm(P.inv)} of ${fm(A.inv)} investable`;
+    if (b==='X') document.getElementById('bk-X-share').value = +sh.toFixed(1);
+    document.getElementById(`bk-${b}-m`).innerHTML = [
+      `Investments: ${nMin}–${nMax} private companies`, `Time frame to liquidity: ${B.liq}`, `Return expectations: ${B.ret[0]}–${B.ret[1]}×`,
+      `Cheque size: ${fm(s[B.k.min])}, scaling to ${fm(s[B.k.max])}`, B.extra].filter(Boolean).map(x=>`<li>${esc(x)}</li>`).join('');
+    const ok = (good, txt) => `<b class="${good ? 'bk-ok' : 'bk-bad'}">${good ? '✓' : '⚠'} ${txt}</b>`;
+    document.getElementById(`bk-${b}-k`).innerHTML = [
+      ['Companies held', ok(P.n >= nMin && P.n <= nMax, `${P.n} of ${nMin}–${nMax}`)],
+      ['Deployed', `<b>${fm(P.deployed)}${P.cash > 0.05 ? ` <span class="flag">${fm(P.cash)} undeployed</span>` : ''}</b>`],
+      ['Base case on deployed', ok(base.onDeployed!=null && base.onDeployed >= B.ret[0], `${fx(base.onDeployed)} vs ${B.ret[0]}–${B.ret[1]}× target`)],
+    ].map(([l,v])=>`<li><span>${l}</span>${v}</li>`).join('');
+    document.getElementById(`bk-${b}-fh`).textContent = `Marquee companies that fit (${B.fit}): ${fits.length} · ${sel} held`;
+    document.getElementById(`bk-${b}-f`).innerHTML = fits.map(c => `<button type="button" class="chip ${al.sel.includes(c.id)?'on':''}" data-tog="${c.id}" aria-pressed="${al.sel.includes(c.id)}"
+      title="Marquee #${c.mq} · ${esc(c.tier)}${al.bkt[c.id] ? ' · bucket set by the team' : c.ipo ? ' · '+esc(IPO_SHORT[c.ipo.status]||c.ipo.status) : ''}">${esc(c.name)}${al.bkt[c.id] ? ' *' : ''}</button>`).join('')
+      || '<span class="empty">No Marquee companies fit this bucket. Move companies here under Choose companies.</span>';
+  }
 }
 const PICK_COLS = [
   { l:'Hold' }, { d:'Position on the Marquee Access Fund list.', l:'Marquee rank', r:1 }, { d:DEF.company, l:'Company' }, { d:DEF.tier, l:'Tier' }, { l:'Sector' },
   { d:'Average indicative secondary price across Clarity, Augment and Forge (USD).', l:'Secondary price', r:1 }, { d:DEF.curVal, l:'Current valuation', r:1 },
   { d:DEF.ipo, l:'IPO status' },
+  { d:'Investment bucket. Auto places a company with an IPO filing or reported IPO plans in Crossover and the rest in Private Growth; choose a bucket to override.', l:'Bucket' },
   { d:'US$ millions of stock we can actually buy, from brokers and the desk. Blank means no limit is applied.', l:'Available stock ($m)', r:1 },
   { d:'Replaces the global base case for this company, as a % move from today\'s secondary price. Blank uses the global base case.', l:'Base case override (%)', r:1 },
 ];
@@ -1272,13 +1369,15 @@ function drawAllocPick() {
     <td class="r num">${c.mq}</td><td class="co"><a href="#" class="al-open">${esc(c.name)}</a></td><td>${esc(c.tier)}</td><td>${esc(c.sector)}</td>
     <td class="r num">${c.bl==null ? NA : usd(c.bl)}</td><td class="r num">${(c.impl ?? c.curVal)==null ? NA : bn(c.impl ?? c.curVal)}</td>
     <td>${c.ipo ? IPO_SHORT[c.ipo.status]||esc(c.ipo.status) : NA}</td>
+    <td><select class="al-in" data-bkt aria-label="Bucket for ${esc(c.name)}">${[['', `Auto · ${BUCKETS[c.ipo ? 'X' : 'G'].short}`], ['G', BUCKETS.G.short], ['X', BUCKETS.X.short]]
+      .map(([v,l])=>`<option value="${v}" ${(al.bkt[c.id]||'')===v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
     <td class="r"><input class="al-in" type="number" min="0" step="1" data-cap value="${al.cap[c.id] ?? ''}" placeholder="no limit" aria-label="Available stock for ${esc(c.name)}, US$ millions"></td>
     <td class="r"><input class="al-in" type="number" step="5" data-ovr value="${al.ovr[c.id] ?? ''}" placeholder="${al.s.base}" aria-label="Base case override for ${esc(c.name)}, %"></td></tr>`).join('');
 }
 const AL_COLS = [
-  { d:DEF.company, l:'Company' }, { d:DEF.tier, l:'Tier' }, { l:'Sector' },
+  { d:DEF.company, l:'Company' }, { d:'Investment bucket the company is allocated from.', l:'Bucket' }, { d:DEF.tier, l:'Tier' }, { l:'Sector' },
   { d:'Tier weight from the settings above.', l:'Weight', r:1 },
-  { d:'Share of investable capital by tier weight alone, before stock limits and rules.', l:'Weight share ($m)', r:1 },
+  { d:'Share of the bucket\'s capital by tier weight alone, before stock limits and rules.', l:'Weight share ($m)', r:1 },
   { d:'Stock available to buy, as entered above.', l:'Available ($m)', r:1 },
   { d:'Capital allocated after stock limits, the maximum position, the sector cap and the minimum ticket.', l:'Allocated ($m)', r:1 },
   { d:'Allocated capital as a share of investable capital (raise less reserve).', l:'% of investable', r:1 },
@@ -1291,7 +1390,8 @@ function drawAlloc() {
   const s = al.s, A = allocate(s, al.sel), sh = shapeOf(A), e = s.entry/100;
   const cases = ['bear','base','bull'].map(k => ({ k, l:k[0].toUpperCase()+k.slice(1), ...outcome(A, s, k) }));
   document.getElementById('al-pick-n').textContent = `${al.sel.length} of ${mqAll().length} Marquee companies selected`;
-  document.getElementById('al-sub').textContent = `${fm(s.raise)} raised · ${fm(A.reserve)} reserve · ${fm(A.inv)} investable · tier weights Anchor ${s.wAnchor} : Conviction ${s.wConviction} : Tail ${s.wTail} : Watch ${s.wWatch}`;
+  document.getElementById('al-sub').textContent = `${fm(s.raise)} raised · ${fm(A.reserve)} reserve · ${fm(A.inv)} investable · ${BUCKETS.G.short} ${fm(A.bk.G.inv)} / ${BUCKETS.X.short} ${fm(A.bk.X.inv)} · tier weights Anchor ${s.wAnchor} : Conviction ${s.wConviction} : Tail ${s.wTail} : Watch ${s.wWatch}`;
+  drawBuckets(A);
   const base = cases[1];
   document.getElementById('al-kpis').innerHTML = [
     ['Investable', fm(A.inv), `after ${fm(A.reserve)} reserve`],
@@ -1304,8 +1404,13 @@ function drawAlloc() {
 
   const w = [];
   if (!al.sel.length) w.push('No companies selected. Tick companies in the table above, or use Top 5 / Top 10.');
-  if (A.cash > 0.05) w.push(`${fm(A.cash)} cannot be placed: the selected companies hit their stock limits, the ${s.maxPos}% maximum position or the ${s.sectorCap}% sector cap. Add companies, find more stock or relax a rule.`);
-  if (sh.n && sh.n * s.maxPos < 100) w.push(`With ${sh.n} companies and a ${s.maxPos}% maximum position, at most ${sh.n*s.maxPos}% of investable capital can be deployed.`);
+  for (const [b, B] of Object.entries(BUCKETS)) {
+    const P = A.bk[b], nMin = s[B.k.nMin], nMax = s[B.k.nMax], fits = mqAll().filter(c=>bucketOf(c)===b).length;
+    if (P.cash > 0.05) w.push(`${B.short}: ${fm(P.cash)} of its ${fm(P.inv)} cannot be placed: its companies hit their stock limits, the ${fm(s[B.k.max])} largest cheque, the ${s.maxPos}% maximum position or the ${s.sectorCap}% sector cap. Hold more ${B.short} companies, find more stock or relax a rule.`);
+    if (fits < nMin) w.push(`Only ${fits} Marquee ${fits===1?'company fits':'companies fit'} ${B.short} (${B.fit}), below its minimum of ${nMin}. Move companies into ${B.short} under Choose companies, or add names to the Marquee list.`);
+    else if (nMin * Math.max(s.minTicket, s[B.k.min]) > P.inv + 1e-9) w.push(`${B.short} cannot reach ${nMin} companies: ${nMin} cheques of at least ${fm(Math.max(s.minTicket, s[B.k.min]))} need ${fm(nMin*Math.max(s.minTicket, s[B.k.min]))}, more than its ${fm(P.inv)}. Raise more, give ${B.short} a larger share, or lower its smallest cheque or minimum company count.`);
+    else if (P.n < nMin || P.n > nMax) w.push(`${B.short} holds ${P.n} ${P.n===1?'company':'companies'}; its mandate is ${nMin}–${nMax}.`);
+  }
   const noCap = A.rs.filter(r=>r.amt>0 && !r.capSet);
   if (noCap.length) w.push(`No available stock entered for ${noCap.map(r=>esc(r.c.name)).join(', ')}: the model assumes the full allocation can be bought.`);
   const noPx = A.rs.filter(r=>r.amt>0 && r.c.bl==null);
@@ -1313,15 +1418,15 @@ function drawAlloc() {
   document.getElementById('al-warn').innerHTML = w.map(x=>`<li>⚠ ${x}</li>`).join('');
 
   document.querySelector('#tbl-al thead').innerHTML = headHtml(AL_COLS);
-  const ord = [...A.rs].sort((a,b)=>b.amt-a.amt || a.c.mq-b.c.mq);
+  const ord = [...A.rs].sort((a,b)=>a.b.localeCompare(b.b) || b.amt-a.amt || a.c.mq-b.c.mq);
   const row = r => { const c = r.c, px = c.bl==null ? null : c.bl*(1+e), m = k => r.amt*(1+exitMove(r,k,s))/(1+e);
-    return `<tr data-id="${c.id}" class="${r.amt>0?'':'al-off'}"><td class="co"><a href="#" class="al-open">${esc(c.name)}</a></td><td>${esc(c.tier)}</td><td>${esc(c.sector)}</td>
+    return `<tr data-id="${c.id}" class="${r.amt>0?'':'al-off'}"><td class="co"><a href="#" class="al-open">${esc(c.name)}</a></td><td>${BUCKETS[r.b].short}</td><td>${esc(c.tier)}</td><td>${esc(c.sector)}</td>
       <td class="r num">${r.w}</td><td class="r num">${fm(r.target)}</td><td class="r num">${r.capSet ? fm(r.cap) : NA}</td>
       <td class="r num"><b>${fm(r.amt)}</b></td><td class="r num">${A.inv ? fp(r.amt/A.inv) : '—'}</td>
       <td class="r num">${px==null ? NA : usd(px)}</td><td class="r num">${px && r.amt ? Math.round(r.amt*1e6/px).toLocaleString('en-US') : NA}</td>
       <td class="r num">${fm(m('bear'))}</td><td class="r num">${fm(m('base'))}${numOr(al.ovr[c.id])!=null ? ' <span class="flag">override</span>' : ''}</td><td class="r num">${fm(m('bull'))}</td>
       <td class="flag">${esc(r.why)}</td></tr>`; };
-  document.querySelector('#tbl-al tbody').innerHTML = ord.map(row).join('') + (A.rs.length ? `<tr class="al-total"><td>Total</td><td></td><td></td><td></td><td class="r num">${fm(A.inv)}</td><td></td>
+  document.querySelector('#tbl-al tbody').innerHTML = ord.map(row).join('') + (A.rs.length ? `<tr class="al-total"><td>Total</td><td></td><td></td><td></td><td></td><td class="r num">${fm(A.inv)}</td><td></td>
     <td class="r num">${fm(A.deployed)}</td><td class="r num">${A.inv ? fp(A.deployed/A.inv) : '—'}</td><td></td><td></td>
     ${cases.map(x=>`<td class="r num">${fm(x.val)}</td>`).join('')}<td class="flag">${A.cash>0.05 ? fm(A.cash)+' undeployed' : ''}</td></tr>` : '');
 
@@ -1365,14 +1470,16 @@ function alSheets() {
     { h:'Value', e:true, v:f=>s[f.k], d:'The value used on the Allocation tab.' }, { h:'Unit', e:false, v:f=>f.u, w:30 },
     { h:'Key', e:false, v:f=>f.k, w:14, d:'Links the row to the page. Do not change.' },
   ], AL_FIELDS);
-  const pick = PICK_COLS.map(k => k.l);   // page headers: Hold, Marquee rank, Company, Tier, Sector, Secondary price, Current valuation, IPO status, Available stock ($m), Base case override (%)
+  const pick = PICK_COLS.map(k => k.l);   // page headers: Hold, Marquee rank, Company, Tier, Sector, Secondary price, Current valuation, IPO status, Bucket, Available stock ($m), Base case override (%)
   const companies = xlTable([
     { h:pick[0], e:true, v:c=>al.sel.includes(c.id) ? 'Y' : '', d:'Y to hold the company in this scenario.' },
     { h:pick[1], e:false, v:c=>c.mq, z:XZ.int }, { h:pick[2], e:false, v:c=>c.name, w:24 }, { h:pick[3], e:false, v:c=>c.tier }, { h:pick[4], e:false, v:c=>c.sector, w:26 },
     { h:pick[5], e:false, v:c=>c.bl, z:XZ.usd }, { h:pick[6], e:false, v:c=>c.impl ?? c.curVal, z:XZ.bn },
     { h:pick[7], e:false, v:c=>c.ipo ? IPO_SHORT[c.ipo.status]||c.ipo.status : '' },
-    { h:pick[8], e:true, v:c=>al.cap[c.id], z:XZ.m, d:'US$ millions of stock that can actually be bought. Blank = no limit.' },
-    { h:pick[9], e:true, v:c=>al.ovr[c.id], z:XZ.pctn, d:'Replaces the global base case for this company, as a % move from today\'s secondary price. Blank = global.' },
+    { h:pick[8], e:true, v:c=>al.bkt[c.id] ? BUCKETS[al.bkt[c.id]].short : `Auto · ${BUCKETS[bucketOf(c, {})].short}`, w:24,
+      d:'Private Growth or Crossover to set the bucket; Auto (or blank) places companies with an IPO filing or reported IPO plans in Crossover and the rest in Private Growth.' },
+    { h:pick[9], e:true, v:c=>al.cap[c.id], z:XZ.m, d:'US$ millions of stock that can actually be bought. Blank = no limit.' },
+    { h:pick[10], e:true, v:c=>al.ovr[c.id], z:XZ.pctn, d:'Replaces the global base case for this company, as a % move from today\'s secondary price. Blank = global.' },
     { h:'ID', e:false, v:c=>c.id, w:16, d:'Links the row to the page. Do not change.' },
   ], mqAll());
   const held = A.rs.filter(r=>r.amt>0), d = A.deployed || 1;
@@ -1388,14 +1495,22 @@ function alSheets() {
         ['Undeployed cash', A.cash, XZ.m, A.cash > 0.05 ? 'cannot be placed under current limits' : 'fully placed'],
         ['Companies held', sh.n, XZ.int, `of ${al.sel.length} selected · effective ${sh.eff.toFixed(1)}`], ['Largest position', sh.top1, XZ.share, `top 3: ${fp(sh.top3)} of deployed`],
         ['Base case', cases[1].onRaise, XZ.mult, `on the raise · ${fx(cases[1].onDeployed)} on deployed`] ] },
+    { title:'Investment buckets', sub:'Companies with an IPO filing or reported IPO plans fit Crossover; the rest fit Private Growth, unless the team sets the bucket', cols:[
+      { h:'Bucket', v:([b,B])=>B.name, w:26 }, { h:'Share of investable', v:([b])=>bucketShare(s, b)/100, z:XZ.share }, { h:'Capital ($m)', v:([b])=>A.bk[b].inv, z:XZ.m },
+      { h:'Deployed ($m)', v:([b])=>A.bk[b].deployed, z:XZ.m }, { h:'Undeployed ($m)', v:([b])=>A.bk[b].cash, z:XZ.m },
+      { h:'Companies held', v:([b])=>A.bk[b].n }, { h:'Mandate (companies)', v:([b,B])=>`${s[B.k.nMin]}–${s[B.k.nMax]}` },
+      { h:'Marquee companies that fit', v:([b])=>mqAll().filter(c=>bucketOf(c)===b).length },
+      { h:'Cheque size', v:([b,B])=>`${fm(s[B.k.min])} to ${fm(s[B.k.max])}`, w:18 }, { h:'Time to liquidity', v:([b,B])=>B.liq },
+      { h:'Return expectation', v:([b,B])=>`${B.ret[0]}–${B.ret[1]}×` }, { h:'Base case × deployed', v:([b])=>outcome(A.bk[b], s, 'base').onDeployed, z:XZ.mult } ],
+      rows:Object.entries(BUCKETS) },
     { cols:[
-      { h:'Company', v:r=>r.c.name, w:24 }, { h:'Tier', v:r=>r.c.tier }, { h:'Sector', v:r=>r.c.sector, w:26 }, { h:'Weight', v:r=>r.w },
+      { h:'Company', v:r=>r.c.name, w:24 }, { h:'Bucket', v:r=>r.b ? BUCKETS[r.b].short : '' }, { h:'Tier', v:r=>r.c.tier }, { h:'Sector', v:r=>r.c.sector, w:26 }, { h:'Weight', v:r=>r.w },
       { h:'Weight share ($m)', v:r=>r.target, z:XZ.m }, { h:'Available ($m)', v:r=>r.capSet ? r.cap : null, z:XZ.m }, { h:'Allocated ($m)', v:r=>r.amt, z:XZ.m },
       { h:'% of investable', v:r=>A.inv ? r.amt/A.inv : null, z:XZ.share }, { h:'Entry price', v:r=>r.c.bl==null ? null : r.c.bl*(1+e), z:XZ.usd },
       { h:'Shares bought', v:r=>r.c.bl && r.amt ? Math.round(r.amt*1e6/(r.c.bl*(1+e))) : null, z:XZ.int },
       ...['bear','base','bull'].map(k => ({ h:`${k[0].toUpperCase()+k.slice(1)} ($m)`, v:r=>r.total ? A.rs.reduce((a,x)=>a+mv(k)(x),0) : mv(k)(r), z:XZ.m })),
       { h:'Note', v:r=>r.why, w:36 } ],
-      rows:[...[...A.rs].sort((a,b)=>b.amt-a.amt || a.c.mq-b.c.mq), { total:true, c:{ name:'Total' }, target:A.inv, amt:A.deployed, why:A.cash>0.05 ? `${fm(A.cash)} undeployed` : '' }] },
+      rows:[...[...A.rs].sort((a,b)=>a.b.localeCompare(b.b) || b.amt-a.amt || a.c.mq-b.c.mq), { total:true, c:{ name:'Total' }, target:A.inv, amt:A.deployed, why:A.cash>0.05 ? `${fm(A.cash)} undeployed` : '' }] },
     { title:'Exit outcomes', sub:'Current allocation, at the entry price set', cols:[
       { h:'Case', v:x=>x.l }, { h:'Move vs today', v:x=>s[x.k]/100, z:XZ.pct0 }, { h:'Value ($m)', v:x=>x.val, z:XZ.m }, { h:'Gain ($m)', v:x=>x.gain, z:XZ.m },
       { h:'× deployed', v:x=>x.onDeployed, z:XZ.mult }, { h:'× raise', v:x=>x.onRaise, z:XZ.mult } ], rows:cases },
@@ -1426,6 +1541,7 @@ function initAlloc() {
     const t = e.target;
     if (t.dataset.k) { const f = AL_FIELDS.find(x=>x.k===t.dataset.k); al.s[f.k] = numOr(t.value, f.d); if (f.k==='base') document.querySelectorAll('[data-ovr]').forEach(i=>i.placeholder=al.s.base); }
     else if ('cap' in t.dataset || 'ovr' in t.dataset) { const id = t.closest('tr').dataset.id, m = 'cap' in t.dataset ? al.cap : al.ovr; t.value==='' ? delete m[id] : m[id] = +t.value; }
+    else if ('bkt' in t.dataset) { const id = t.closest('tr').dataset.id; t.value ? al.bkt[id] = t.value : delete al.bkt[id]; }
     else return;
     alRefresh();
   });
@@ -1437,7 +1553,10 @@ function initAlloc() {
   });
   v.addEventListener('click', e => {
     const a = e.target.closest('.al-open'); if (a) { e.preventDefault(); openDetail(UNI.find(c=>c.id===a.closest('tr').dataset.id)); return; }
-    const p = e.target.closest('[data-pick]'); if (p) { al.sel = mqAll().slice(0, +p.dataset.pick).map(c=>c.id); drawAllocPick(); alRefresh(); }
+    const g = e.target.closest('[data-tog]');
+    if (g) { const id = g.dataset.tog; al.sel = al.sel.includes(id) ? al.sel.filter(x=>x!==id) : mqAll().map(c=>c.id).filter(x => x===id || al.sel.includes(x)); drawAllocPick(); alRefresh(); return; }
+    const p = e.target.closest('[data-pick]');
+    if (p) { al.sel = p.dataset.pick==='fill' ? bucketFill(al.s, al.bkt) : mqAll().slice(0, +p.dataset.pick).map(c=>c.id); drawAllocPick(); alRefresh(); }
   });
   document.getElementById('al-reset').onclick = () => { if (!confirm('Reset all allocation settings, selections and stock limits to the defaults?')) return; al = alDefault(); drawAllocSettings(); drawAllocPick(); alRefresh(); };
   document.getElementById('al-dl').onclick = async () => {
@@ -1460,6 +1579,8 @@ function initAlloc() {
       for (const r of S) { const fd = AL_FIELDS.find(x => x.k===r['Key'] || x.l===r['Setting']); if (fd) n.s[fd.k] = numOr(r['Value'], fd.d); }
       if (C.length) { n.sel = []; for (const r of C) { const id = r['ID']; if (!UNI.some(c=>c.id===id && c.mq)) continue;
         if (String(r['Hold']||'').trim().toUpperCase()==='Y') n.sel.push(id);
+        const bt = String(r['Bucket']||'').trim().toLowerCase();
+        if (!bt.startsWith('auto')) { if (/^(private )?growth/.test(bt)) n.bkt[id] = 'G'; else if (/^crossover/.test(bt)) n.bkt[id] = 'X'; }
         const cp = numOr(r['Available stock ($m)']), ov = numOr(r['Base case override (%)']);
         if (cp!=null) n.cap[id] = cp; if (ov!=null) n.ovr[id] = ov; }
         n.sel = mqAll().map(c=>c.id).filter(id=>n.sel.includes(id)); }
@@ -1524,9 +1645,9 @@ const MASTER_README = [
   ['Universe', 'Universe · the company master, grouped by sector as on the page. Edit Company, Liquidity score, prices, Note, Region, and the input columns to the right. Add or remove companies here.'],
   ['Methodology', 'Methodology · every weight, scoring range and tier threshold. The Methodology page text updates to match.'],
   ['Calibration', 'Methodology → Calibration · Current tier, Category and Reason.'],
-  ['Allocation settings', 'Allocation → settings panels · fund rules, tier weights, exit cases and entry price.'],
-  ['Allocation companies', 'Allocation → Choose companies · Hold (Y), available stock and base-case override.'],
-  ['Allocation (read-only)', 'Allocation · headline figures, the allocation table, sensitivities and portfolio shape.'],
+  ['Allocation settings', 'Allocation → bucket cards and settings panels · bucket shares, cheque sizes and company counts, fund rules, tier weights, exit cases and entry price.'],
+  ['Allocation companies', 'Allocation → Choose companies · Hold (Y), bucket, available stock and base-case override.'],
+  ['Allocation (read-only)', 'Allocation · headline figures, the investment buckets, the allocation table, sensitivities and portfolio shape.'],
   ['Funding rounds, Shareholders, Profile notes', 'Company detail pop-ups · funding history, key shareholders and share-count notes.'],
   [],
   ['Rules'],
