@@ -4,7 +4,7 @@
 )
 # Imports the master Excel workbook (dashboard "Master Excel" button) back into the dashboard data files
 # (Universe, Marquee list, Calibration, IPO pipeline and Methodology sheets; Allocation sheets are not imported):
-#   quant-data.js  (Universe, Marquee list)   tier-overrides.js (Calibration)   method-config.js (Methodology)
+#   quant-data.js  (Universe, Marquee list, Watching companies)   tier-overrides.js (Calibration)   method-config.js (Methodology)
 #   quant-rounds.js (Funding rounds, Shareholders, Profile notes)   ipo-status.js (IPO pipeline)
 # Removed companies are also appended to name-map.csv. Prices, shares and history for "tracker" rows stay
 # with the price tracker (index.html) and are not taken from the workbook.
@@ -60,6 +60,7 @@ function Sheet($name, [switch]$Optional) {   # rows as ordered hashtables keyed 
 $CO = if (HasSheet 'Universe') { Sheet 'Universe' } else { Sheet 'Companies' }
 $RD = Sheet 'Funding rounds'; $SH = Sheet 'Shareholders'; $PR = Sheet 'Profile notes'
 $MQS = if (HasSheet 'Marquee list') { @(Sheet 'Marquee list') } else { $null }
+$WLS = if (HasSheet 'Watching companies') { @(Sheet 'Watching companies') } else { $null }
 $CAL = if (HasSheet 'Calibration') { @(Sheet 'Calibration') } else { $null }
 $IPS = if (HasSheet 'IPO pipeline') { @(Sheet 'IPO pipeline') } else { $null }
 $MET = if (HasSheet 'Methodology') { @(Sheet 'Methodology') } else { $null }
@@ -118,7 +119,7 @@ function Index($rows, $sheet) {
     $ix[$k] = $r }
   $ix
 }
-$ixMQ = Index $MQS 'Marquee list'; $ixCAL = Index $CAL 'Calibration'; $ixIPO = Index $IPS 'IPO pipeline'
+$ixMQ = Index $MQS 'Marquee list'; $ixWL = Index $WLS 'Watching companies'; $ixCAL = Index $CAL 'Calibration'; $ixIPO = Index $IPS 'IPO pipeline'
 $used = @{}
 function Find($ix, $sheet, $id, $name) {   # the row for this company in a page sheet; @{} when it has none
   foreach ($k in "id:$id", "name:$($name.ToLower())") { if ($ix.Contains($k)) { $used["$sheet|$k"] = 1; return $ix[$k] } }
@@ -149,12 +150,14 @@ foreach ($r in $CO) {
   $o = if ($isNew) { $null } else { $old[$id] }
   $tracker = $o -and $o.pxSrc -eq 'tracker'
   $mr = if ($ixMQ -ne $null) { Find $ixMQ 'Marquee list' $id $name } else { $r }
+  $wr = if ($ixWL -ne $null) { Find $ixWL 'Watching companies' $id $name } else { $null }
   $tr = if ($ixCAL -ne $null) { Find $ixCAL 'Calibration' $id $name } else { $r }
   $ir = if ($ixIPO -ne $null) { Find $ixIPO 'IPO pipeline' $id $name } else { $r }
   $e = [ordered]@{
     id = $id; name = $name; region = S $r['Region']; hq = S $r['HQ']; sector = S $r['Sector']; sub = S $r['Sub-sector']
     tier = if ($o) { $o.tier } else { 'Tail' }   # stored base tier; the page's rules and overrides set the confirmed tier
     listed = (S $r['Listed']) -ieq 'Y'; mq = N $mr['Marquee rank'] "$name Marquee rank"
+    wl = if ($wr -ne $null) { N $wr['#'] "$name watching position" } elseif ($o) { $o.wl } else { $null }
     aug = N $r['Augment Power 20 rank'] "$name Augment Power 20 rank"; c50 = N $r['Clarity 50 rank'] "$name Clarity 50 rank"
     forgeTraded = (S $r['Forge traded']) -ieq 'Y'
     lrEv = N (Col $r 'Last round valuation input ($bn)','Last round valuation ($bn)') "$name last round valuation"; lrName = S $r['Last round']; lrDate = D $r['Last round date'] "$name last round date"
@@ -175,7 +178,7 @@ foreach ($r in $CO) {
   }
   if ($isNew) { $chg.Add("ADD     $name ($($e.sector), $($e.region)) as id '$id'") }
   else {
-    foreach ($k in 'name','region','hq','sector','sub','listed','mq','aug','c50','forgeTraded','lrEv','lrName','lrDate','curVal','note','ctype','ccy','liq','shares') {
+    foreach ($k in 'name','region','hq','sector','sub','listed','mq','wl','aug','c50','forgeTraded','lrEv','lrName','lrDate','curVal','note','ctype','ccy','liq','shares') {
       $a = $o.$k; $b = $e[$k]; if (Differs $a $b) { $chg.Add("EDIT    $name · $k : '$a' → '$b'") } }
     if (-not $tracker) { foreach ($k in 'c','a','f') { if (Differs $o.px.$k $e.px[$k]) { $chg.Add("EDIT    $name · price $k : '$($o.px.$k)' → '$($e.px[$k])'") } } }
   }
@@ -206,7 +209,7 @@ foreach ($r in $CO) {
 }
 foreach ($id in $old.Keys) { if (-not $seen[$id]) { $chg.Add("REMOVE  $($old[$id].name) — row deleted from the workbook (use Action = Remove next time)"); $removed += [pscustomobject]@{ id=$id; name=$old[$id].name; reason='Deleted from master workbook' } } }
 
-foreach ($p in @(@('Marquee list',$ixMQ),@('Calibration',$ixCAL),@('IPO pipeline',$ixIPO))) {
+foreach ($p in @(@('Marquee list',$ixMQ),@('Watching companies',$ixWL),@('Calibration',$ixCAL),@('IPO pipeline',$ixIPO))) {
   if ($p[1] -eq $null) { continue }
   foreach ($k in $p[1].Keys) { if (-not $used["$($p[0])|$k"]) { $warn.Add("$($p[0]): '$($k -replace '^(id|name):','')' is not a company in Universe; row ignored") } } }
 

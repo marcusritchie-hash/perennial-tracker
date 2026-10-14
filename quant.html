@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261014123944"></script>
-<script src="quant-rounds.js?v=20261014123944" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261014123944" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261014123944" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261014123944" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261014123944" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261014131736"></script>
+<script src="quant-rounds.js?v=20261014131736" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261014131736" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261014131736" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261014131736" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261014131736" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -269,9 +269,9 @@
   <nav class="tabs" role="tablist" aria-label="Views">
     <button class="tab-btn" role="tab" data-view="analytics" type="button">Analytics</button>
     <button class="tab-btn" role="tab" data-view="marquee" type="button">Marquee list</button>
-    <button class="tab-btn" role="tab" data-view="alloc" type="button">Allocation</button>
     <button class="tab-btn" role="tab" data-view="universe" type="button">Universe</button>
     <button class="tab-btn" role="tab" data-view="method" type="button">Methodology</button>
+    <button class="tab-btn" role="tab" data-view="alloc" type="button">Allocation</button>
   </nav>
 
   <div class="draft-bar" id="draft-bar" role="status" hidden>
@@ -364,6 +364,13 @@
       <p id="mq-sub"></p>
     </div>
     <div class="tbl-wrap"><table id="tbl-mq"><thead></thead><tbody></tbody></table></div>
+  </section>
+  <section>
+    <div class="sec-hd">
+      <h2>Watching Companies</h2>
+      <p id="wl-sub"></p>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-wl"><thead></thead><tbody></tbody></table></div>
   </section>
   </div>
 
@@ -680,7 +687,7 @@ document.getElementById('f-mq').onchange = e=>{ F.mq=e.target.checked; render();
 document.getElementById('f-stale').onchange = e=>{ F.stale=e.target.checked; render(); };
 document.getElementById('f-q').oninput = e=>{ F.q=e.target.value.trim().toLowerCase(); render(); };
 
-const rows = () => UNI.filter(c => F.tiers.has(c.tier) && (!F.region||c.region===F.region) && (!F.sector||c.sector===F.sector) && (!F.mq||c.mq) && (!F.q||c.name.toLowerCase().includes(F.q)));
+const rows = (mqOnly = F.mq) => UNI.filter(c => F.tiers.has(c.tier) && (!F.region||c.region===F.region) && (!F.sector||c.sector===F.sector) && (!mqOnly||c.mq) && (!F.q||c.name.toLowerCase().includes(F.q)));
 const premOk = c => c.prem!=null && (F.stale || !c.stale);
 
 // ── charts ──
@@ -851,6 +858,7 @@ const DEF = {
 const COLS = [
   { d:'Rank within the sector by liquidity score (1 = most liquid). Ranks cover the whole universe, so filters hide rows without re-ranking.', l:'Sector rank', r:1, f:c=>c.srank ?? NA },
   { d:'Rank across all companies by liquidity score (1 = most liquid).', l:'Overall rank', r:1, f:c=>c.rank ?? NA },
+  { d:'Yes if the company is on the Perennial Marquee Access Fund list (see the Marquee list tab).', l:'Marquee list', f:c=>c.mq ? `<span title="Marquee rank ${c.mq}">Yes</span>` : NA },
   { d:DEF.company, l:'Company', cls:'co', f:c=>`${esc(c.name)}${c.listed?'<span class="badge b-ls">LISTED</span>':''}` },
   { d:DEF.tier, l:'Tier', f:c=>esc(c.tier) },
   { d:DEF.liqWb, l:'Liquidity score', r:1, f:c=>c.liq==null ? NA : c.liq.toFixed(1) },
@@ -859,7 +867,6 @@ const COLS = [
   { d:DEF.venue('Clarity (formerly Hiive)'), l:'Clarity', r:1, f:c=>c.px.c==null ? NA : ccySym(c)+c.px.c.toFixed(2) },
   { d:DEF.venue('Augment (data by Caplight)'), l:'Augment', r:1, f:c=>c.px.a==null ? NA : usd(c.px.a) },
   { d:DEF.venue('Forge'), l:'Forge', r:1, f:c=>c.px.f==null ? NA : usd(c.px.f) },
-  { d:'Yes if the company is on the Perennial Marquee Access Fund list (see the Marquee list tab).', l:'Marquee list', f:c=>c.mq ? `<span title="Marquee rank ${c.mq}">Yes</span>` : NA },
   { d:DEF.ipo, l:'IPO status', f:c=>c.ipo ? `${IPO_SHORT[c.ipo.status]||esc(c.ipo.status)} <span class="flag">${c.ipo.target ? 'target '+esc(c.ipo.target) : fMon(c.ipo.updated+'-01')}</span>` : NA },
   { d:'Perennial analyst note.', l:'Note', cls:'note-cell', f:c=>esc(c.note||'') },
   { l:'Region', f:c=>esc(c.region) },
@@ -904,8 +911,20 @@ function drawMarquee(rs) {
   document.querySelector('#tbl-mq thead').innerHTML = headHtml(MQ_COLS);
   document.querySelector('#tbl-mq tbody').innerHTML = m.length ? m.map(c=>rowHtml(MQ_COLS, c)).join('')
     : `<tr><td colspan="${MQ_COLS.length}" class="empty">No Marquee companies match the current filters.</td></tr>`;
+  // Watching companies: names the team is considering, whether or not they are on the Marquee list.
+  const w = rows(false).filter(c=>c.wl).sort((a,b)=>a.wl-b.wl), wAll = UNI.filter(c=>c.wl);
+  document.getElementById('wl-sub').textContent = `Companies we are watching and should consider · ${wAll.length} companies · ${wAll.filter(c=>c.mq).length} already on the Marquee list`
+    + (w.length < wAll.length ? ` · ${w.length} shown with current filters` : '');
+  document.querySelector('#tbl-wl thead').innerHTML = headHtml(WL_COLS);
+  document.querySelector('#tbl-wl tbody').innerHTML = w.length ? w.map(c=>rowHtml(WL_COLS, c)).join('')
+    : `<tr><td colspan="${WL_COLS.length}" class="empty">No watching companies match the current filters.</td></tr>`;
 }
-for (const id of ['#tbl','#tbl-mq']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
+const WL_COLS = [
+  { d:'Position on the watching list.', l:'#', r:1, f:c=>c.wl },
+  { d:'Marquee rank, where the company is already on the Marquee list.', l:'Marquee rank', r:1, f:c=>c.mq ?? NA },
+  ...MQ_COLS.slice(1),
+];
+for (const id of ['#tbl','#tbl-mq','#tbl-wl']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
 
 // ── coverage ──
 // ── IPO pipeline: companies with a filing or reported IPO plans, furthest along first ──
@@ -1450,8 +1469,8 @@ function initAlloc() {
 }
 
 // ── render ──
-// ── views: Analytics / Marquee list / Allocation / Universe / Methodology, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','alloc','universe','method'];
+// ── views: Analytics / Marquee list / Universe / Methodology / Allocation, selected by the tabs and kept in the URL hash ──
+const VIEWS = ['analytics','marquee','universe','method','alloc'];
 let view = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'analytics';
 function setView(v) {
   view = VIEWS.includes(v) ? v : 'analytics';
@@ -1501,12 +1520,13 @@ const MASTER_README = [
   ['Analytics (read-only)', 'Analytics · the headline statistics, each chart as a table, and data coverage.'],
   ['IPO pipeline', 'Analytics → IPO pipeline · IPO status, last filing update, target listing and recent valuation. Add a row (company + ID + status) to add; delete the row to remove.'],
   ['Marquee list', 'Marquee list · the Marquee rank only (order and membership). Add a row with the company ID to add; delete the row to remove.'],
-  ['Allocation settings', 'Allocation → settings panels · fund rules, tier weights, exit cases and entry price.'],
-  ['Allocation companies', 'Allocation → Choose companies · Hold (Y), available stock and base-case override.'],
-  ['Allocation (read-only)', 'Allocation · headline figures, the allocation table, sensitivities and portfolio shape.'],
+  ['Watching companies', 'Marquee list → Watching Companies · the watching position (#) only. Add a row with the company ID to add; delete the row to remove.'],
   ['Universe', 'Universe · the company master, grouped by sector as on the page. Edit Company, Liquidity score, prices, Note, Region, and the input columns to the right. Add or remove companies here.'],
   ['Methodology', 'Methodology · every weight, scoring range and tier threshold. The Methodology page text updates to match.'],
   ['Calibration', 'Methodology → Calibration · Current tier, Category and Reason.'],
+  ['Allocation settings', 'Allocation → settings panels · fund rules, tier weights, exit cases and entry price.'],
+  ['Allocation companies', 'Allocation → Choose companies · Hold (Y), available stock and base-case override.'],
+  ['Allocation (read-only)', 'Allocation · headline figures, the allocation table, sensitivities and portfolio shape.'],
   ['Funding rounds, Shareholders, Profile notes', 'Company detail pop-ups · funding history, key shareholders and share-count notes.'],
   [],
   ['Rules'],
@@ -1642,14 +1662,23 @@ function masterWorkbook() {
     ed(XC.id, true),
   ], UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq));
 
+  // Watching companies (bottom of the Marquee list page); only the watching position is edited here.
+  const watching = xlTable([
+    { h:'#', e:true, v:c=>c.wl, z:XZ.int, d:'Position on the watching list. Delete the row to take a company off; add a row with its ID to add one.' },
+    { h:'Marquee rank', e:false, v:c=>c.mq, z:XZ.int, d:'Marquee rank, where the company is already on the Marquee list. Edit in the Marquee list sheet.' },
+    ...[XC.rank, XC.company, XC.sector, XC.sub, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.hq, XC.region].map(k => ed(k, false)),
+    ed(XC.id, true),
+  ], UNI.filter(c=>c.wl).sort((a,b)=>a.wl-b.wl));
+
   // Universe, grouped by sector and ranked within it as on the page; input columns the page does not show follow.
   const byRank = (a,b) => (a.srank??1e9) - (b.srank??1e9) || a.name.localeCompare(b.name);
   const uniRows = SECTOR_ORDER.flatMap(s => UNI.filter(c=>c.sector===s).sort(byRank));
   const b = c => c.base;
   const universe = xlTable([
-    ed(XC.sector, true), ed(XC.srank, false), ed(XC.rank, false), ed(XC.company, true), ed(XC.tier, false), ed(XC.liq, true),
-    ed(XC.lrEv, false), ed(XC.curVal, false), ed(XC.clarity, true), ed(XC.augment, true), ed(XC.forge, true),
+    ed(XC.sector, true), ed(XC.srank, false), ed(XC.rank, false),
     { h:'Marquee list', e:false, v:c=>c.mq ? 'Yes' : '', d:'Yes if the company is on the Marquee list. Edit in the Marquee list sheet.' },
+    ed(XC.company, true), ed(XC.tier, false), ed(XC.liq, true),
+    ed(XC.lrEv, false), ed(XC.curVal, false), ed(XC.clarity, true), ed(XC.augment, true), ed(XC.forge, true),
     ed(XC.ipo, false), ed(XC.note, true), ed(XC.region, true),
     ed(XC.id, true),
     { h:'Action', e:true, v:()=>null, d:'Enter Remove (and an Action reason) to drop the company.' },
@@ -1715,10 +1744,11 @@ function masterWorkbook() {
   XLSX.utils.book_append_sheet(wb, analytics, 'Analytics (read-only)');
   XLSX.utils.book_append_sheet(wb, ipo, 'IPO pipeline');
   XLSX.utils.book_append_sheet(wb, marquee, 'Marquee list');
-  for (const [name, ws] of alSheets()) XLSX.utils.book_append_sheet(wb, ws, name);
+  XLSX.utils.book_append_sheet(wb, watching, 'Watching companies');
   XLSX.utils.book_append_sheet(wb, universe, 'Universe');
   XLSX.utils.book_append_sheet(wb, method, 'Methodology');
   XLSX.utils.book_append_sheet(wb, calib, 'Calibration');
+  for (const [name, ws] of alSheets()) XLSX.utils.book_append_sheet(wb, ws, name);
   XLSX.utils.book_append_sheet(wb, xlSheet(rounds, W), 'Funding rounds');
   XLSX.utils.book_append_sheet(wb, xlSheet(holders, W), 'Shareholders');
   XLSX.utils.book_append_sheet(wb, xlSheet(profiles, W), 'Profile notes');
