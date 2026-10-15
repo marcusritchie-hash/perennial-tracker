@@ -15,11 +15,17 @@ $rows = foreach ($line in ($text -split "`n")) {
     $p = $o.px.$k
     if ($p -ne $null -and ($low -eq $null -or $p -lt $low)) { $low = $p; $lowAt = $venues[$k] }
   }
+  # Valuation in US$ bn: lowest price x shares outstanding where both are known (same basis as the
+  # dashboard's implied valuation, but at the low price), else the dashboard's reported valuation.
+  $val = $null; $valBasis = ''
+  if ($low -ne $null -and $o.shares) { $val = [math]::Round($low * $o.shares / 1e9, 3); $valBasis = 'Low price x shares' }
+  elseif ($o.curVal -ne $null) { $val = $o.curVal; $valBasis = 'Reported valuation' }
   [pscustomobject]@{
     id = $o.id; name = $o.name; ccy = $o.ccy
     low = $low; low_venue = $lowAt
     clarity = $o.px.c; forge = $o.px.f; augment = $o.px.a
     asof = $asof
+    val_bn = $val; val_basis = $valBasis
   }
 }
 $csv = ($rows | ConvertTo-Csv -NoTypeInformation) -join "`n"
