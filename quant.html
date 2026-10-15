@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261015152250"></script>
-<script src="quant-rounds.js?v=20261015152250" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261015152250" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261015152250" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261015152250" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261015152250" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261015154236"></script>
+<script src="quant-rounds.js?v=20261015154236" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261015154236" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261015154236" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261015154236" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261015154236" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -130,6 +130,9 @@
     padding: 10px 18px 9px; cursor: pointer; white-space: nowrap; }
   .tab-btn:hover { color: var(--brand); }
   .tab-btn[aria-selected="true"] { color: var(--brand); border-bottom-color: var(--purple); }
+  .tab-btn:disabled { color: var(--muted); opacity: .55; cursor: not-allowed; }
+  .tab-btn:disabled:hover { color: var(--muted); }
+  .tab-soon { font-size: 11px; font-weight: 400; font-style: italic; margin-left: 2px; }
 
   /* filters */
   .filters { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
@@ -288,7 +291,7 @@
     <button class="tab-btn" role="tab" data-view="marquee" type="button">Marquee list</button>
     <button class="tab-btn" role="tab" data-view="universe" type="button">Universe</button>
     <button class="tab-btn" role="tab" data-view="method" type="button">Methodology</button>
-    <button class="tab-btn" role="tab" data-view="alloc" type="button">Allocation</button>
+    <button class="tab-btn" role="tab" data-view="alloc" type="button" disabled aria-disabled="true" title="Not ready yet">Allocation <span class="tab-soon">not ready</span></button>
   </nav>
 
   <div class="draft-bar" id="draft-bar" role="status" hidden>
@@ -1627,9 +1630,12 @@ function initAlloc() {
 // ── render ──
 // ── views: Analytics / Marquee list / Universe / Methodology / Allocation, selected by the tabs and kept in the URL hash ──
 const VIEWS = ['analytics','marquee','universe','method','alloc'];
-let view = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'analytics';
+// The Allocation tab is greyed out and cannot be opened until it is ready; set ALLOC_READY to true (and enable its tab button) to open it.
+const ALLOC_READY = false;
+const OPEN_VIEWS = VIEWS.filter(v => ALLOC_READY || v !== 'alloc');
+let view = OPEN_VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'analytics';
 function setView(v) {
-  view = VIEWS.includes(v) ? v : 'analytics';
+  view = OPEN_VIEWS.includes(v) ? v : 'analytics';
   for (const x of VIEWS) document.getElementById('view-'+x).hidden = x !== view;
   document.querySelectorAll('.tab-btn').forEach(b => b.setAttribute('aria-selected', b.dataset.view === view));
   document.getElementById('tog-stale').hidden = view !== 'analytics';   // only the analytics statistics use it
