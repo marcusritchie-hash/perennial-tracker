@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261015145306"></script>
-<script src="quant-rounds.js?v=20261015145306" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261015145306" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261015145306" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261015145306" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261015145306" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261015152250"></script>
+<script src="quant-rounds.js?v=20261015152250" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261015152250" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261015152250" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261015152250" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261015152250" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -656,7 +656,7 @@ const median = xs => quant(xs, .5);
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const alpha = (hex, a) => { const h=hex.replace('#',''); const n=parseInt(h.length===3?h.split('').map(x=>x+x).join(''):h,16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
 const pct = (x, d=0) => x==null ? '—' : (x>0?'+':'') + (x*100).toFixed(d) + '%';
-const bn = x => x==null ? '—' : x>=1000 ? '$'+(x/1000).toFixed(2)+'T' : x>=10 ? '$'+x.toFixed(0)+'bn' : '$'+x.toFixed(1)+'bn';
+const bn = x => x==null ? '—' : x>=1000 ? '$'+(x/1000).toFixed(2)+'T' : x>=10 ? '$'+x.toFixed(0)+'bn' : x>=1 ? '$'+x.toFixed(1)+'bn' : '$'+Math.round(x*1000)+'m';   // under $1bn in millions
 const usd = x => x==null ? '—' : '$'+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fDate = d => d ? new Date(d+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}) : '—';
 const fMon = d => new Date(d+'T00:00:00').toLocaleDateString('en-AU',{month:'short',year:'numeric'});
