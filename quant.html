@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261015125248"></script>
-<script src="quant-rounds.js?v=20261015125248" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261015125248" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261015125248" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261015125248" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261015125248" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261015145306"></script>
+<script src="quant-rounds.js?v=20261015145306" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261015145306" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261015145306" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261015145306" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261015145306" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -867,8 +867,10 @@ function drawKpis(rs) {
 }
 // Marquee ranks renumbered 1..n in the fund's original order, since listed and acquired names have been removed.
 UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq).forEach((c,i) => c.mq = i+1);
+// Sectors by size, with AI Models & Applications always first.
+const SECTOR_TOP = 'AI Models & Applications';
 const SECTOR_ORDER =Object.entries(UNI.reduce((a,c)=>(a[c.sector]=(a[c.sector]||0)+1, a), {}))
-  .sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0])).map(([s])=>s);
+  .sort((a,b)=>(b[0]===SECTOR_TOP)-(a[0]===SECTOR_TOP) || b[1]-a[1] || a[0].localeCompare(b[0])).map(([s])=>s);
 const NA = '<span class="na">—</span>';
 const ccySym = c => c.ccy==='EUR'?'€':c.ccy==='GBP'?'£':'$';
 // Definitions shared by several tables.
