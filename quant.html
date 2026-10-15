@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261015154236"></script>
-<script src="quant-rounds.js?v=20261015154236" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261015154236" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261015154236" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261015154236" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261015154236" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261016094829"></script>
+<script src="quant-rounds.js?v=20261016094829" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261016094829" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261016094829" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261016094829" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261016094829" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -60,7 +60,7 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--ink2); font-family: var(--sans); font-weight: 400; font-size: 13px; line-height: 1.5; }
-  .app { max-width: 1360px; margin: 0 auto; padding: 28px 24px 64px; }
+  .app { margin: 0 auto; padding: 28px 24px 64px; }   /* full window width */
   h1, h2 { font-family: var(--serif); font-weight: 400; color: var(--brand); }
   h1 { font-size: 26px; line-height: 1.2; }
   h2 { font-size: 18px; padding-bottom: 6px; border-bottom: 1px solid var(--brand); margin-bottom: 4px; }
@@ -167,7 +167,7 @@
   /* table */
   .tbl-wrap { overflow-x: auto; background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); max-height: 640px; overflow-y: auto; }
   table { border-collapse: collapse; width: 100%; font-size: 12px; }
-  thead th { position: sticky; top: 0; background: var(--purple); color: #fff; font-weight: 700; text-align: left; padding: 9px 10px; white-space: nowrap; cursor: pointer; user-select: none; }
+  thead th { position: sticky; top: 0; background: var(--purple); color: #fff; font-weight: 700; text-align: left; padding: 9px 10px; white-space: normal; vertical-align: bottom; line-height: 1.25; cursor: pointer; user-select: none; }
   thead th.r, td.r { text-align: right; }
   thead th[aria-sort="ascending"]::after { content: " ▲"; font-size: 9px; }
   thead th[aria-sort="descending"]::after { content: " ▼"; font-size: 9px; }
@@ -176,7 +176,8 @@
   tbody tr { cursor: pointer; }
   tbody tr:hover td { background: color-mix(in srgb, var(--accent-light-purple) 35%, var(--surface)); }
   td.co { font-weight: 600; color: var(--ink); }
-  td.note-cell { white-space: normal; min-width: 240px; color: var(--muted); }
+  td.note-cell { white-space: normal; width: 250px; min-width: 250px; color: var(--muted); }   /* wraps, so tables stay narrow */
+  td.wrap { white-space: normal; min-width: 90px; }
   thead th { cursor: default; }
   tbody tr.sec-row td { background: var(--surface) !important; cursor: default; padding: 16px 10px 8px; border-bottom: 1px solid var(--brand);
     font-family: var(--serif); font-size: 15px; color: var(--brand); text-transform: uppercase; letter-spacing: .04em; }
@@ -577,8 +578,6 @@
     <div class="kpis" id="cal-kpis" style="grid-template-columns:repeat(4,1fr)"></div>
     <div class="tbl-wrap"><table id="tbl-cal"><thead></thead><tbody></tbody></table></div>
   </section>
-  </div>
-
   <section class="method">
     <div class="sec-hd"><h2>Methodology &amp; sources</h2></div>
     <ul>
@@ -590,6 +589,7 @@
       <li>All figures in USD. Universe from Perennial's Pre-IPO Fund Universe; prices refreshed <span class="asof"></span>.</li>
     </ul>
   </section>
+  </div>
 </div>
 
 <dialog id="dlg" aria-labelledby="dlg-title">
@@ -898,9 +898,9 @@ const COLS = [
   { d:DEF.venue('Clarity (formerly Hiive)'), l:'Clarity', r:1, f:c=>c.px.c==null ? NA : ccySym(c)+c.px.c.toFixed(2) },
   { d:DEF.venue('Augment (data by Caplight)'), l:'Augment', r:1, f:c=>c.px.a==null ? NA : usd(c.px.a) },
   { d:DEF.venue('Forge'), l:'Forge', r:1, f:c=>c.px.f==null ? NA : usd(c.px.f) },
-  { d:DEF.ipo, l:'IPO status', f:c=>c.ipo ? `${IPO_SHORT[c.ipo.status]||esc(c.ipo.status)} <span class="flag">${c.ipo.target ? 'target '+esc(c.ipo.target) : fMon(c.ipo.updated+'-01')}</span>` : NA },
+  { d:DEF.ipo, l:'IPO status', cls:'wrap', f:c=>c.ipo ? `${IPO_SHORT[c.ipo.status]||esc(c.ipo.status)} <span class="flag">${c.ipo.target ? 'target '+esc(c.ipo.target) : fMon(c.ipo.updated+'-01')}</span>` : NA },
   { d:'Perennial analyst note.', l:'Note', cls:'note-cell', f:c=>esc(c.note||'') },
-  { l:'Region', f:c=>esc(c.region) },
+  { l:'Region', cls:'wrap', f:c=>esc(c.region) },
 ];
 const rowHtml = (cols, c) => `<tr data-id="${c.id}">`+cols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(c)}</td>`).join('')+'</tr>';
 // Column headers; a column with a definition (d) gets an ⓘ button that shows it on hover, focus or tap.
@@ -924,14 +924,14 @@ const MQ_COLS = [
   { d:'Position on the Marquee Access Fund list.', l:'Marquee rank', r:1, f:c=>c.mq },
   { d:'Rank across all companies by liquidity score (1 = most liquid).', l:'Overall rank', r:1, f:c=>c.rank ?? NA },
   { d:DEF.company, l:'Company', cls:'co', f:c=>`${esc(c.name)}${c.listed?'<span class="badge b-ls">LISTED</span>':''}` },
-  { l:'Sector', f:c=>esc(c.sector) },
-  { l:'Sub-sector', f:c=>esc(c.sub||'') },
+  { l:'Sector', cls:'wrap', f:c=>esc(c.sector) },
+  { l:'Sub-sector', cls:'wrap', f:c=>esc(c.sub||'') },
   { d:DEF.tier, l:'Tier', f:c=>esc(c.tier) },
   { d:DEF.liqWb, l:'Liquidity score', r:1, f:c=>c.liq==null ? NA : c.liq.toFixed(1) },
   { d:'Rank within the sector by liquidity score (1 = most liquid). Ranks cover the whole universe, so filters hide rows without re-ranking.', l:'Sector rank', r:1, f:c=>c.srank ?? NA },
   ...COLS.filter(k=>['Last round EV','Current valuation','Clarity','Augment','Forge','IPO status','Note'].includes(k.l)),
-  { l:'HQ', f:c=>esc(c.hq||'') },
-  { l:'Region', f:c=>esc(c.region) },
+  { l:'HQ', cls:'wrap', f:c=>esc(c.hq||'') },
+  { l:'Region', cls:'wrap', f:c=>esc(c.region) },
 ];
 function drawMarquee(rs) {
   const m = rs.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq);
