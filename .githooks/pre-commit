@@ -4,6 +4,8 @@
 # 2. Gives quant.html's data-file links a fresh ?v= so browsers fetch the new data with the new page,
 #    instead of a copy cached for up to 10 minutes by GitHub Pages. Only the staged copy of quant.html
 #    is rewritten (and the same edit made in the working copy), so unstaged edits never slip into a commit.
+# 3. Rebuilds feed-prices.csv (lowest venue price per company) from the staged quant-data.js; the Order Book
+#    workbook pulls it into Live Book column B.
 d=$(date +%Y-%m-%d)
 printf '// Written by .githooks/pre-commit on every commit; do not edit.\nwindow.SITE_UPDATED = "%s";\n' "$d" > site-updated.js
 git add site-updated.js
@@ -15,4 +17,12 @@ if git cat-file -e :quant.html 2>/dev/null; then
   mode=$(git ls-files -s quant.html | cut -d' ' -f1)
   git update-index --cacheinfo "$mode,$blob,quant.html"
   sed -E -i "$re" quant.html
+fi
+
+if git cat-file -e :quant-data.js 2>/dev/null; then
+  tmp=$(mktemp)
+  git show :quant-data.js > "$tmp"
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File .githooks/feed-prices.ps1 -DataFile "$(cygpath -w "$tmp")"
+  rm -f "$tmp"
+  git add feed-prices.csv
 fi
