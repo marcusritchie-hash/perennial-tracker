@@ -31,7 +31,7 @@ $rows = foreach ($line in ($text -split "`n")) {
     clarity = $o.px.c; forge = $o.px.f; augment = $o.px.a
     asof = $asof
     val_bn = $val; val_basis = $valBasis
-    avg = $(if ($avg -ne $null) { [math]::Round($avg, 2) } else { $null }); venues = $ps.Count
+    avg = $(if ($avg -ne $null) { [math]::Round($avg, 2, [MidpointRounding]::AwayFromZero) } else { $null }); venues = $ps.Count
   }
 }
 $csv = ($rows | ConvertTo-Csv -NoTypeInformation) -join "`n"
