@@ -7,12 +7,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261016115951"></script>
-<script src="quant-rounds.js?v=20261016115951" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261016115951" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261016115951" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261016115951" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261016115951" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261016134603"></script>
+<script src="quant-rounds.js?v=20261016134603" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261016134603" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261016134603" onerror="window.IPO={}"></script>
+<script src="method-config.js?v=20261016134603" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261016134603" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -178,6 +178,8 @@
   td.co { font-weight: 600; color: var(--ink); }
   td.note-cell { white-space: normal; width: 250px; min-width: 250px; color: var(--muted); }   /* wraps, so tables stay narrow */
   td.wrap { white-space: normal; min-width: 90px; }
+  #tbl-mq td.note-cell, #tbl-wl td.note-cell { width: 190px; min-width: 190px; }   /* Marquee and Watching fit a 1440px laptop */
+  #tbl-mq td.wrap, #tbl-wl td.wrap { min-width: 72px; }
   thead th { cursor: default; }
   tbody tr.sec-row td { background: var(--surface) !important; cursor: default; padding: 16px 10px 8px; border-bottom: 1px solid var(--brand);
     font-family: var(--serif); font-size: 15px; color: var(--brand); text-transform: uppercase; letter-spacing: .04em; }
@@ -925,12 +927,10 @@ const MQ_COLS = [
   { d:'Rank across all companies by liquidity score (1 = most liquid).', l:'Overall rank', r:1, f:c=>c.rank ?? NA },
   { d:DEF.company, l:'Company', cls:'co', f:c=>`${esc(c.name)}${c.listed?'<span class="badge b-ls">LISTED</span>':''}` },
   { l:'Sector', cls:'wrap', f:c=>esc(c.sector) },
-  { l:'Sub-sector', cls:'wrap', f:c=>esc(c.sub||'') },
   { d:DEF.tier, l:'Tier', f:c=>esc(c.tier) },
   { d:DEF.liqWb, l:'Liquidity score', r:1, f:c=>c.liq==null ? NA : c.liq.toFixed(1) },
   { d:'Rank within the sector by liquidity score (1 = most liquid). Ranks cover the whole universe, so filters hide rows without re-ranking.', l:'Sector rank', r:1, f:c=>c.srank ?? NA },
   ...COLS.filter(k=>['Last round EV','Current valuation','Clarity','Augment','Forge','IPO status','Note'].includes(k.l)),
-  { l:'HQ', cls:'wrap', f:c=>esc(c.hq||'') },
   { l:'Region', cls:'wrap', f:c=>esc(c.region) },
 ];
 function drawMarquee(rs) {
@@ -1705,7 +1705,7 @@ const MASTER_README = [
   ['Funding rounds', 'Type: Equity, Strategic, Convertible, Tender, Debt or Pending (reported, not closed). Company-run = N for investor-to-investor sales.'],
   [],
   [`Exported ${new Date().toLocaleString('en-AU')} · ${UNI.length} companies · data as of ${fDate(QD_ASOF)}`],
-];
+].filter(r => ALLOC_READY || !/^(5\. )?Allocation/.test(r[0] || ''));  // no Allocation sheets while the tab is not ready
 // SheetJS is only needed for Excel downloads and uploads, so it loads on first use.
 const loadXLSX = () => window.XLSX ? Promise.resolve() : new Promise((ok, fail) => { const s = document.createElement('script');
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
@@ -1820,7 +1820,7 @@ function masterWorkbook() {
   // Marquee list, as on the page; only the rank is edited here.
   const marquee = xlTable([
     { h:'Marquee rank', e:true, v:c=>c.mq, z:XZ.int, d:'Position on the Marquee Access Fund list. Delete the row to take a company off; add a row with its ID to add one.' },
-    ...[XC.rank, XC.company, XC.sector, XC.sub, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.hq, XC.region].map(k => ed(k, false)),
+    ...[XC.rank, XC.company, XC.sector, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.region].map(k => ed(k, false)),
     ed(XC.id, true),
   ], UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq));
 
@@ -1828,7 +1828,7 @@ function masterWorkbook() {
   const watching = xlTable([
     { h:'#', e:true, v:c=>c.wl, z:XZ.int, d:'Position on the watching list. Delete the row to take a company off; add a row with its ID to add one.' },
     { h:'Marquee rank', e:false, v:c=>c.mq, z:XZ.int, d:'Marquee rank, where the company is already on the Marquee list. Edit in the Marquee list sheet.' },
-    ...[XC.rank, XC.company, XC.sector, XC.sub, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.hq, XC.region].map(k => ed(k, false)),
+    ...[XC.rank, XC.company, XC.sector, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.region].map(k => ed(k, false)),
     ed(XC.id, true),
   ], UNI.filter(c=>c.wl).sort((a,b)=>a.wl-b.wl));
 
@@ -1910,7 +1910,7 @@ function masterWorkbook() {
   XLSX.utils.book_append_sheet(wb, universe, 'Universe');
   XLSX.utils.book_append_sheet(wb, method, 'Methodology');
   XLSX.utils.book_append_sheet(wb, calib, 'Calibration');
-  for (const [name, ws] of alSheets()) XLSX.utils.book_append_sheet(wb, ws, name);
+  if (ALLOC_READY) for (const [name, ws] of alSheets()) XLSX.utils.book_append_sheet(wb, ws, name);
   XLSX.utils.book_append_sheet(wb, xlSheet(rounds, W), 'Funding rounds');
   XLSX.utils.book_append_sheet(wb, xlSheet(holders, W), 'Shareholders');
   XLSX.utils.book_append_sheet(wb, xlSheet(profiles, W), 'Profile notes');
