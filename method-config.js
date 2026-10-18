@@ -1,4 +1,4 @@
-// Tier-model parameters, edited through the master Excel's Methodology sheet (imported by .claude/work/import-master.ps1).
+// Scoring and bucket-rule parameters, edited through the master Excel's Methodology sheet (imported by .claude/work/import-master.ps1).
 // Units as in that sheet: weights and percentage bounds in %, months in months, valuations in US$ billions, scores 0–100.
 window.METHOD = {
   "pillar.va": 40, "pillar.lq": 30, "pillar.dm": 30,
@@ -14,8 +14,6 @@ window.METHOD = {
   "dm.c50.w": 35,
   "dm.mom.w": 30, "dm.mom.lo": -20, "dm.mom.hi": 30,
   "rule.minPillars": 2,
-  "rule.anchor.comp": 60, "rule.anchor.lq": 50, "rule.anchor.val": 50,
-  "rule.tail.lq": 30,
-  "rule.conv.comp": 40, "rule.conv.va": 70,
+  "rule.watch.comp": 40, "rule.watch.va": 70,
   "data.staleMonths": 18
 };

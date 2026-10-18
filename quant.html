@@ -7,13 +7,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261019093622"></script>
-<script src="quant-rounds.js?v=20261019093622" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261019093622" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261019093622" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261019093622" onerror="window.EXITS=null"></script>
-<script src="method-config.js?v=20261019093622" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261019093622" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261019101922"></script>
+<script src="quant-rounds.js?v=20261019101922" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261019101922" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261019101922" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261019101922" onerror="window.EXITS=null"></script>
+<script src="method-config.js?v=20261019101922" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261019101922" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -407,7 +407,7 @@
   <section>
     <div class="sec-hd">
       <h2>Investment Bucket Allocation for Capital</h2>
-      <p>Investable capital is split between two buckets, each with its own mandate. A Marquee company with an IPO filing or reported IPO plans fits Crossover; one with no IPO path disclosed fits Private Growth. Change any company's bucket under Choose companies. Within each bucket, positions follow tier weights between the bucket's cheque sizes. Each company grows at its bucket's base growth a year (or the team's own figure for it) for the bucket's years to exit; the base growth starts where the base case just meets the bottom of the mandate's return range. Click a company to hold it or take it out.</p>
+      <p>Investable capital is split between two buckets, each with its own mandate. Each Marquee company is allocated from its confirmed investment bucket (see the Methodology tab); Watch companies are not held. Change any company's bucket for this scenario under Choose companies. Within each bucket, positions follow the score tilt between the bucket's cheque sizes, and each bucket has an indicative range of 0–75% of the Fund's NAV. Each company grows at its bucket's base growth a year (or the team's own figure for it) for the bucket's years to exit; the base growth starts where the base case just meets the bottom of the mandate's return range. Click a company to hold it or take it out.</p>
     </div>
     <div class="bk-grid" id="bk-grid"></div>
   </section>
@@ -415,7 +415,7 @@
   <section>
     <div class="sec-hd">
       <h2>Allocation sensitivity</h2>
-      <p>How a capital raise would be spread across selected Marquee companies. Each company's share follows its tier weight, limited by the stock available to buy and the fund's portfolio rules; anything that cannot be placed stays as cash. The sensitivities below show how the result responds to exit outcomes, entry price and the tier weights themselves. Illustrative only: not a forecast, and not investment advice.</p>
+      <p>How a capital raise would be spread across selected Marquee companies. Each company's share follows its weight within its bucket (equal, or tilted towards higher composite scores), limited by the stock available to buy and the fund's portfolio rules; anything that cannot be placed stays as cash. The sensitivities below show how the result responds to exit outcomes, entry price and the weighting itself. Illustrative only: not a forecast, and not investment advice.</p>
     </div>
     <div class="al-tools">
       <button class="btn" id="al-dl" type="button">⤓ Download scenario</button>
@@ -452,7 +452,7 @@
       <div class="panel"><h3>Exit outcomes</h3><div class="sub">Current allocation, at the entry price set above</div><div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-al-exit"><thead></thead><tbody></tbody></table></div></div>
       <div class="panel"><h3>Entry price</h3><div class="sub">Multiple on capital deployed if we pay above or below today's secondary price</div><div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-al-entry"><thead></thead><tbody></tbody></table></div></div>
     </div>
-    <div class="panel" style="margin-top:18px"><h3>Tier-weight sensitivity</h3><div class="sub">The same companies, stock limits and rules under different tier weightings. The highlighted row is the current setting.</div><div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-al-wt"><thead></thead><tbody></tbody></table></div></div>
+    <div class="panel" style="margin-top:18px"><h3>Weighting sensitivity</h3><div class="sub">The same companies, stock limits and rules with different score tilts. The highlighted row is the current setting.</div><div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-al-wt"><thead></thead><tbody></tbody></table></div></div>
   </section>
 
   <section>
@@ -541,28 +541,23 @@
   <div class="view" id="view-method" role="tabpanel" hidden>
   <section>
     <div class="sec-hd">
-      <h2>Tier methodology</h2>
-      <p>Every company in the universe sits in one of four tiers: Anchor, Conviction, Tail or Watch. The tier reflects three things: whether the company is compounding value, whether its shares can be bought and sold at size, and how strong investor demand is. Scores on these three pillars suggest a tier; the investment team confirms it, and any departure from the suggested tier is recorded with its reason.</p>
+      <h2>Investment buckets</h2>
+      <p>Every company in the universe sits in one of the Fund's two investment buckets, Late Growth or Crossover / Pre-IPO, or on Watch. The bucket reflects how close the company is to a liquidity event. Within a bucket, companies are ranked by a score on three pillars: whether the company is compounding value, whether its shares can be bought and sold at size, and how strong investor demand is. A rule suggests the bucket; the investment team confirms it, and any departure from the rule is recorded with its reason.</p>
     </div>
-    <div class="grid4">
+    <div class="grid3">
       <div class="card tier-card" style="border-top-color:var(--purple)">
-        <h3>Anchor</h3>
-        <p><b>Proven value creation, deep liquidity, strong demand.</b> Category leaders, typically valued at $50bn or more, quoted across several secondary venues and with a record of rising valuations.</p>
-        <p class="role">Portfolio role: core holdings that provide stability and the most reliable path to liquidity.</p>
+        <h3>Late Growth</h3>
+        <p><b>Capital to execute growth plans; pathway to exit defined but not yet imminent.</b> Typically ordinary or preference equity, in primary rounds or secondaries priced against the most recent primary mark, public comparables and recent company performance.</p>
+        <p class="role">Target timeframe to liquidity: 2–4 years · indicative allocation 0–75% of the Fund's NAV.</p>
       </div>
       <div class="card tier-card" style="border-top-color:var(--accent-purple)">
-        <h3>Conviction</h3>
-        <p><b>Strong value accretion with growing liquidity.</b> Companies compounding value quickly where secondary markets are still developing, or established names where one pillar lags.</p>
-        <p class="role">Portfolio role: higher-upside positions backed by a specific investment thesis.</p>
-      </div>
-      <div class="card tier-card" style="border-top-color:var(--mid-grey)">
-        <h3>Tail</h3>
-        <p><b>Scored, but thinly traded.</b> Companies whose shares are hard to buy or sell at size, or that carry a risk that caps their tier.</p>
-        <p class="role">Portfolio role: smaller positions that add optionality, monitored for upgrade.</p>
+        <h3>Crossover / Pre-IPO</h3>
+        <p><b>A clear and near-term pathway to a liquidity event, typically within 1–2 years.</b> Primary or secondary positions accessed through company-led rounds, internal tenders, GP-led processes and arranged secondaries, and may include participation in the IPO itself.</p>
+        <p class="role">Target timeframe to liquidity: 1–2 years · indicative allocation 0–75% of the Fund's NAV.</p>
       </div>
       <div class="card tier-card" style="border-top-color:var(--accent-light-purple)">
         <h3>Watch</h3>
-        <p><b>On our radar, not yet investable.</b> Companies we cannot yet score, or that score too low on value accretion and demand. They move up as the data and the business improve.</p>
+        <p><b>On our radar, not yet investable.</b> Companies we cannot yet score, or that score too low on value accretion and the composite, and that the investment team has not placed in a bucket; or that the team has moved to Watch. They move into a bucket as the data and the business develop.</p>
         <p class="role">Portfolio role: monitored, not held.</p>
       </div>
     </div>
@@ -605,14 +600,13 @@
   </section>
 
   <section>
-    <div class="sec-hd"><h2>From scores to tiers</h2><p>The composite score weights the pillars <m-v k="pillar.va"></m-v> / <m-v k="pillar.lq"></m-v> / <m-v k="pillar.dm"></m-v>. The suggested tier follows these rules, applied in order:</p></div>
+    <div class="sec-hd"><h2>From the rule to a bucket</h2><p>The suggested bucket follows these rules, applied in order. The composite score, which weights the pillars <m-v k="pillar.va"></m-v> / <m-v k="pillar.lq"></m-v> / <m-v k="pillar.dm"></m-v>, ranks companies within their bucket; it does not move them between buckets.</p></div>
     <div class="tbl-wrap" style="max-height:none"><table class="rules">
-      <thead><tr><th>Suggested tier</th><th>Rule</th></tr></thead>
+      <thead><tr><th>Suggested bucket</th><th>Rule</th></tr></thead>
       <tbody>
-        <tr><td class="co">Watch</td><td>Fewer than <m-v k="rule.minPillars"></m-v> pillars are backed by data. The company is monitored, not held, until it can be scored. Companies the investment team has placed in Anchor or Conviction keep that tier.</td></tr>
-        <tr><td class="co">Anchor</td><td>Composite score of <m-v k="rule.anchor.comp"></m-v> or more, liquidity score of <m-v k="rule.anchor.lq"></m-v> or more, and valuation of $<m-v k="rule.anchor.val"></m-v>bn or more.</td></tr>
-        <tr><td class="co">Tail</td><td>Liquidity score below <m-v k="rule.tail.lq"></m-v>, whatever the other pillars show.</td></tr>
-        <tr><td class="co">Conviction</td><td>Composite score of <m-v k="rule.conv.comp"></m-v> or more, or a value accretion score of <m-v k="rule.conv.va"></m-v> or more.</td></tr>
+        <tr><td class="co">Crossover / Pre-IPO</td><td>The company has filed for an IPO (publicly or confidentially) or has reported IPO plans: a clear, near-term pathway to liquidity.</td></tr>
+        <tr><td class="co">Watch</td><td>Fewer than <m-v k="rule.minPillars"></m-v> pillars are backed by data, or the composite score is below <m-v k="rule.watch.comp"></m-v> and value accretion below <m-v k="rule.watch.va"></m-v>; and the investment team has not placed the company in a bucket. The company is monitored, not held, until the data and the business develop.</td></tr>
+        <tr><td class="co">Late Growth</td><td>Every other company: a pathway to exit that is defined but not yet imminent.</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -621,7 +615,7 @@
     <div class="grid2">
       <div class="panel">
         <h3>Risk overlay</h3>
-        <p class="sub" style="margin-bottom:8px">The overlay can only lower a tier, never raise it. It captures risks the three pillars cannot measure:</p>
+        <p class="sub" style="margin-bottom:8px">Risks the three pillars cannot measure. The investment team weighs them when confirming a bucket, and may move a company to Watch because of one:</p>
         <ul class="plain">
           <li><b>Regulatory:</b> the business model's legal standing is unsettled, for example prediction markets or digital assets.</li>
           <li><b>Geopolitical and structural:</b> export controls, sanctions exposure, or offshore holding structures.</li>
@@ -632,18 +626,18 @@
       <div class="panel">
         <h3>Governance and review</h3>
         <ul class="plain">
-          <li><b>Investment team decides:</b> scores suggest a tier; the team confirms it. Every difference between the suggested and confirmed tier is recorded with its reason and date.</li>
-          <li><b>Quarterly review</b> of all tiers, plus an immediate review when a company raises a round, runs a tender, files for an IPO, or an overlay risk changes.</li>
-          <li><b>Data-limited companies</b> sit on Watch unless the team has assigned them a tier, and are re-scored as secondary pricing and funding history are added.</li>
+          <li><b>Investment team decides:</b> the rule suggests a bucket; the team confirms it. Every difference between the suggested and confirmed bucket is recorded with its reason and date.</li>
+          <li><b>Quarterly review</b> of all buckets, plus an immediate review when a company raises a round, runs a tender, files for an IPO, or an overlay risk changes.</li>
+          <li><b>Data-limited companies</b> sit on Watch unless the team has placed them in a bucket, and are re-scored as secondary pricing and funding history are added.</li>
         </ul>
       </div>
     </div>
   </section>
 
   <section>
-    <div class="sec-hd"><h2>Calibration</h2><p>Suggested tier from the scores compared with the tier currently assigned by the investment team. Filters above apply. Click a company for its detail.</p></div>
+    <div class="sec-hd"><h2>Calibration</h2><p>The bucket each company is in, the rule it follows or the team decision that replaces it, and its scores and rank within the bucket. Filters above apply. Click a company for its detail.</p></div>
     <div class="edit-bar">
-      <label class="tog"><input type="checkbox" id="edit-tiers"> Edit tiers</label>
+      <label class="tog"><input type="checkbox" id="edit-tiers"> Edit buckets</label>
       <span class="sub">Changes apply to the whole dashboard immediately and are kept in this browser until published.</span>
     </div>
     <div class="kpis" id="cal-kpis" style="grid-template-columns:repeat(4,1fr)"></div>
@@ -683,20 +677,27 @@ const VENUES = [
 ];
 const DISP_TOP = 25;
 let dispAll = false;
-// Confirmed tiers: workbook tier (tier0), replaced by the published overrides (tier-overrides.js),
-// replaced in turn by this browser's unpublished drafts from the Methodology tab's edit mode.
-const TIER_CHOICES = ['Anchor','Conviction','Tail','Watch'];
-const DRAFT_KEY = 'pq-tier-drafts';
+// Investment buckets, the fund's mandate: Late Growth, Crossover / Pre-IPO, and Watch (monitored, not held). Each company's
+// rule bucket (tier0, set after scoring) is replaced by the published overrides (tier-overrides.js), and those in turn by this
+// browser's unpublished drafts from the Methodology tab's edit mode. The field keeps its old name, tier. The stored workbook
+// tier (c.base.tier) only records whether the original universe placed a data-limited company as investable.
+const LG = 'Late Growth', XO = 'Crossover / Pre-IPO', WATCH = 'Watch';
+const TIER_CHOICES = [LG, XO, WATCH];
+const DRAFT_KEY = 'pq-bucket-drafts';   // drafts saved under the old tier names no longer apply
 let tierDrafts = {};
 try { tierDrafts = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}') || {}; } catch {}
 const saveDrafts = () => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(tierDrafts)); } catch {} };
 // The decision in force for a company: a draft (null = draft removes the override) or the published override.
 const tierDecision = c => c.id in tierDrafts ? tierDrafts[c.id] : (window.TIER_OVR || {})[c.id] || null;
-for (const c of UNI) c.tier0 = c.tier;
-function applyTiers() { for (const c of UNI) c.tier = tierDecision(c)?.tier || c.tier0; }
-applyTiers();
-const TIERS = ['Anchor','Conviction','Tail','Watch','Unassigned'].filter(t => t!=='Unassigned' || UNI.some(c => c.tier0 === t || c.tier === t));
-// Tier-model parameters: values from method-config.js (the master Excel's Methodology sheet), these defaults otherwise.
+const decidedBucket = c => TIER_CHOICES.includes(tierDecision(c)?.tier) ? tierDecision(c).tier : null;
+// Confirmed bucket, and each company's rank by composite score within it (1 = highest).
+function applyTiers() {
+  for (const c of UNI) c.tier = decidedBucket(c) || c.tier0;
+  for (const b of TIER_CHOICES) UNI.filter(c=>c.tier===b && c.ts?.comp!=null).sort((x,y)=>y.ts.comp-x.ts.comp).forEach((c,i) => c.brank = i+1);
+  for (const c of UNI) if (c.ts?.comp==null) c.brank = null;
+}
+const TIERS = TIER_CHOICES;
+// Scoring and bucket-rule parameters: values from method-config.js (the master Excel's Methodology sheet), these defaults otherwise.
 // Units as shown in the sheet: weights and percentage bounds in %, months, US$ billions, or scores 0–100.
 const METHOD_SPEC = [
   ['Pillar weights','pillar.va','Value accretion','% of composite',40], ['Pillar weights','pillar.lq','Liquidity','% of composite',30], ['Pillar weights','pillar.dm','Demand','% of composite',30],
@@ -711,10 +712,8 @@ const METHOD_SPEC = [
   ['Demand','dm.aug.w','Augment Power 20: weight','% of pillar',35], ['Demand','dm.aug.hm','Augment Power 20: score for an honourable mention','score 0–100',25],
   ['Demand','dm.c50.w','Clarity Liquidity Index: weight','% of pillar',35],
   ['Demand','dm.mom.w','Price momentum: weight','% of pillar',30], ['Demand','dm.mom.lo','Price momentum: scores 0 at','% change',-20], ['Demand','dm.mom.hi','Price momentum: scores 100 at','% change',30],
-  ['Tier rules','rule.minPillars','Pillars with data needed to score','count',2],
-  ['Tier rules','rule.anchor.comp','Anchor: minimum composite score','score 0–100',60], ['Tier rules','rule.anchor.lq','Anchor: minimum liquidity score','score 0–100',50], ['Tier rules','rule.anchor.val','Anchor: minimum valuation','US$ bn',50],
-  ['Tier rules','rule.tail.lq','Tail: liquidity score below','score 0–100',30],
-  ['Tier rules','rule.conv.comp','Conviction: minimum composite score','score 0–100',40], ['Tier rules','rule.conv.va','Conviction: or minimum value accretion score','score 0–100',70],
+  ['Bucket rules','rule.minPillars','Pillars with data needed to score (fewer: Watch unless placed by the team)','count',2],
+  ['Bucket rules','rule.watch.comp','Watch: composite score below','score 0–100',40], ['Bucket rules','rule.watch.va','Watch: and value accretion score below','score 0–100',70],
   ['Data','data.staleMonths','A last round older than this is stale','months',18],
 ].map(([sec,k,l,u,d]) => ({ sec, k, l, u, d }));
 const M = Object.fromEntries(METHOD_SPEC.map(p => [p.k, Number.isFinite(+window.METHOD?.[p.k]) ? +window.METHOD[p.k] : p.d]));
@@ -950,7 +949,7 @@ const ccySym = c => c.ccy==='EUR'?'€':c.ccy==='GBP'?'£':'$';
 // Definitions shared by several tables.
 const DEF = {
   company: 'The company. Click a row for its funding history, shareholders and price history.',
-  tier: 'The tier confirmed by the investment team: Anchor, Conviction, Tail or Watch. See the Methodology tab.',
+  tier: 'Investment bucket confirmed by the investment team: Late Growth (exit defined, 2–4 years to liquidity), Crossover / Pre-IPO (clear liquidity event within 1–2 years) or Watch (monitored, not held). See the Methodology tab.',
   liqWb: "Perennial's liquidity score (0–100): observed secondary pricing (45 pts), trading attention on venue rankings (35 pts) and company scale (20 pts).",
   lrEv: 'Post-money valuation of the last primary round, in US$ billions. "tender" marks a company-run tender used instead because the last round is over 18 months old.',
   curVal: 'Average secondary price across venues × shares outstanding, in US$ billions. Where there is no secondary price, the most recent reported valuation.',
@@ -962,7 +961,7 @@ const COLS = [
   { d:'Rank across all companies by liquidity score (1 = most liquid).', l:'Overall rank', r:1, f:c=>c.rank ?? NA },
   { d:'Yes if the company is on the Perennial Marquee Access Fund list (see the Marquee list tab).', l:'Marquee list', f:c=>c.mq ? `<span title="Marquee rank ${c.mq}">Yes</span>` : NA },
   { d:DEF.company, l:'Company', cls:'co', f:c=>`${esc(c.name)}${c.listed?'<span class="badge b-ls">LISTED</span>':''}` },
-  { d:DEF.tier, l:'Tier', f:c=>esc(c.tier) },
+  { d:DEF.tier, l:'Bucket', cls:'wrap', f:c=>esc(c.tier) },
   { d:DEF.liqWb, l:'Liquidity score', r:1, f:c=>c.liq==null ? NA : c.liq.toFixed(1) },
   { d:DEF.lrEv, l:'Last round EV', r:1, f:c=>c.lrEv==null ? NA : bn(c.lrEv) + (c.lrTender ? ' <span class="flag" title="Company-run tender offer; last primary round is over 18 months old">tender</span>' : '') },
   { d:DEF.curVal, l:'Current valuation', r:1, f:c=>{ const v = c.impl ?? c.curVal; return v==null ? NA : bn(v); } },
@@ -996,7 +995,7 @@ const MQ_COLS = [
   { d:'Rank across all companies by liquidity score (1 = most liquid).', l:'Overall rank', r:1, f:c=>c.rank ?? NA },
   { d:DEF.company, l:'Company', cls:'co', f:c=>`${esc(c.name)}${c.listed?'<span class="badge b-ls">LISTED</span>':''}` },
   { l:'Sector', cls:'wrap', f:c=>esc(c.sector) },
-  { d:DEF.tier, l:'Tier', f:c=>esc(c.tier) },
+  { d:DEF.tier, l:'Bucket', cls:'wrap', f:c=>esc(c.tier) },
   { d:DEF.liqWb, l:'Liquidity score', r:1, f:c=>c.liq==null ? NA : c.liq.toFixed(1) },
   { d:'Rank within the sector by liquidity score (1 = most liquid). Ranks cover the whole universe, so filters hide rows without re-ranking.', l:'Sector rank', r:1, f:c=>c.srank ?? NA },
   ...COLS.filter(k=>['Last round EV','Current valuation','Clarity','Augment','Forge','IPO status','Note'].includes(k.l)),
@@ -1208,7 +1207,7 @@ function drawComps(rs) {
 
   // Projected multiples.
   const s = al.s;
-  document.getElementById('cmp-fw-note').textContent = `Assumptions, not forecasts. Each bucket's base growth a year — Private Growth ${s.gRate}% over ${s.gYears} years to exit, Crossover ${s.xRate}% over ${s.xYears} years — with the bear and bull cases ${s.spread} points a year below and above, as on the Allocation tab. Companies with an IPO filing or reported plans are Crossover; the rest Private Growth. Compare with the realised multiples above.`;
+  document.getElementById('cmp-fw-note').textContent = `Assumptions, not forecasts. Each bucket's base growth a year — ${LG} ${s.gRate}% over ${s.gYears} years to exit, ${XO} ${s.xRate}% over ${s.xYears} years — with the bear and bull cases ${s.spread} points a year below and above, as on the Allocation tab. Each company uses its investment bucket; Watch companies are shown at the ${LG} assumptions. Compare with the realised multiples above.`;
   const fwCols = [{ l:'Bucket' }, { l:'Case' }, { l:'Growth a year', r:1 }, ...HORIZONS.map(y=>({ l:`${y} year${y>1?'s':''}`, r:1 })), { d:"Multiple at the bucket's years to exit.", l:'At exit', r:1 }];
   document.querySelector('#tbl-cmp-fw thead').innerHTML = headHtml(fwCols);
   const ref = (l, xs) => `<tr><td colspan="3" class="flag">${l}</td><td colspan="${HORIZONS.length+1}" class="num">${medCell(xs, fx)}</td></tr>`;
@@ -1240,7 +1239,7 @@ function drawIpo(rs) {
     { d:'Listing year the company has stated, where it has given one.', l:'Target listing', f:c=>c.ipo.target ? esc(c.ipo.target) : NA },
     { d:'Most recent valuation, from the latest round or secondary pricing, in US$ billions.', l:'Recent valuation', r:1, f:c=>bn(c.ipo.val) },
     { d:DEF.curVal, l:'Implied valuation', r:1, f:c=>c.impl==null ? NA : bn(c.impl) },
-    { d:DEF.tier, l:'Tier', f:c=>esc(c.tier) },
+    { d:DEF.tier, l:'Bucket', cls:'wrap', f:c=>esc(c.tier) },
     { l:'Sector', f:c=>esc(c.sector) },
   ];
   document.querySelector('#tbl-ipo thead').innerHTML = headHtml(cols);
@@ -1272,7 +1271,7 @@ document.getElementById('dlg-close').onclick = () => dlg.close();
 dlg.addEventListener('click', e=>{ if (e.target===dlg) dlg.close(); });
 function openDetail(c) {
   document.getElementById('dlg-title').textContent = c.name;
-  document.getElementById('dlg-sub').textContent = [c.sector, c.sub, c.hq||c.region, c.tier+' tier', c.mq?`Marquee #${c.mq}`:null, c.listed?'Listed':null].filter(Boolean).join(' · ');
+  document.getElementById('dlg-sub').textContent = [c.sector, c.sub, c.hq||c.region, c.tier, c.mq?`Marquee #${c.mq}`:null, c.listed?'Listed':null].filter(Boolean).join(' · ');
   const qr = window.QR?.[c.id];
   const facts = [
     [c.lrTender ? 'Last valuation (tender)' : 'Last round', c.lrName ? `${esc(c.lrName)}` : '—', c.lrDate?fDate(c.lrDate):'date not reported'],
@@ -1319,7 +1318,7 @@ function drawDetail(c) {
     dp => `<b>${dp.dataset.label}</b><br>${usd(dp.raw.y)} · ${fDate(new Date(dp.raw.x).toISOString().slice(0,10))}`);
 }
 
-// ── tier model: value accretion / liquidity / demand → suggested tier (see the Methodology tab) ──
+// ── scoring model: value accretion / liquidity / demand → composite score, which ranks companies within their bucket ──
 const TIER_W = { va:mp('pillar.va'), lq:mp('pillar.lq'), dm:mp('pillar.dm') };
 const YEAR_MS = 365.25*864e5;
 const lin = (x, lo, hi) => x==null || isNaN(x) ? null : Math.max(0, Math.min(100, (x-lo)/(hi-lo)*100));
@@ -1348,19 +1347,15 @@ for (const c of UNI) {
   const dm = has.dm ? wmean([[augS, mp('dm.aug.w')], [c.c50 ? lin(51-c.c50,0,50) : 0, mp('dm.c50.w')], [c.mom==null ? null : lin(c.mom,mp('dm.mom.lo'),mp('dm.mom.hi')), mp('dm.mom.w')]]) : null;
   const enough = Object.values(has).filter(Boolean).length >= M['rule.minPillars'];
   const comp = enough ? TIER_W.va*(va??0) + TIER_W.lq*(lq??0) + TIER_W.dm*(dm??0) : null;
-  const sug = comp==null ? 'Watch'
-    : comp>=M['rule.anchor.comp'] && (lq??0)>=M['rule.anchor.lq'] && val>=M['rule.anchor.val'] ? 'Anchor'
-    : (lq??0) < M['rule.tail.lq'] ? 'Tail'
-    : comp>=M['rule.conv.comp'] || (va??0)>=M['rule.conv.va'] ? 'Conviction' : 'Watch';
-  // IPO floor: a company that has filed for an IPO or reported IPO plans is at least Conviction.
-  const sugF = c.ipo && ['Tail','Watch'].includes(sug) ? 'Conviction' : sug;
-  c.ts = { va, lq, dm, comp, sug: sugF, ipoFloor: sugF!==sug, growth };
+  // Rule bucket: an IPO filing or reported IPO plans → Crossover / Pre-IPO. A company that cannot be scored yet, or that
+  // scores too low on both the composite and value accretion, → Watch, unless the original universe placed it as investable
+  // (workbook Anchor or Conviction). Everything else → Late Growth. Above that floor the score only ranks companies within
+  // their bucket.
+  const weak = comp==null || (comp < M['rule.watch.comp'] && (va??0) < M['rule.watch.va']);
+  const sug = c.ipo ? XO : weak && !['Anchor','Conviction'].includes(c.base.tier) ? WATCH : LG;
+  c.ts = { va, lq, dm, comp, sug, growth };
+  c.tier0 = sug;
 }
-// Watch: workbook-Tail companies the model cannot score yet are monitored, not held. They leave Watch
-// automatically once two pillars have data; team-assigned Anchor/Conviction and overrides are untouched.
-for (const c of UNI) if (c.tier0==='Tail' && c.ts.sug==='Watch') c.tier0 = 'Watch';
-// IPO floor applies to the confirmed tier too; team overrides still win.
-for (const c of UNI) if (c.ts.ipoFloor || (c.ipo && ['Tail','Watch'].includes(c.tier0))) c.tier0 = 'Conviction';
 applyTiers();
 
 const OVR_CATEGORIES = ['Regulatory','Geopolitical','Binary','Transfer restrictions','Data gap','Other'];
@@ -1370,27 +1365,25 @@ const isDraft = c => c.id in tierDrafts;
 
 // Calibration status of a company: [status, detail]; shared by the Calibration table and the master Excel.
 const calStatus = c => { const d = tierDecision(c), tag = isDraft(c) ? ' (draft)' : '';
-  return c.ts.comp==null && c.tier==='Watch' ? [`Watch${tag}`, 'awaiting data to score']
-    : c.ts.comp==null ? [`Team judgement${tag}`, d?.reason ? `${d.category ? d.category+': ' : ''}${d.reason}` : 'data-limited']
-    : c.ts.sug===c.tier ? [`Agrees${tag}`, d?.reason || '']
-    : d?.reason ? [`Override${tag}`, `${d.category ? d.category+': ' : ''}${d.reason}`]
-    : ['To review', ''];
+  const why = d?.reason ? `${d.category ? d.category+': ' : ''}${d.reason}` : '';
+  return c.tier!==c.ts.sug ? (why ? [`Override${tag}`, why] : ['To review', 'bucket differs from the rule, no reason recorded'])
+    : c.tier===WATCH ? [`Watch${tag}`, why || 'awaiting data to score']
+    : c.ts.comp==null ? [`Team judgement${tag}`, why || 'data-limited; placed by the team']
+    : [`Agrees${tag}`, why];
 };
 function drawMethod(rs) {
   const status = calStatus;
-  const scored = rs.filter(c=>c.ts.comp!=null), agree = scored.filter(c=>c.ts.sug===c.tier).length;
-  const review = scored.filter(c=>c.ts.sug!==c.tier && !hasReason(c)).length;
+  const scored = rs.filter(c=>c.ts.comp!=null), over = rs.filter(c=>c.tier!==c.ts.sug);
+  const review = over.filter(c=>!hasReason(c)).length;
   document.getElementById('cal-kpis').innerHTML = [
-    ['Scored', scored.length, `of ${rs.length} companies`],
-    ['Suggested = current', scored.length ? Math.round(agree/scored.length*100)+'%' : '—', `${agree} companies`],
-    ['To review', review, 'suggested tier differs, no reason recorded'],
-    ['Not yet scored', rs.length-scored.length, `${rs.filter(c=>c.ts.comp==null && c.tier==='Watch').length} on Watch · rest by team judgement`],
+    ...TIER_CHOICES.map(b => [b, rs.filter(c=>c.tier===b).length, b===WATCH ? 'monitored, not held' : `${rs.filter(c=>c.tier===b && c.ts.comp!=null).length} scored`]),
+    ['Team overrides', over.length, review ? `${review} without a reason` : 'all with a recorded reason'],
   ].map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
   const f0 = x => x==null ? NA : Math.round(x);
   const cols = [
     { d:DEF.company, l:'Company', cls:'co', f:c=>esc(c.name) },
-    { d:'The tier confirmed by the investment team. "was X" shows the tier the rules gave before the team decision.', l:'Current tier', f:c=>`${esc(c.tier)}${c.tier!==c.tier0 ? ` <span class="flag">was ${esc(c.tier0)}</span>` : ''}` },
-    { d:'The tier the methodology rules give from the scores, before any team decision. "not scored" means fewer than two pillars have data.', l:'Suggested', f:c=>c.ts.comp==null && c.tier!=='Watch' ? '<span class="flag">not scored</span>' : c.ts.sug===c.tier ? esc(c.ts.sug) : `<b>${esc(c.ts.sug)}</b>` },
+    { d:'The bucket confirmed by the investment team. "rule: X" shows the bucket the rule gives where the team placed the company differently.', l:'Bucket', f:c=>`${esc(c.tier)}${c.tier!==c.ts.sug ? ` <span class="flag">rule: ${esc(c.ts.sug)}</span>` : ''}` },
+    { d:'Rank by composite score among the scored companies in the same bucket (1 = highest).', l:'Rank in bucket', r:1, f:c=>c.brank ?? NA },
     { d:`0–100: is the company compounding value? Secondary price vs last valuation (${M['va.prem.w']}%), valuation growth (${M['va.growth.w']}%), freshness of the last valuation (${M['va.fresh.w']}%), path to realisation: IPO filing or company tender (${M['va.path.w']}%).`, l:'Value accretion', r:1, f:c=>f0(c.ts.va) },
     { d:`0–100: can positions be entered and exited at size? Venue coverage (${M['lq.venues.w']}%), price agreement between venues (${M['lq.spread.w']}%), scale (${M['lq.scale.w']}%), company-run tenders (${M['lq.tender.w']}%).`, l:'Liquidity', r:1, f:c=>f0(c.ts.lq) },
     { d:`0–100: how strong is buyer interest? Augment Power 20 (${M['dm.aug.w']}%), Clarity Liquidity Index (${M['dm.c50.w']}%), secondary price momentum (${M['dm.mom.w']}%).`, l:'Demand', r:1, f:c=>f0(c.ts.dm) },
@@ -1399,27 +1392,27 @@ function drawMethod(rs) {
   if (tierEdit) {
     const opt = (v, cur, label=v) => `<option value="${esc(v)}"${v===cur?' selected':''}>${esc(label)}</option>`;
     cols.push(
-      { l:'Set tier', d:'Choose the confirmed tier; Default keeps the tier the rules give.', f:c=>{ const d=tierDecision(c); return `<select class="ed" data-f="tier" aria-label="Tier for ${esc(c.name)}">${opt('', d?.tier||'', `Default (${c.tier0})`)}${TIER_CHOICES.map(t=>opt(t, d?.tier||'')).join('')}</select>`; } },
-      { l:'Category', d:'Why the tier differs from the suggestion: Regulatory, Geopolitical, Binary, Transfer restrictions, Data gap or Other.', f:c=>{ const d=tierDecision(c); return `<select class="ed" data-f="category" aria-label="Override category for ${esc(c.name)}">${opt('', d?.category||'', '—')}${OVR_CATEGORIES.map(t=>opt(t, d?.category||'')).join('')}</select>`; } },
-      { l:'Reason', cls:'note-cell', d:'One client-readable sentence explaining the decision; shown on this tab.', f:c=>`<input class="ed" data-f="reason" type="text" value="${esc(tierDecision(c)?.reason||'')}" placeholder="Why the tier differs from the suggestion" aria-label="Reason for ${esc(c.name)}">` },
+      { l:'Set bucket', d:'Choose the confirmed bucket; Default keeps the bucket the rule gives.', f:c=>{ const d=decidedBucket(c); return `<select class="ed" data-f="tier" aria-label="Bucket for ${esc(c.name)}">${opt('', d||'', `Default (${c.tier0})`)}${TIER_CHOICES.map(t=>opt(t, d||'')).join('')}</select>`; } },
+      { l:'Category', d:'Why the bucket differs from the rule: Regulatory, Geopolitical, Binary, Transfer restrictions, Data gap or Other.', f:c=>{ const d=tierDecision(c); return `<select class="ed" data-f="category" aria-label="Override category for ${esc(c.name)}">${opt('', d?.category||'', '—')}${OVR_CATEGORIES.map(t=>opt(t, d?.category||'')).join('')}</select>`; } },
+      { l:'Reason', cls:'note-cell', d:'One client-readable sentence explaining the decision; shown on this tab.', f:c=>`<input class="ed" data-f="reason" type="text" value="${esc(tierDecision(c)?.reason||'')}" placeholder="Why the bucket differs from the rule" aria-label="Reason for ${esc(c.name)}">` },
     );
   } else {
-    cols.push({ l:'Status', cls:'note-cell', d:'Agrees: the confirmed tier matches the suggestion. Override: the team chose a different tier, for the recorded reason. Watch: awaiting data. Team judgement: not scored, tier set by the team.', f:c=>{ const [s,d]=status(c); return `${s}${d?` <span class="flag">${esc(d)}</span>`:''}`; } });
+    cols.push({ l:'Status', cls:'note-cell', d:'Agrees: the bucket is the one the rule gives. Override: the team chose a different bucket, for the recorded reason. Watch: awaiting data. Team judgement: not scored, placed in a bucket by the team.', f:c=>{ const [s,d]=status(c); return `${s}${d?` <span class="flag">${esc(d)}</span>`:''}`; } });
   }
-  // Disagreements first, then by composite score; data-limited companies last. In edit mode rows keep a
-  // fixed order (composite score) so a row does not jump away while it is being edited.
-  const order = c => tierEdit ? 0 : c.ts.comp==null ? 3 : c.ts.sug!==c.tier && !hasReason(c) ? 0 : c.ts.sug!==c.tier ? 1 : 2;
-  const s = [...rs].sort((a,b)=>order(a)-order(b) || (b.ts.comp??-1)-(a.ts.comp??-1) || a.name.localeCompare(b.name));
+  // Overrides without a reason first, then other overrides, then by bucket and rank; data-limited companies last.
+  // In edit mode rows keep a fixed order so a row does not jump away while it is being edited.
+  const order = c => tierEdit ? 0 : c.tier!==c.ts.sug ? (hasReason(c) ? 1 : 0) : c.ts.comp==null ? 3 : 2;
+  const s = [...rs].sort((a,b)=>order(a)-order(b) || TIER_CHOICES.indexOf(a.tier)-TIER_CHOICES.indexOf(b.tier) || (b.ts.comp??-1)-(a.ts.comp??-1) || a.name.localeCompare(b.name));
   document.querySelector('#tbl-cal thead').innerHTML = headHtml(cols);
   document.querySelector('#tbl-cal tbody').innerHTML = s.map(c=>rowHtml(cols, c)).join('');
   drawDraftBar();
 }
 
-// ── tier edit mode: changes apply live and are kept as drafts until published ──
+// ── bucket edit mode: changes apply live and are kept as drafts until published ──
 function drawDraftBar() {
   const n = Object.keys(tierDrafts).length;
   document.getElementById('draft-bar').hidden = !n;
-  document.getElementById('draft-n').textContent = `${n} unpublished tier ${n===1?'change':'changes'}`;
+  document.getElementById('draft-n').textContent = `${n} unpublished bucket ${n===1?'change':'changes'}`;
   document.getElementById('dl-tiers').disabled = document.getElementById('discard-tiers').disabled = !n;
 }
 document.querySelector('#tbl-cal tbody').addEventListener('click', e=>{
@@ -1438,7 +1431,7 @@ document.querySelector('#tbl-cal tbody').addEventListener('change', e=>{
 });
 document.getElementById('edit-tiers').addEventListener('change', e=>{ tierEdit = e.target.checked; render(); });
 document.getElementById('discard-tiers').addEventListener('click', ()=>{
-  if (!confirm('Discard all unpublished tier changes in this browser?')) return;
+  if (!confirm('Discard all unpublished bucket changes in this browser?')) return;
   tierDrafts = {}; saveDrafts(); applyTiers(); render();
 });
 // Published overrides with drafts merged in, written out as a replacement tier-overrides.js.
@@ -1449,7 +1442,7 @@ document.getElementById('dl-tiers').addEventListener('click', ()=>{
   const pick = d => Object.fromEntries(['tier','category','reason','date'].filter(k=>d[k]).map(k=>[k, d[k]]));
   const js = [
     '// Generated by the Methodology tab\'s "Download changes" button.',
-    "// Confirmed tiers that differ from the rules, and the investment team's reasons. Keyed by company id.",
+    "// Confirmed investment buckets that differ from the rule, and the investment team's reasons. Keyed by company id.",
     'window.TIER_OVR = {', Object.entries(merged).map(([id,d])=>`  ${JSON.stringify(id)}: ${JSON.stringify(pick(d))}`).join(',\n'), '};', '' ].join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([js], { type:'text/javascript' }));
@@ -1457,7 +1450,7 @@ document.getElementById('dl-tiers').addEventListener('click', ()=>{
   setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
 });
 
-// ── allocation sensitivity: spread a raise across chosen Marquee companies by tier weight, within available
+// ── allocation sensitivity: spread a raise across chosen Marquee companies by weight, within available
 // stock and the portfolio rules, then stress the result. Settings live in this browser and in downloaded scenarios. ──
 const AL_KEY = 'pq-alloc';
 const AL_FIELDS = [
@@ -1466,40 +1459,40 @@ const AL_FIELDS = [
   { g:'Fund', k:'maxPos', l:'Maximum position', u:'% of investable', d:25, step:1 },
   { g:'Fund', k:'minTicket', l:'Minimum ticket', u:'$m', d:5, step:1 },
   { g:'Fund', k:'sectorCap', l:'Sector cap', u:'% of investable', d:40, step:5 },
-  { g:'Tier weights', k:'wAnchor', l:'Anchor', u:'weight', d:3, step:0.5 },
-  { g:'Tier weights', k:'wConviction', l:'Conviction', u:'weight', d:2, step:0.5 },
-  { g:'Tier weights', k:'wTail', l:'Tail', u:'weight', d:1, step:0.5 },
-  { g:'Tier weights', k:'wWatch', l:'Watch', u:'weight (monitored, not held)', d:0, step:0.5 },
+  { g:'Weighting', k:'tilt', l:'Score tilt', u:'0 = equal weight, 1 = in proportion to composite score', d:0.5, step:0.25 },
   { g:'Exit cases', k:'spread', l:'Bear / bull spread', u:'points a year below / above the base growth', d:20, step:5 },
   { g:'Exit cases', k:'entry', l:'Entry price', u:'% vs today\'s price', d:0, step:5 },
-  { g:'Buckets', k:'gShare', l:'Private Growth share', u:'% of investable', d:50, step:5 },
+  { g:'Buckets', k:'gShare', l:'Late Growth share', u:'% of investable', d:50, step:5 },
   // Base growth defaults meet the bottom of each mandate's return range: 1.443^3 ≈ 3.0×, 1.311^1.5 ≈ 1.5×.
-  { g:'Buckets', k:'gRate', l:'Private Growth base growth', u:'% a year', d:44.3, step:1 },
-  { g:'Buckets', k:'gYears', l:'Private Growth years to exit', u:'years', d:3, step:0.5 },
-  { g:'Buckets', k:'xRate', l:'Crossover base growth', u:'% a year', d:31.1, step:1 },
-  { g:'Buckets', k:'xYears', l:'Crossover years to exit', u:'years', d:1.5, step:0.5 },
-  { g:'Buckets', k:'gMin', l:'Private Growth cheque from', u:'$m', d:10, step:1 },
-  { g:'Buckets', k:'gMax', l:'Private Growth cheque up to', u:'$m', d:30, step:1 },
-  { g:'Buckets', k:'gNmin', l:'Private Growth companies, minimum', u:'companies', d:10, step:1 },
-  { g:'Buckets', k:'gNmax', l:'Private Growth companies, maximum', u:'companies', d:20, step:1 },
-  { g:'Buckets', k:'xMin', l:'Crossover cheque from', u:'$m', d:20, step:1 },
-  { g:'Buckets', k:'xMax', l:'Crossover cheque up to', u:'$m', d:100, step:1 },
-  { g:'Buckets', k:'xNmin', l:'Crossover companies, minimum', u:'companies', d:5, step:1 },
-  { g:'Buckets', k:'xNmax', l:'Crossover companies, maximum', u:'companies', d:10, step:1 },
+  { g:'Buckets', k:'gRate', l:'Late Growth base growth', u:'% a year', d:44.3, step:1 },
+  { g:'Buckets', k:'gYears', l:'Late Growth years to exit', u:'years', d:3, step:0.5 },
+  { g:'Buckets', k:'xRate', l:'Crossover / Pre-IPO base growth', u:'% a year', d:31.1, step:1 },
+  { g:'Buckets', k:'xYears', l:'Crossover / Pre-IPO years to exit', u:'years', d:1.5, step:0.5 },
+  { g:'Buckets', k:'gMin', l:'Late Growth cheque from', u:'$m', d:10, step:1 },
+  { g:'Buckets', k:'gMax', l:'Late Growth cheque up to', u:'$m', d:30, step:1 },
+  { g:'Buckets', k:'gNmin', l:'Late Growth companies, minimum', u:'companies', d:10, step:1 },
+  { g:'Buckets', k:'gNmax', l:'Late Growth companies, maximum', u:'companies', d:20, step:1 },
+  { g:'Buckets', k:'xMin', l:'Crossover / Pre-IPO cheque from', u:'$m', d:20, step:1 },
+  { g:'Buckets', k:'xMax', l:'Crossover / Pre-IPO cheque up to', u:'$m', d:100, step:1 },
+  { g:'Buckets', k:'xNmin', l:'Crossover / Pre-IPO companies, minimum', u:'companies', d:5, step:1 },
+  { g:'Buckets', k:'xNmax', l:'Crossover / Pre-IPO companies, maximum', u:'companies', d:10, step:1 },
 ];
-const AL_GROUPS = { 'Fund':'Fund rules', 'Tier weights':'Tier weights', 'Exit cases':'Exit cases and entry price', 'Buckets':'Investment buckets' };
-// The two investment buckets. Settings keys hold the editable share, cheque sizes and company counts; the time to
-// liquidity and return expectations are the mandate's and are compared with the base case.
+const AL_GROUPS = { 'Fund':'Fund rules', 'Weighting':'Weighting within a bucket', 'Exit cases':'Exit cases and entry price', 'Buckets':'Investment buckets' };
+// The Fund's two investment buckets. Settings keys hold the editable share, cheque sizes and company counts; the time to
+// liquidity, indicative NAV range and return expectations are the mandate's and are compared with the base case.
 const BUCKETS = {
-  G: { n:1, name:'Private Growth', short:'Private Growth', liq:'2–4 years', ret:[3,5], fit:'no IPO path disclosed',
+  G: { n:1, name:LG, short:LG, liq:'2–4 years', nav:[0,75], ret:[3,5], fit:'exit defined, not yet imminent',
        k:{ min:'gMin', max:'gMax', nMin:'gNmin', nMax:'gNmax', rate:'gRate', yrs:'gYears' } },
-  X: { n:2, name:'Crossover (Pre-IPO + IPO)', short:'Crossover', liq:'1–2 years', ret:[1.5,2], fit:'IPO filed or IPO plans reported',
-       extra:'Includes IPO participation on existing or new holdings', k:{ min:'xMin', max:'xMax', nMin:'xNmin', nMax:'xNmax', rate:'xRate', yrs:'xYears' } },
+  X: { n:2, name:XO, short:XO, liq:'1–2 years', nav:[0,75], ret:[1.5,2], fit:'clear liquidity event within 1–2 years',
+       extra:'Company-led rounds, internal tenders, GP-led processes and arranged secondaries; may include participation in the IPO', k:{ min:'xMin', max:'xMax', nMin:'xNmin', nMax:'xNmax', rate:'xRate', yrs:'xYears' } },
 };
 const bucketShare = (s, b) => Math.min(100, Math.max(0, b==='G' ? s.gShare : 100 - s.gShare));
-// A company's bucket: the team's choice where set, otherwise Crossover with an IPO filing or reported plans.
-const bucketOf = (c, bkt = al.bkt) => bkt[c.id] || (c.ipo ? 'X' : 'G');
-const AL_PRESETS = [['4 : 2 : 1',4,2,1],['3 : 2 : 1',3,2,1],['2 : 1 : 0.5',2,1,0.5],['3 : 2 : 2',3,2,2],['Equal weight',1,1,1]];
+// A company's allocation bucket: the scenario's choice where set, otherwise its confirmed investment bucket.
+const bucketOf = (c, bkt = al.bkt) => bkt[c.id] || (c.tier===XO ? 'X' : 'G');
+// Weight within a bucket: equal at tilt 0, in proportion to the composite score at tilt 1 (unscored companies count as 50).
+// Watch companies are monitored, not held.
+const wOf = (c, t) => c.tier===WATCH ? 0 : +((1-t) + t*(c.ts.comp ?? 50)/50).toFixed(3);
+const AL_PRESETS = [['Equal weight',0],['Half tilt to score',0.5],['Full tilt to score',1]];
 const mqAll = () => UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq);
 // The top companies by Marquee rank in each bucket, up to the bucket's minimum company count.
 const bucketFill = (s, bkt) => { const m = mqAll(); return m.filter(c => ['G','X'].some(b => bucketOf(c, bkt)===b
@@ -1516,13 +1509,13 @@ const fp = x => x==null || isNaN(x) ? '—' : (x*100).toFixed(1) + '%';
 const numOr = (v, d=null) => v==='' || v==null || isNaN(+v) ? d : +v;
 
 // The raise less the reserve is split between the buckets, and each bucket is allocated on its own (bucketAllocate).
-// The sector cap is fund-wide: Crossover, with the fewer and larger names, is placed first and Private Growth gets the
+// The sector cap is fund-wide: Crossover / Pre-IPO, with the fewer and larger names, is placed first and Late Growth gets the
 // room left in each sector.
-function allocate(s, ids, wts) {
+function allocate(s, ids, tilt) {
   const inv = Math.max(0, s.raise * (1 - s.reserve/100)), secCap = inv * s.sectorCap/100;
   const bk = {}, used = {};
   for (const b of ['X','G']) {
-    bk[b] = bucketAllocate(s, ids.filter(id => bucketOf(UNI.find(c=>c.id===id) || {})===b), wts, b, inv * bucketShare(s, b)/100, inv, sec => Math.max(0, secCap - (used[sec] || 0)));
+    bk[b] = bucketAllocate(s, ids.filter(id => bucketOf(UNI.find(c=>c.id===id) || {})===b), tilt, b, inv * bucketShare(s, b)/100, inv, sec => Math.max(0, secCap - (used[sec] || 0)));
     bk[b].rs.forEach(r => used[r.c.sector] = (used[r.c.sector] || 0) + r.amt);
   }
   const rs = [...bk.G.rs, ...bk.X.rs], deployed = bk.G.deployed + bk.X.deployed;
@@ -1533,19 +1526,19 @@ function allocate(s, ids, wts) {
 // the limit and the rest re-shared. A sector over the room it has left under the fund's sector cap (secRoom) has its
 // open companies scaled down to fit. Companies below the minimum cheque are dropped one at a time (smallest first) and
 // the bucket re-run.
-function bucketAllocate(s, ids, wts, b, inv, fundInv, secRoom) {
-  const W = wts || { Anchor:s.wAnchor, Conviction:s.wConviction, Tail:s.wTail, Watch:s.wWatch }, B = BUCKETS[b];
+function bucketAllocate(s, ids, tilt, b, inv, fundInv, secRoom) {
+  const t = tilt ?? s.tilt, B = BUCKETS[b];
   const fundCap = fundInv * s.maxPos/100, chqMax = s[B.k.max], posCap = Math.min(fundCap, chqMax);
   const minChq = Math.max(s.minTicket, s[B.k.min]);
   const capWhy = r => r.cap <= posCap ? 'Limited by available stock' : chqMax <= fundCap ? `At the ${fm(chqMax)} largest ${B.short} cheque` : 'Capped at maximum position';
   const rs = ids.map(id => UNI.find(c=>c.id===id)).filter(Boolean).map(c => {
     const cap = numOr(al.cap[c.id]);
-    return { c, b, w:Math.max(0, +W[c.tier] || 0), cap: cap==null ? Infinity : Math.max(0, cap), capSet: cap!=null, amt:0, why:'' };
+    return { c, b, w:wOf(c, t), cap: cap==null ? Infinity : Math.max(0, cap), capSet: cap!=null, amt:0, why:'' };
   });
   const sumW = rs.reduce((a,r)=>a+r.w, 0);
   rs.forEach(r => r.target = sumW ? inv*r.w/sumW : 0);
   const out = new Set(rs.filter(r=>r.w===0));
-  out.forEach(r => r.why = `Tier weight for ${r.c.tier} is 0`);
+  out.forEach(r => r.why = 'On Watch: monitored, not held');
   for (let pass = 0; pass < 40; pass++) {
     const fixed = new Set(); let rem = inv;
     rs.filter(r=>!out.has(r)).forEach(r => { r.amt = 0; r.why = ''; });
@@ -1627,7 +1620,7 @@ function drawBuckets(A) {
     document.getElementById(`bk-${b}-s`).textContent = `${fm(P.inv)} of ${fm(A.inv)} investable`;
     if (b==='X') document.getElementById('bk-X-share').value = +sh.toFixed(1);
     document.getElementById(`bk-${b}-m`).innerHTML = [
-      `Investments: ${nMin}–${nMax} private companies`, `Time frame to liquidity: ${B.liq}`, `Return expectations: ${B.ret[0]}–${B.ret[1]}×`,
+      `Investments: ${nMin}–${nMax} private companies`, `Time frame to liquidity: ${B.liq}`, `Indicative allocation: ${B.nav[0]}–${B.nav[1]}% of NAV`, `Return expectations: ${B.ret[0]}–${B.ret[1]}×`,
       `Cheque size: ${fm(s[B.k.min])}, scaling to ${fm(s[B.k.max])}`, B.extra].filter(Boolean).map(x=>`<li>${esc(x)}</li>`).join('');
     const ok = (good, txt) => `<b class="${good ? 'bk-ok' : 'bk-bad'}">${good ? '✓' : '⚠'} ${txt}</b>`;
     document.getElementById(`bk-${b}-k`).innerHTML = [
@@ -1643,10 +1636,10 @@ function drawBuckets(A) {
   }
 }
 const PICK_COLS = [
-  { l:'Hold' }, { d:'Position on the Marquee Access Fund list.', l:'Marquee rank', r:1 }, { d:DEF.company, l:'Company' }, { d:DEF.tier, l:'Tier' }, { l:'Sector' },
+  { l:'Hold' }, { d:'Position on the Marquee Access Fund list.', l:'Marquee rank', r:1 }, { d:DEF.company, l:'Company' }, { d:'Composite score (0–100), used for the score tilt.', l:'Score', r:1 }, { l:'Sector' },
   { d:'Average indicative secondary price across Clarity, Augment and Forge (USD).', l:'Secondary price', r:1 }, { d:DEF.curVal, l:'Current valuation', r:1 },
   { d:DEF.ipo, l:'IPO status' },
-  { d:'Investment bucket. Auto places a company with an IPO filing or reported IPO plans in Crossover and the rest in Private Growth; choose a bucket to override.', l:'Bucket' },
+  { d:'Investment bucket. Auto uses the company’s confirmed investment bucket; choose a bucket to override.', l:'Bucket' },
   { d:'US$ millions of stock we can actually buy, from brokers and the desk. Blank means no limit is applied.', l:'Available stock ($m)', r:1 },
   { d:'Base-case growth for this company, % a year to exit. Blank uses its bucket\'s base growth (shown greyed). Bear and bull are the spread below and above.', l:'Growth (% a year)', r:1 },
   { d:'Base-case multiple at exit: (1 + growth) ^ years to exit for its bucket, before any entry-price adjustment.', l:'Base ×', r:1 },
@@ -1655,7 +1648,7 @@ function drawAllocPick() {
   document.querySelector('#tbl-al-pick thead').innerHTML = headHtml(PICK_COLS);
   document.querySelector('#tbl-al-pick tbody').innerHTML = mqAll().map(c => `<tr data-id="${c.id}">
     <td><input type="checkbox" class="al-pick" ${al.sel.includes(c.id)?'checked':''} aria-label="Hold ${esc(c.name)}"></td>
-    <td class="r num">${c.mq}</td><td class="co"><a href="#" class="al-open">${esc(c.name)}</a></td><td>${esc(c.tier)}</td><td>${esc(c.sector)}</td>
+    <td class="r num">${c.mq}</td><td class="co"><a href="#" class="al-open">${esc(c.name)}</a></td><td class="r num">${c.ts.comp==null ? NA : Math.round(c.ts.comp)}</td><td>${esc(c.sector)}</td>
     <td class="r num">${c.bl==null ? NA : usd(c.bl)}</td><td class="r num">${(c.impl ?? c.curVal)==null ? NA : bn(c.impl ?? c.curVal)}</td>
     <td>${c.ipo ? IPO_SHORT[c.ipo.status]||esc(c.ipo.status) : NA}</td>
     <td><select class="al-in" data-bkt aria-label="Bucket for ${esc(c.name)}">${[['', `Auto · ${BUCKETS[c.ipo ? 'X' : 'G'].short}`], ['G', BUCKETS.G.short], ['X', BUCKETS.X.short]]
@@ -1674,9 +1667,9 @@ function pickDerived() {
   });
 }
 const AL_COLS = [
-  { d:DEF.company, l:'Company' }, { d:'Investment bucket the company is allocated from.', l:'Bucket' }, { d:DEF.tier, l:'Tier' }, { l:'Sector' },
-  { d:'Tier weight from the settings above.', l:'Weight', r:1 },
-  { d:'Share of the bucket\'s capital by tier weight alone, before stock limits and rules.', l:'Weight share ($m)', r:1 },
+  { d:DEF.company, l:'Company' }, { d:'Investment bucket the company is allocated from.', l:'Bucket' }, { d:'Composite score (0–100), used for the score tilt.', l:'Score', r:1 }, { l:'Sector' },
+  { d:'Weight within the bucket from the score tilt above; Watch companies weigh 0.', l:'Weight', r:1 },
+  { d:'Share of the bucket\'s capital by weight alone, before stock limits and rules.', l:'Weight share ($m)', r:1 },
   { d:'Stock available to buy, as entered above.', l:'Available ($m)', r:1 },
   { d:'Capital allocated after stock limits, the maximum position, the sector cap and the minimum ticket.', l:'Allocated ($m)', r:1 },
   { d:'Allocated capital as a share of investable capital (raise less reserve).', l:'% of investable', r:1 },
@@ -1692,7 +1685,7 @@ function drawAlloc() {
   const s = al.s, A = allocate(s, al.sel), sh = shapeOf(A), e = s.entry/100;
   const cases = ['bear','base','bull'].map(k => ({ k, l:k[0].toUpperCase()+k.slice(1), ...outcome(A, s, k) }));
   document.getElementById('al-pick-n').textContent = `${al.sel.length} of ${mqAll().length} Marquee companies selected`;
-  document.getElementById('al-sub').textContent = `${fm(s.raise)} raised · ${fm(A.reserve)} reserve · ${fm(A.inv)} investable · ${BUCKETS.G.short} ${fm(A.bk.G.inv)} / ${BUCKETS.X.short} ${fm(A.bk.X.inv)} · tier weights Anchor ${s.wAnchor} : Conviction ${s.wConviction} : Tail ${s.wTail} : Watch ${s.wWatch}`;
+  document.getElementById('al-sub').textContent = `${fm(s.raise)} raised · ${fm(A.reserve)} reserve · ${fm(A.inv)} investable · ${BUCKETS.G.short} ${fm(A.bk.G.inv)} / ${BUCKETS.X.short} ${fm(A.bk.X.inv)} · score tilt ${s.tilt}`;
   drawBuckets(A);
   const base = cases[1];
   document.getElementById('al-kpis').innerHTML = [
@@ -1707,6 +1700,7 @@ function drawAlloc() {
   const w = [];
   if (!al.sel.length) w.push('No companies selected. Tick companies in the table above, or use Top 5 / Top 10.');
   for (const [b, B] of Object.entries(BUCKETS)) {
+    if (bucketShare(s, b) > B.nav[1]) w.push(`${B.short} is set to ${bucketShare(s, b)}% of investable capital, above its indicative ${B.nav[0]}–${B.nav[1]}% of NAV.`);
     const P = A.bk[b], nMin = s[B.k.nMin], nMax = s[B.k.nMax], fits = mqAll().filter(c=>bucketOf(c)===b).length;
     if (P.cash > 0.05) w.push(`${B.short}: ${fm(P.cash)} of its ${fm(P.inv)} cannot be placed: its companies hit their stock limits, the ${fm(s[B.k.max])} largest cheque, the ${s.maxPos}% maximum position or the ${s.sectorCap}% sector cap. Hold more ${B.short} companies, find more stock or relax a rule.`);
     if (fits < nMin) w.push(`Only ${fits} Marquee ${fits===1?'company fits':'companies fit'} ${B.short} (${B.fit}), below its minimum of ${nMin}. Move companies into ${B.short} under Choose companies, or add names to the Marquee list.`);
@@ -1722,7 +1716,7 @@ function drawAlloc() {
   document.querySelector('#tbl-al thead').innerHTML = headHtml(AL_COLS);
   const ord = [...A.rs].sort((a,b)=>a.b.localeCompare(b.b) || b.amt-a.amt || a.c.mq-b.c.mq);
   const row = r => { const c = r.c, px = c.bl==null ? null : c.bl*(1+e), m = k => r.amt*(1+exitMove(r,k,s))/(1+e);
-    return `<tr data-id="${c.id}" class="${r.amt>0?'':'al-off'}"><td class="co"><a href="#" class="al-open">${esc(c.name)}</a></td><td>${BUCKETS[r.b].short}</td><td>${esc(c.tier)}</td><td>${esc(c.sector)}</td>
+    return `<tr data-id="${c.id}" class="${r.amt>0?'':'al-off'}"><td class="co"><a href="#" class="al-open">${esc(c.name)}</a></td><td>${BUCKETS[r.b].short}</td><td class="r num">${c.ts.comp==null ? NA : Math.round(c.ts.comp)}</td><td>${esc(c.sector)}</td>
       <td class="r num">${r.w}</td><td class="r num">${fm(r.target)}</td><td class="r num">${r.capSet ? fm(r.cap) : NA}</td>
       <td class="r num"><b>${fm(r.amt)}</b></td><td class="r num">${A.inv ? fp(r.amt/A.inv) : '—'}</td>
       <td class="r num">${px==null ? NA : usd(px)}</td><td class="r num">${px && r.amt ? Math.round(r.amt*1e6/px).toLocaleString('en-US') : NA}</td>
@@ -1742,19 +1736,17 @@ function drawAlloc() {
   document.querySelector('#tbl-al-entry tbody').innerHTML = entries.map(en => `<tr class="${en===s.entry?'al-hi':''}"><td class="r num">${pct(en/100)}</td><td class="r num">${pct(1/(1+en/100)-1)}</td>`
     + ['bear','base','bull'].map(k=>`<td class="r num">${fx(outcome(A, s, k, en/100).onDeployed)}</td>`).join('') + '</tr>').join('');
 
-  document.querySelector('#tbl-al-wt thead').innerHTML = headHtml([{l:'Anchor : Conviction : Tail'},{l:'Deployed ($m)',r:1},{l:'Undeployed ($m)',r:1},{l:'Companies held',r:1},{d:'1 ÷ sum of squared weights: the number of equal-sized positions with the same concentration.',l:'Effective holdings',r:1},{l:'Largest position',r:1},{l:'Bear × raise',r:1},{l:'Base × raise',r:1},{l:'Bull × raise',r:1}]);
-  const cur = ['Current setting', s.wAnchor, s.wConviction, s.wTail];
-  const presets = AL_PRESETS.some(p=>p[1]===s.wAnchor && p[2]===s.wConviction && p[3]===s.wTail) ? AL_PRESETS : [cur, ...AL_PRESETS];
-  document.querySelector('#tbl-al-wt tbody').innerHTML = presets.map(([l,a,cv,t]) => {
-    const B = allocate(s, al.sel, { Anchor:a, Conviction:cv, Tail:t, Watch:s.wWatch }), q = shapeOf(B);
-    const hi = a===s.wAnchor && cv===s.wConviction && t===s.wTail;
-    return `<tr class="${hi?'al-hi':''}"><td class="co">${esc(l)}${l==='Current setting' ? ` <span class="flag">${a} : ${cv} : ${t}</span>` : ''}</td><td class="r num">${fm(B.deployed)}</td><td class="r num">${fm(B.cash)}</td><td class="r num">${q.n}</td><td class="r num">${q.eff.toFixed(1)}</td><td class="r num">${fp(q.top1)}</td>`
+  document.querySelector('#tbl-al-wt thead').innerHTML = headHtml([{l:'Weighting within a bucket'},{l:'Deployed ($m)',r:1},{l:'Undeployed ($m)',r:1},{l:'Companies held',r:1},{d:'1 ÷ sum of squared weights: the number of equal-sized positions with the same concentration.',l:'Effective holdings',r:1},{l:'Largest position',r:1},{l:'Bear × raise',r:1},{l:'Base × raise',r:1},{l:'Bull × raise',r:1}]);
+  const presets = AL_PRESETS.some(p=>p[1]===s.tilt) ? AL_PRESETS : [['Current setting', s.tilt], ...AL_PRESETS];
+  document.querySelector('#tbl-al-wt tbody').innerHTML = presets.map(([l,t]) => {
+    const B = allocate(s, al.sel, t), q = shapeOf(B);
+    return `<tr class="${t===s.tilt?'al-hi':''}"><td class="co">${esc(l)} <span class="flag">tilt ${t}</span></td><td class="r num">${fm(B.deployed)}</td><td class="r num">${fm(B.cash)}</td><td class="r num">${q.n}</td><td class="r num">${q.eff.toFixed(1)}</td><td class="r num">${fp(q.top1)}</td>`
       + ['bear','base','bull'].map(k=>`<td class="r num">${fx(outcome(B, s, k).onRaise)}</td>`).join('') + '</tr>'; }).join('');
 
   const held = A.rs.filter(r=>r.amt>0), d = A.deployed || 1;
   document.getElementById('al-conc').innerHTML = [
     ['Companies held', sh.n], ['Effective holdings', sh.eff.toFixed(1)], ['Largest position', fp(sh.top1)], ['Top 3 positions', fp(sh.top3)],
-    ['Anchor share', fp(held.filter(r=>r.c.tier==='Anchor').reduce((a,r)=>a+r.amt,0)/d)], ['Undeployed cash', fm(A.cash)],
+    [`${XO} share`, fp(held.filter(r=>r.b==='X').reduce((a,r)=>a+r.amt,0)/d)], ['Undeployed cash', fm(A.cash)],
   ].map(([l,v])=>`<li><span>${l}</span><b>${v}</b></li>`).join('');
   const mix = (el, groups, cap) => { document.getElementById(el).innerHTML = Object.entries(groups).sort((a,b)=>b[1]-a[1]).map(([k,v]) =>
     `<span>${esc(k)}</span><div class="cov-bar ${cap!=null && v/(A.inv||1) > cap+1e-9 ? 'over' : ''}"><span style="width:${(v/d*100).toFixed(1)}%"></span></div><span class="num r" style="text-align:right">${fp(v/d)}</span>`).join('') || '<span class="empty" style="grid-column:1/-1">Nothing deployed</span>'; };
@@ -1774,14 +1766,14 @@ function alSheets() {
     { h:'Value', e:true, v:f=>s[f.k], d:'The value used on the Allocation tab.' }, { h:'Unit', e:false, v:f=>f.u, w:30 },
     { h:'Key', e:false, v:f=>f.k, w:14, d:'Links the row to the page. Do not change.' },
   ], AL_FIELDS);
-  const pick = PICK_COLS.map(k => k.l);   // page headers: Hold, Marquee rank, Company, Tier, Sector, Secondary price, Current valuation, IPO status, Bucket, Available stock ($m), Growth (% a year), Base ×
+  const pick = PICK_COLS.map(k => k.l);   // page headers: Hold, Marquee rank, Company, Score, Sector, Secondary price, Current valuation, IPO status, Bucket, Available stock ($m), Growth (% a year), Base ×
   const companies = xlTable([
     { h:pick[0], e:true, v:c=>al.sel.includes(c.id) ? 'Y' : '', d:'Y to hold the company in this scenario.' },
-    { h:pick[1], e:false, v:c=>c.mq, z:XZ.int }, { h:pick[2], e:false, v:c=>c.name, w:24 }, { h:pick[3], e:false, v:c=>c.tier }, { h:pick[4], e:false, v:c=>c.sector, w:26 },
+    { h:pick[1], e:false, v:c=>c.mq, z:XZ.int }, { h:pick[2], e:false, v:c=>c.name, w:24 }, { h:pick[3], e:false, v:c=>c.ts.comp==null ? null : Math.round(c.ts.comp) }, { h:pick[4], e:false, v:c=>c.sector, w:26 },
     { h:pick[5], e:false, v:c=>c.bl, z:XZ.usd }, { h:pick[6], e:false, v:c=>c.impl ?? c.curVal, z:XZ.bn },
     { h:pick[7], e:false, v:c=>c.ipo ? IPO_SHORT[c.ipo.status]||c.ipo.status : '' },
     { h:pick[8], e:true, v:c=>al.bkt[c.id] ? BUCKETS[al.bkt[c.id]].short : `Auto · ${BUCKETS[bucketOf(c, {})].short}`, w:24,
-      d:'Private Growth or Crossover to set the bucket; Auto (or blank) places companies with an IPO filing or reported IPO plans in Crossover and the rest in Private Growth.' },
+      d:'Late Growth or Crossover / Pre-IPO to set the bucket; Auto (or blank) uses the company’s confirmed investment bucket.' },
     { h:pick[9], e:true, v:c=>al.cap[c.id], z:XZ.m, d:'US$ millions of stock that can actually be bought. Blank = no limit.' },
     { h:pick[10], e:true, v:c=>al.gro[c.id], d:'Base-case growth for this company, % a year to exit. Blank = its bucket\'s base growth.' },
     { h:pick[11], e:false, v:c=>exitMult(c, 'base', s), z:XZ.mult, d:'Base-case multiple at exit: (1 + growth) ^ years to exit, before any entry-price adjustment.' },
@@ -1790,17 +1782,16 @@ function alSheets() {
   const held = A.rs.filter(r=>r.amt>0), d = A.deployed || 1;
   const mix = f => Object.entries(held.reduce((a,r)=>(a[f(r.c)]=(a[f(r.c)]||0)+r.amt, a), {})).sort((x,y)=>y[1]-x[1]);
   const mixCols = h => [{ h, v:x=>x[0], w:28 }, { h:'Deployed ($m)', v:x=>x[1], z:XZ.m }, { h:'Share of deployed', v:x=>x[1]/d, z:XZ.share }];
-  const cur = ['Current setting', s.wAnchor, s.wConviction, s.wTail];
-  const presets = AL_PRESETS.some(p=>p[1]===s.wAnchor && p[2]===s.wConviction && p[3]===s.wTail) ? AL_PRESETS : [cur, ...AL_PRESETS];
+  const presets = AL_PRESETS.some(p=>p[1]===s.tilt) ? AL_PRESETS : [['Current setting', s.tilt], ...AL_PRESETS];
   const mv = k => r => r.amt*(1+exitMove(r,k,s))/(1+e);
   const results = xlBlocks([
-    { title:'Allocation', sub:`${fm(s.raise)} raised · ${fm(A.reserve)} reserve · ${fm(A.inv)} investable · tier weights Anchor ${s.wAnchor} : Conviction ${s.wConviction} : Tail ${s.wTail} : Watch ${s.wWatch}`,
+    { title:'Allocation', sub:`${fm(s.raise)} raised · ${fm(A.reserve)} reserve · ${fm(A.inv)} investable · score tilt ${s.tilt}`,
       cols:[{ h:'Figure', v:x=>x[0], w:24 }, { h:'Value', v:x=>x[1], z:x=>x[2] }, { h:'Detail', v:x=>x[3], w:44 }], rows:[
         ['Investable', A.inv, XZ.m, `after ${fm(A.reserve)} reserve`], ['Deployed', A.deployed, XZ.m, A.inv ? `${fp(A.deployed/A.inv)} of investable` : ''],
         ['Undeployed cash', A.cash, XZ.m, A.cash > 0.05 ? 'cannot be placed under current limits' : 'fully placed'],
         ['Companies held', sh.n, XZ.int, `of ${al.sel.length} selected · effective ${sh.eff.toFixed(1)}`], ['Largest position', sh.top1, XZ.share, `top 3: ${fp(sh.top3)} of deployed`],
         ['Base case', cases[1].onRaise, XZ.mult, `on the raise · ${fx(cases[1].onDeployed)} on deployed`] ] },
-    { title:'Investment buckets', sub:'Companies with an IPO filing or reported IPO plans fit Crossover; the rest fit Private Growth, unless the team sets the bucket', cols:[
+    { title:'Investment buckets', sub:`Each company is allocated from its confirmed investment bucket (Watch companies are not held), unless the scenario sets another`, cols:[
       { h:'Bucket', v:([b,B])=>B.name, w:26 }, { h:'Share of investable', v:([b])=>bucketShare(s, b)/100, z:XZ.share }, { h:'Capital ($m)', v:([b])=>A.bk[b].inv, z:XZ.m },
       { h:'Deployed ($m)', v:([b])=>A.bk[b].deployed, z:XZ.m }, { h:'Undeployed ($m)', v:([b])=>A.bk[b].cash, z:XZ.m },
       { h:'Companies held', v:([b])=>A.bk[b].n }, { h:'Mandate (companies)', v:([b,B])=>`${s[B.k.nMin]}–${s[B.k.nMax]}` },
@@ -1809,7 +1800,7 @@ function alSheets() {
       { h:'Base growth (% a year)', v:([b,B])=>s[B.k.rate] }, { h:'Years to exit', v:([b,B])=>s[B.k.yrs] }, { h:'Return expectation', v:([b,B])=>`${B.ret[0]}–${B.ret[1]}×` }, { h:'Base case × deployed', v:([b])=>outcome(A.bk[b], s, 'base').onDeployed, z:XZ.mult } ],
       rows:Object.entries(BUCKETS) },
     { cols:[
-      { h:'Company', v:r=>r.c.name, w:24 }, { h:'Bucket', v:r=>r.b ? BUCKETS[r.b].short : '' }, { h:'Tier', v:r=>r.c.tier }, { h:'Sector', v:r=>r.c.sector, w:26 }, { h:'Weight', v:r=>r.w },
+      { h:'Company', v:r=>r.c.name, w:24 }, { h:'Bucket', v:r=>r.b ? BUCKETS[r.b].short : '' }, { h:'Score', v:r=>r.c.ts?.comp==null ? null : Math.round(r.c.ts.comp) }, { h:'Sector', v:r=>r.c.sector, w:26 }, { h:'Weight', v:r=>r.w },
       { h:'Weight share ($m)', v:r=>r.target, z:XZ.m }, { h:'Available ($m)', v:r=>r.capSet ? r.cap : null, z:XZ.m }, { h:'Allocated ($m)', v:r=>r.amt, z:XZ.m },
       { h:'% of investable', v:r=>A.inv ? r.amt/A.inv : null, z:XZ.share }, { h:'Entry price', v:r=>r.c.bl==null ? null : r.c.bl*(1+e), z:XZ.usd },
       { h:'Shares bought', v:r=>r.c.bl && r.amt ? Math.round(r.amt*1e6/(r.c.bl*(1+e))) : null, z:XZ.int },
@@ -1825,15 +1816,15 @@ function alSheets() {
       { h:'Entry vs today', v:x=>x/100, z:XZ.pct0 }, { h:'Shares bought', v:x=>1/(1+x/100)-1, z:XZ.pct0 },
       ...['bear','base','bull'].map(k => ({ h:k[0].toUpperCase()+k.slice(1), v:x=>outcome(A, s, k, x/100).onDeployed, z:XZ.mult })) ],
       rows:[...new Set([-30,-20,-10,0,10,20,30, s.entry])].sort((a,b)=>a-b) },
-    { title:'Tier-weight sensitivity', sub:'The same companies, stock limits and rules under different tier weightings', cols:[
-      { h:'Anchor : Conviction : Tail', v:p=>p[0]==='Current setting' ? `Current setting (${p[1]} : ${p[2]} : ${p[3]})` : p[0], w:28 },
+    { title:'Weighting sensitivity', sub:'The same companies, stock limits and rules with different score tilts', cols:[
+      { h:'Weighting within a bucket', v:p=>`${p[0]} (tilt ${p[1]})`, w:30 },
       { h:'Deployed ($m)', v:p=>p.B.deployed, z:XZ.m }, { h:'Undeployed ($m)', v:p=>p.B.cash, z:XZ.m }, { h:'Companies held', v:p=>p.q.n },
       { h:'Effective holdings', v:p=>p.q.eff, z:XZ.s1 }, { h:'Largest position', v:p=>p.q.top1, z:XZ.share },
       ...['bear','base','bull'].map(k => ({ h:`${k[0].toUpperCase()+k.slice(1)} × raise`, v:p=>outcome(p.B, s, k).onRaise, z:XZ.mult })) ],
-      rows:presets.map(p => { const B = allocate(s, al.sel, { Anchor:p[1], Conviction:p[2], Tail:p[3], Watch:s.wWatch }); return Object.assign([...p], { B, q:shapeOf(B) }); }) },
+      rows:presets.map(p => { const B = allocate(s, al.sel, p[1]); return Object.assign([...p], { B, q:shapeOf(B) }); }) },
     { title:'Portfolio shape — concentration', cols:[{ h:'Measure', v:x=>x[0], w:24 }, { h:'Value', v:x=>x[1], z:x=>x[2] }], rows:[
       ['Companies held', sh.n, XZ.int], ['Effective holdings', sh.eff, XZ.s1], ['Largest position', sh.top1, XZ.share], ['Top 3 positions', sh.top3, XZ.share],
-      ['Anchor share', held.filter(r=>r.c.tier==='Anchor').reduce((a,r)=>a+r.amt,0)/d, XZ.share], ['Undeployed cash', A.cash, XZ.m] ] },
+      [`${XO} share`, held.filter(r=>r.b==='X').reduce((a,r)=>a+r.amt,0)/d, XZ.share], ['Undeployed cash', A.cash, XZ.m] ] },
     { title:'Sector mix', sub:`Sector cap ${s.sectorCap}% of investable (${fm(A.secCap)})`, cols:mixCols('Sector'), rows:mix(c=>c.sector) },
     { title:'Path to exit', sub:'IPO status of the companies held', cols:mixCols('IPO status'), rows:mix(c => !c.ipo ? 'No IPO path disclosed' : /filed/i.test(c.ipo.status) ? 'IPO filed' : 'IPO plans reported') },
     { title:'Region mix', cols:mixCols('Region'), rows:mix(c=>c.region) },
@@ -1956,9 +1947,9 @@ const MASTER_README = [
   ['Watching companies', 'Marquee list → Watching Companies · the watching position (#) only. Add a row with the company ID to add; delete the row to remove.'],
   ['Universe', 'Universe · the company master, grouped by sector as on the page. Edit Company, Liquidity score, prices, Note, Region, and the input columns to the right. Add or remove companies here.'],
   ['Comparables (read-only)', 'Comparables · trading after a round, multiples from primary rounds, IPO exits and projected multiples, by sector and by valuation band. IPO exits are researched by Claude; ask for changes.'],
-  ['Methodology', 'Methodology · every weight, scoring range and tier threshold. The Methodology page text updates to match.'],
-  ['Calibration', 'Methodology → Calibration · Current tier, Category and Reason.'],
-  ['Allocation settings', 'Allocation → bucket cards and settings panels · bucket shares, cheque sizes and company counts, fund rules, tier weights, exit cases and entry price.'],
+  ['Methodology', 'Methodology · every weight and scoring range. The Methodology page text updates to match.'],
+  ['Calibration', 'Methodology → Calibration · Bucket, Category and Reason.'],
+  ['Allocation settings', 'Allocation → bucket cards and settings panels · bucket shares, cheque sizes and company counts, fund rules, score tilt, exit cases and entry price.'],
   ['Allocation companies', 'Allocation → Choose companies · Hold (Y), bucket, available stock and growth (% a year).'],
   ['Allocation (read-only)', 'Allocation · headline figures, the investment buckets, the allocation table, sensitivities and portfolio shape.'],
   ['Funding rounds, Shareholders, Profile notes', 'Company detail pop-ups · funding history, key shareholders and share-count notes.'],
@@ -1966,7 +1957,7 @@ const MASTER_README = [
   ['Rules'],
   ['ID', 'Never change an existing ID; it links a company across sheets. For a new company leave ID blank in Universe — Claude will assign one.'],
   ['Action', 'Universe only. Leave blank to keep a company. Enter Remove (and an Action reason) to drop it, e.g. after an IPO or acquisition.'],
-  ['Current tier', 'Calibration. Anchor, Conviction, Tail or Watch. If it differs from "Default tier (rules)", give a Category and Reason.'],
+  ['Bucket', 'Calibration. Late Growth, Crossover / Pre-IPO or Watch. If it differs from "Rule bucket", give a Category and Reason.'],
   ['Category', 'Regulatory, Geopolitical, Binary, Transfer restrictions, Data gap or Other.'],
   ['Derived values', 'Universe "Last round EV" and "Current valuation" are what the page shows: researched funding rounds and live prices take precedence. Edit the input columns to the right instead.'],
   ['Methodology weights', 'Weights within a pillar, and the three pillar weights, should each add up to 100.'],
@@ -2033,7 +2024,7 @@ const XC = {
   srank: { h:'Sector rank', v:c=>c.srank, z:XZ.int, d:'Rank within the sector by liquidity score (1 = most liquid).' },
   rank: { h:'Overall rank', v:c=>c.rank, z:XZ.int, d:'Rank across all companies by liquidity score (1 = most liquid).' },
   company: { h:'Company', v:c=>c.name, w:26, d:'The company name as shown on the dashboard.' },
-  tier: { h:'Tier', v:c=>c.tier, d:DEF.tier + ' Edit in the Calibration sheet.' },
+  tier: { h:'Bucket', v:c=>c.tier, w:20, d:DEF.tier + ' Edit in the Calibration sheet.' },
   liq: { h:'Liquidity score', v:c=>c.base.liq, z:XZ.s1, d:DEF.liqWb },
   lrEv: { h:'Last round EV', v:c=>c.lrEv, z:XZ.bn, d:DEF.lrEv + ' Shows the page value: a researched funding history or a company tender takes precedence over the input column.' },
   curVal: { h:'Current valuation', v:c=>c.impl ?? c.curVal, z:XZ.bn, d:DEF.curVal },
@@ -2173,21 +2164,21 @@ function masterWorkbook() {
     { h:'Unit', e:false, v:p=>p.u, w:16 }, { h:'Default', e:false, v:p=>p.d, d:'The original value, for reference.' }, { h:'Key', e:false, v:p=>p.k, w:22, d:'Links the row to the dashboard. Do not change.' },
   ], METHOD_SPEC);
 
-  // Calibration, in the page's order: disagreements first, then by composite score, data-limited companies last.
-  const order = c => c.ts.comp==null ? 3 : c.ts.sug!==c.tier && !hasReason(c) ? 0 : c.ts.sug!==c.tier ? 1 : 2;
-  const calRows = [...UNI].sort((a,b)=>order(a)-order(b) || (b.ts.comp??-1)-(a.ts.comp??-1) || a.name.localeCompare(b.name));
+  // Calibration, in the page's order: overrides first, then by bucket and composite score, data-limited companies last.
+  const order = c => c.tier!==c.ts.sug ? (hasReason(c) ? 1 : 0) : c.ts.comp==null ? 3 : 2;
+  const calRows = [...UNI].sort((a,b)=>order(a)-order(b) || TIER_CHOICES.indexOf(a.tier)-TIER_CHOICES.indexOf(b.tier) || (b.ts.comp??-1)-(a.ts.comp??-1) || a.name.localeCompare(b.name));
   const calib = xlTable([
     ed(XC.company, false),
-    { h:'Current tier', e:true, v:c=>c.tier, d:'The tier confirmed by the investment team: Anchor, Conviction, Tail or Watch.' },
-    { h:'Suggested', e:false, v:c=>c.ts.comp==null && c.tier!=='Watch' ? 'not scored' : c.ts.sug, d:'The tier the methodology rules give from the scores, before any team decision.' },
+    { h:'Bucket', e:true, v:c=>c.tier, d:'The investment bucket confirmed by the investment team: Late Growth, Crossover / Pre-IPO or Watch.' },
+    { h:'Rank in bucket', e:false, v:c=>c.brank, z:XZ.int, d:'Rank by composite score among the scored companies in the same bucket (1 = highest).' },
     { h:'Value accretion', e:false, v:c=>r0(c.ts.va), z:XZ.s0, d:'0–100 pillar score.' },
     { h:'Liquidity', e:false, v:c=>r0(c.ts.lq), z:XZ.s0, d:'0–100 pillar score.' },
     { h:'Demand', e:false, v:c=>r0(c.ts.dm), z:XZ.s0, d:'0–100 pillar score.' },
     { h:'Composite', e:false, v:c=>r0(c.ts.comp), z:XZ.s0, d:`Overall score: ${M['pillar.va']}% value accretion + ${M['pillar.lq']}% liquidity + ${M['pillar.dm']}% demand.` },
     { h:'Status', e:false, v:c=>calStatus(c)[0], d:'Agrees, Override, To review, Watch or Team judgement.' },
-    { h:'Category', e:true, v:c=>(ovr[c.id]||{}).category, w:20, d:'Why the tier differs from the suggestion: Regulatory, Geopolitical, Binary, Transfer restrictions, Data gap or Other.' },
+    { h:'Category', e:true, v:c=>(ovr[c.id]||{}).category, w:20, d:'Why the bucket differs from the rule: Regulatory, Geopolitical, Binary, Transfer restrictions, Data gap or Other.' },
     { h:'Reason', e:true, v:c=>(ovr[c.id]||{}).reason, w:60, d:'One client-readable sentence explaining the decision.' },
-    { h:'Default tier (rules)', e:false, v:c=>c.tier0, d:'The tier the rules give before any team decision.' },
+    { h:'Rule bucket', e:false, v:c=>c.tier0, d:'The bucket the rule gives before any team decision.' },
     { h:'Decision date', e:false, v:c=>(ovr[c.id]||{}).date },
     ed(XC.id, true),
   ], calRows);
