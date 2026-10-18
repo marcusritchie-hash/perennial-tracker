@@ -7,12 +7,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261019081444"></script>
-<script src="quant-rounds.js?v=20261019081444" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261019081444" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261019081444" onerror="window.IPO={}"></script>
-<script src="method-config.js?v=20261019081444" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261019081444" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261019093622"></script>
+<script src="quant-rounds.js?v=20261019093622" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261019093622" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261019093622" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261019093622" onerror="window.EXITS=null"></script>
+<script src="method-config.js?v=20261019093622" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261019093622" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -178,8 +179,8 @@
   td.co { font-weight: 600; color: var(--ink); }
   td.note-cell { white-space: normal; width: 250px; min-width: 250px; color: var(--muted); }   /* wraps, so tables stay narrow */
   td.wrap { white-space: normal; min-width: 90px; }
-  #tbl-mq td.note-cell, #tbl-wl td.note-cell { width: 190px; min-width: 190px; }   /* Marquee and Watching fit a 1440px laptop */
-  #tbl-mq td.wrap, #tbl-wl td.wrap { min-width: 72px; }
+  #tbl-mq td.note-cell, #tbl-wl td.note-cell, #tbl-cmp-ex td.note-cell { width: 190px; min-width: 190px; }   /* Marquee and Watching fit a 1440px laptop */
+  #tbl-mq td.wrap, #tbl-wl td.wrap, #tbl-cmp-ex td.wrap { min-width: 72px; }
   thead th { cursor: default; }
   tbody tr.sec-row td { background: var(--surface) !important; cursor: default; padding: 16px 10px 8px; border-bottom: 1px solid var(--brand);
     font-family: var(--serif); font-size: 15px; color: var(--brand); text-transform: uppercase; letter-spacing: .04em; }
@@ -188,6 +189,9 @@
   .b-mq { background: var(--purple); color: #fff; }
   .b-ls { background: var(--line); color: var(--ink2); }
   .flag { color: var(--muted); font-size: 11px; }
+  .up { color: var(--pos); font-weight: 600; } .dn { color: var(--neg); font-weight: 600; }
+  #tbl-cmp-ex td.co, #tbl-cmp-rdx td.co, #tbl-cmp-rdx td.wrap, #tbl-cmp-rdx td.mark { white-space: normal; min-width: 110px; }
+  .cmp-mx { max-height: none; } .cmp-mx tbody tr { cursor: default; } .cmp-mx tr.all td { font-weight: 600; }
   .na { color: var(--line); }
 
   /* coverage */
@@ -293,6 +297,7 @@
     <button class="tab-btn" role="tab" data-view="analytics" type="button">Analytics</button>
     <button class="tab-btn" role="tab" data-view="marquee" type="button">Marquee list</button>
     <button class="tab-btn" role="tab" data-view="universe" type="button">Universe</button>
+    <button class="tab-btn" role="tab" data-view="comps" type="button">Comparables</button>
     <button class="tab-btn" role="tab" data-view="method" type="button">Methodology</button>
     <button class="tab-btn" role="tab" data-view="alloc" type="button" disabled aria-disabled="true" title="Not ready yet">Allocation <span class="tab-soon">not ready</span></button>
   </nav>
@@ -311,6 +316,7 @@
     <select id="f-sector" aria-label="Sector"></select>
     <label class="tog" id="tog-mq"><input type="checkbox" id="f-mq"> Marquee list only</label>
     <label class="tog" id="tog-stale" title="Include premiums measured against rounds older than 18 months or with no reported date"><input type="checkbox" id="f-stale"> Include stale rounds</label>
+    <label class="tog" id="tog-grp">Group by <select id="f-grp" aria-label="Group comparables by"><option value="sector">Sector</option><option value="band">Valuation band</option></select></label>
     <input type="search" id="f-q" placeholder="Search company…" aria-label="Search company">
     <div class="fcount" id="f-count"></div>
   </div>
@@ -466,6 +472,69 @@
       <p>Companies grouped by sector and ranked by liquidity score, within the sector and across the whole universe. Click a company for its detail and price history.</p>
     </div>
     <div class="tbl-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+  </section>
+  </div>
+
+  <div class="view" id="view-comps" role="tabpanel" hidden>
+  <div class="kpis" id="cmp-kpis"></div>
+
+  <section>
+    <div class="sec-hd">
+      <h2>Trading after a funding round</h2>
+      <p>Where each company's average secondary price sits against its last round today, by how long ago the round closed. Implied valuation (average secondary price × shares outstanding) ÷ last-round post-money − 1. Valuation band is the last round's post-money.</p>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Premium / discount by months since the last round</h3>
+        <div class="sub" id="cmp-age-sub"></div>
+        <div class="legend"><span><i style="background:var(--pos)"></i>Above last round</span><span><i style="background:var(--neg)"></i>Below last round</span></div>
+        <div class="chart-box" id="cmp-age-box" style="height:340px"><canvas id="c-cmp-age" role="img" aria-label="Premium or discount to last round against months since the round"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Median premium / discount, by months since the round</h3>
+        <div class="sub">Median (number of companies) · share of companies trading below the last round in the last column</div>
+        <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-age"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
+      <h2>Multiples from primary rounds</h2>
+      <p id="cmp-rd-note">Buying at a priced round's price per share (rounds at a $1bn+ post-money), marked at the latest later price on or before each anniversary: a later priced round or tender, the IPO price, the listed share price, or, for private companies with a known share count, today's average secondary price. Rounds with no later price by an anniversary are left out of that column rather than counted as 1.0×. Marks are not realised sales.</p>
+    </div>
+    <div class="panel" style="margin-bottom:18px">
+      <h3>Median multiple of the entry price</h3>
+      <div class="sub" id="cmp-rd-sub"></div>
+      <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-rd"><thead></thead><tbody></tbody></table></div>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-cmp-rdx"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
+      <h2>IPO exits, 2024–2026</h2>
+      <p id="cmp-ex-note"></p>
+    </div>
+    <div class="panel" style="margin-bottom:18px">
+      <h3>Median multiple, by entry point and time after listing</h3>
+      <div class="sub">Median (number of IPOs) · multiples of the entry price per share</div>
+      <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-exs"><thead></thead><tbody></tbody></table></div>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-cmp-ex"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
+      <h2>Projected multiples from today's price</h2>
+      <p id="cmp-fw-note"></p>
+    </div>
+    <div class="panel" style="margin-bottom:18px">
+      <h3>Multiple of today's price, by holding period</h3>
+      <div class="sub">Bear / base / bull annual growth compounded · the same assumptions as the Allocation tab</div>
+      <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-fw"><thead></thead><tbody></tbody></table></div>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-cmp-fwc"><thead></thead><tbody></tbody></table></div>
   </section>
   </div>
 
@@ -956,6 +1025,206 @@ const WL_COLS = [
   ...MQ_COLS.slice(1),
 ];
 for (const id of ['#tbl','#tbl-mq','#tbl-wl']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
+
+// ── Comparables: secondary pricing by time since the round, multiples from primary rounds, IPO exits and projected multiples ──
+// IPO exits (ipo-exits.js): private rounds and pre-IPO secondary prices researched per company; listed prices from Yahoo Finance.
+const EXITS = window.EXITS?.companies || [];
+const BANDS = [[5,'Under $5bn'],[20,'$5–20bn'],[100,'$20–100bn'],[Infinity,'$100bn+']];
+const bandOf = v => v==null ? null : BANDS.find(([hi]) => v < hi)[1];
+const AGES = [[3,'0–3 months'],[6,'3–6 months'],[12,'6–12 months'],[Infinity,'12 months +']];
+const ageOf = m => AGES.find(([hi]) => m < hi)[1];
+const HORIZONS = [1,2,3,5];
+const plusMonths = (d, m) => { const x = new Date(d+'T00:00:00'); x.setMonth(x.getMonth()+m); return x.toLocaleDateString('en-CA'); };
+const yrsBetween = (a, b) => (new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / (864e5*365.25);
+const mx = x => x==null || isNaN(x) ? NA : `<span class="${x>=1?'up':'dn'}">${x.toFixed(2)}×</span>`;
+const pc = x => x==null ? NA : `<span class="${x>=0?'up':'dn'}">${pct(x)}</span>`;
+const medCell = (xs, f) => xs.length ? `${f(median(xs))} <span class="flag">(${xs.length})</span>` : NA;
+const shareBelow = (xs, at) => xs.length ? `${Math.round(xs.filter(x=>x<at).length/xs.length*100)}% <span class="flag">(${xs.filter(x=>x<at).length} of ${xs.length})</span>` : NA;
+F.grp = 'sector';
+document.getElementById('f-grp').onchange = e => { F.grp = e.target.value; render(); };
+const grpLabel = () => F.grp === 'band' ? 'Valuation band' : 'Sector';
+// "All", then each sector (page order) or valuation band that has items.
+const groupsOf = (items, by = F.grp) => [['All', items], ...(by === 'band' ? BANDS.map(b=>b[1]) : SECTOR_ORDER)
+  .map(g => [g, items.filter(x => (by === 'band' ? x.band : x.sector) === g)]).filter(([,xs]) => xs.length)];
+for (const c of UNI) c.band = bandOf(c.lrEv);
+
+for (const x of EXITS) {
+  // Where an IPO ratchet converted preferred stock into extra shares, the effective cost per IPO share is the entry price.
+  for (const r of x.rounds||[]) if (r.ppsEffective!=null && r.ppsIssue==null) { r.ppsIssue = r.pps; r.pps = r.ppsEffective; }
+  const rs =[...(x.rounds||[])].filter(r=>r.date && r.date < x.ipoDate).sort((a,b)=>a.date.localeCompare(b.date));
+  // Last private round, and the last with a price per share. As on the rest of the page, when the last primary round is more
+  // than 18 months before the IPO, a later company-run tender takes its place.
+  const lastOf = has => { const eq = rs.filter(r=>r.type==='Equity' && has(r)).pop() || null;
+    const tn = rs.filter(r=>r.type==='Tender' && r.companyRun!==false && has(r) && (!eq || r.date > eq.date)).pop() || null;
+    return tn && (!eq || yrsBetween(eq.date, x.ipoDate)*12 > STALE_MONTHS) ? tn : eq; };
+  x.lr = lastOf(r=>r.pps!=null || r.post!=null);
+  x.lrP = lastOf(r=>r.pps!=null);
+  x.peak = rs.filter(r=>r.post!=null).sort((a,b)=>b.post-a.post)[0] || null;
+  x.sec = (x.secondary||[]).filter(s=>s.price!=null && s.date && s.date <= x.ipoDate).sort((a,b)=>b.date.localeCompare(a.date))[0] || null;
+  x.band = bandOf(x.lr?.post);
+  const m = x.mkt || {};
+  // Prices a holder could be marked at after listing, per share.
+  x.after = { ipo:x.ipoPrice, d1:m.firstClose, m6:m.m6?.close, m12:m.m12?.close, m24:m.m24?.close, now:m.latest?.close };
+}
+const EX_POINTS = [['ipo','IPO price'],['d1','First-day close'],['m6','6 months'],['m12','12 months'],['m24','24 months'],['now','Latest']];
+const exOk = x => (!F.sector || x.sector===F.sector) && (!F.q || x.name.toLowerCase().includes(F.q));
+
+// Each priced primary round as an entry, marked at the latest later price on or before each anniversary.
+const ENTRIES = (() => {
+  const out = [];
+  const add = o => {
+    const rs = o.rounds.filter(r=>r.pps!=null && r.date).sort((a,b)=>a.date.localeCompare(b.date));
+    const marks = [...rs.filter(r=>!['Convertible','Debt','Pending'].includes(r.type)).map(r=>({ date:r.date, px:r.pps, what:r.name })),
+      ...o.marks.filter(k=>k.px!=null && k.date)].sort((a,b)=>a.date.localeCompare(b.date));
+    // Entries are unicorn-stage rounds only ($1bn+ post-money), where Perennial invests; seed-stage multiples would swamp the medians.
+    for (const r of rs.filter(r=>r.type==='Equity' && r.post >= 1 && (!o.before || r.date < o.before))) {
+      const later = marks.filter(k=>k.date > r.date);
+      const e = { id:o.id, name:o.name, sector:o.sector, exit:o.exit, date:r.date, round:r.name, pps:r.pps, post:r.post, band:bandOf(r.post), h:{} };
+      for (const y of HORIZONS) { const lim = plusMonths(r.date, 12*y); const k = later.filter(k=>k.date<=lim).pop(); e.h[y] = lim > o.asof || !k ? null : k.px/r.pps; }
+      const last = later.pop();
+      if (last) { e.last = last; e.x = last.px/r.pps; const t = yrsBetween(r.date, last.date); e.irr = t >= 1 ? Math.pow(e.x, 1/t) - 1 : null; }
+      out.push(e);
+    }
+  };
+  for (const c of UNI) { const q = window.QR?.[c.id]; if (q?.rounds?.length && !c.listed)
+    add({ id:c.id, name:c.name, sector:c.sector, rounds:q.rounds, asof:QD_ASOF, exit:false,
+      // Today's secondary price is a mark only where shares outstanding are known, so the price is on a checked share basis.
+      marks: c.impl!=null && c.ccy==='USD' ? [{ date:QD_ASOF, px:c.bl, what:'Average secondary price' }] : [] }); }
+  for (const x of EXITS) { const m = x.mkt || {};
+    add({ id:null, name:x.name, sector:x.sector, rounds:x.rounds||[], before:x.ipoDate, asof:m.latest?.date || x.ipoDate, exit:x.ticker,
+      marks:[{ date:x.ipoDate, px:x.ipoPrice, what:'IPO price' }, ...['m6','m12','m24'].map(k=>m[k] && { date:m[k].date, px:m[k].close, what:`Share price, ${k.slice(1)} months after listing` }).filter(Boolean),
+        m.latest && { date:m.latest.date, px:m.latest.close, what:m.latest.what || 'Latest share price' }].filter(Boolean) }); }
+  return out.sort((a,b)=>b.date.localeCompare(a.date) || a.name.localeCompare(b.name));
+})();
+
+// Projected multiple of today's price after y years at a case's annual growth (the Allocation tab's bucket assumptions).
+const fwRate = (base, k) => Math.max(-100, base + CASE_SHIFT[k] * al.s.spread);
+const fwMult = (rate, y) => Math.pow(1 + rate/100, y);
+
+function cmpKpis(rs, ents, exs) {
+  const pr = rs.filter(c=>c.prem!=null && c.lrAge!=null), young = pr.filter(c=>c.lrAge<12), old = pr.filter(c=>c.lrAge>=12);
+  const h2 = ents.map(e=>e.h[2]).filter(x=>x!=null);
+  const step = exs.filter(x=>x.lr?.post && x.ipoValBn).map(x=>x.ipoValBn/x.lr.post);
+  const r12 = exs.filter(x=>x.lrP && x.after.m12!=null).map(x=>x.after.m12/x.lrP.pps);
+  const s12 = exs.filter(x=>x.sec && x.after.m12!=null).map(x=>x.after.m12/x.sec.price);
+  const yb = young.filter(c=>c.prem<0).length;
+  return [
+    ['Below last round, round < 12 months old', young.length ? Math.round(yb/young.length*100)+'%' : '—', `${yb} of ${young.length} priced companies`],
+    ['Median vs last round, round 12 months +', old.length ? pct(median(old.map(c=>c.prem))) : '—', `n=${old.length} priced companies`],
+    ['Median 2-year multiple from a round', h2.length ? fx(median(h2)) : '—', `n=${h2.length} priced rounds with a later mark`],
+    ['IPO valuation ÷ last private round', step.length ? fx(median(step)) : '—', step.length ? `median · n=${step.length} · ${step.filter(x=>x<1).length} IPOs below the last round` : 'No IPO exits in this filter'],
+    ['Last round → 12 months after IPO', r12.length ? fx(median(r12)) : '—', `median, per share · n=${r12.length}`],
+    ['Last secondary → 12 months after IPO', s12.length ? fx(median(s12)) : '—', `median, per share · n=${s12.length}`],
+  ];
+}
+
+// A summary table: one row per group, one column per measure, each cell the median (n) or the cell function's output.
+function mxTable(id, items, cols) {
+  document.querySelector(`#${id} thead`).innerHTML = headHtml([{ l:grpLabel() }, ...cols]);
+  document.querySelector(`#${id} tbody`).innerHTML = items.length ? groupsOf(items).map(([g, xs], i) =>
+    `<tr class="${i?'':'all'}"><td>${esc(g)}</td>${cols.map(k=>`<td class="r num">${k.cell(xs)}</td>`).join('')}</tr>`).join('')
+    : `<tr><td colspan="${cols.length+1}" class="empty">Nothing in this filter.</td></tr>`;
+}
+
+function drawComps(rs) {
+  const ids = new Set(rs.map(c=>c.id));
+  const exs = EXITS.filter(exOk);
+  const ents = ENTRIES.filter(e => e.exit ? exOk(e) : ids.has(e.id));
+  document.getElementById('cmp-kpis').innerHTML = cmpKpis(rs, ents, exs).map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
+
+  // Trading after a round. Premiums above +200% are drawn at the chart edge so one outlier does not flatten the rest.
+  const PREM_CAP = 2;
+  const pr = rs.filter(c=>c.prem!=null && c.lrAge!=null);
+  document.getElementById('cmp-age-sub').textContent = `${pr.length} companies with a secondary price and a dated last round · as of ${fDate(QD_ASOF)}`;
+  emptyBox('cmp-age-box','c-cmp-age', pr.length ? '' : 'No companies in this filter have a secondary price and a dated last round.');
+  if (pr.length) {
+    const o = baseOpts();
+    o.scales.x = { ...o.scales.x, min:0, title:{ display:true, text:'Months since the last round' } };
+    o.scales.y = { grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:pctAxis, title:{ display:true, text:'vs last round' } };
+    const ch = mk('c-cmp-age', { type:'scatter', data:{ datasets:[{ data:pr.map(c=>({ x:c.lrAge, y:Math.min(c.prem, PREM_CAP) })), backgroundColor:pr.map(c=>c.prem>=0?css('--pos'):css('--neg')),
+      borderColor:css('--surface'), borderWidth:2, pointRadius:6, pointHoverRadius:8 }] }, options:o },
+      dp => { const c=pr[dp.dataIndex]; return `<b>${esc(c.name)}</b><br>${pct(c.prem)} vs last round${c.prem > PREM_CAP ? ' <span class="flag">(shown at the +200% edge)</span>' : ''}<br>${c.lrAge.toFixed(0)} months since ${roundTip(c)}`; });
+    ch.$co = pr;
+  }
+  mxTable('tbl-cmp-age', pr, [
+    ...AGES.map(([,l]) => ({ l, cell:xs=>medCell(xs.filter(c=>ageOf(c.lrAge)===l).map(c=>c.prem), pc) })),
+    { l:'All', cell:xs=>medCell(xs.map(c=>c.prem), pc) },
+    { l:'Below last round', d:'Share of companies whose implied valuation is below the last round.', cell:xs=>shareBelow(xs.map(c=>c.prem), 0) },
+  ]);
+
+  // Multiples from primary rounds.
+  const nCo = new Set(ents.map(e=>e.name)).size;
+  document.getElementById('cmp-rd-sub').textContent = `${ents.length} priced rounds at ${nCo} companies (${ents.filter(e=>e.exit).length} rounds at companies that have since listed) · grouped by the entry round's post-money when by valuation band`;
+  mxTable('tbl-cmp-rd', ents, [
+    ...HORIZONS.map(y => ({ l:`${y} year${y>1?'s':''}`, d:`Multiple of the entry price at the latest mark on or before the ${y}-year anniversary. Rounds younger than ${y} year${y>1?'s':''}, or with no later mark by then, are not counted.`, cell:xs=>medCell(xs.map(e=>e.h[y]).filter(x=>x!=null), fx) })),
+    { l:'Latest mark', d:'Multiple of the entry price at the latest mark of any age.', cell:xs=>medCell(xs.map(e=>e.x).filter(x=>x!=null), fx) },
+    { l:'Annualised', d:'Annual rate implied by the latest mark, for rounds at least a year before it.', cell:xs=>medCell(xs.map(e=>e.irr).filter(x=>x!=null), pc) },
+    { l:'Below entry', d:'Share of rounds whose latest mark is below the entry price.', cell:xs=>shareBelow(xs.map(e=>e.x).filter(x=>x!=null), 1) },
+  ]);
+  const rdCols = [
+    { d:DEF.company, l:'Company' }, { l:'Sector' }, { l:'Round' }, { l:'Date' },
+    { d:'Post-money valuation of the round, US$.', l:'Post-money', r:1 }, { d:'Price per share of the round, on the current share basis.', l:'Price per share', r:1 },
+    ...HORIZONS.map(y => ({ l:`${y}y`, r:1 })), { d:'Multiple of the entry price at the latest mark, and what the mark is.', l:'Latest mark', r:1 }, { l:'Annualised', r:1 },
+  ];
+  document.querySelector('#tbl-cmp-rdx thead').innerHTML = headHtml(rdCols);
+  document.querySelector('#tbl-cmp-rdx tbody').innerHTML = ents.length ? ents.map(e => `<tr${e.id?` data-id="${e.id}"`:''}>
+    <td class="co">${esc(e.name)}${e.exit?`<span class="badge b-ls">${esc(e.exit)}</span>`:''}</td><td class="wrap">${esc(e.sector)}</td><td class="wrap">${esc(e.round)}</td><td>${fDate(e.date)}</td>
+    <td class="r num">${bn(e.post)}</td><td class="r num">${usd(e.pps)}</td>${HORIZONS.map(y=>`<td class="r num">${mx(e.h[y])}</td>`).join('')}
+    <td class="r num mark">${e.last ? `${mx(e.x)} <span class="flag">${esc(e.last.what)} · ${fMon(e.last.date)}</span>` : NA}</td><td class="r num">${pc(e.irr)}</td></tr>`).join('')
+    : `<tr><td colspan="${rdCols.length}" class="empty">No priced rounds in this filter.</td></tr>`;
+
+  // IPO exits.
+  const src = window.EXITS ? `Private rounds and pre-IPO secondary prices researched ${fDate(window.EXITS.researched)} from SEC filings, company announcements and the press; listed prices are ${esc(window.EXITS.priceSource)} to ${fDate(window.EXITS.pricesAsOf)}.` : 'IPO exit data is not available.';
+  document.getElementById('cmp-ex-note').innerHTML = `Venture-backed US tech companies that listed from 2024, valued at $2bn or more at the IPO. Multiples are per share: the IPO price and later share prices ÷ the last private round's price per share, or ÷ the last secondary price we found before the IPO. ${src} Secondary prices are indicative and from varied venues; see each row's sources in the Master Excel.`;
+  document.querySelector('#tbl-cmp-exs thead').innerHTML = headHtml([{ l:'Entry point' }, ...EX_POINTS.map(([,l])=>({ l, r:1 })), { l:'Below entry at latest', r:1 }]);
+  const exRow = (l, entry) => { const xs = exs.filter(x=>entry(x)!=null);
+    return `<tr><td>${l}</td>${EX_POINTS.map(([k])=>`<td class="r num">${medCell(xs.filter(x=>x.after[k]!=null).map(x=>x.after[k]/entry(x)), fx)}</td>`).join('')}<td class="r num">${shareBelow(xs.filter(x=>x.after.now!=null).map(x=>x.after.now/entry(x)), 1)}</td></tr>`; };
+  const steps = exs.filter(x=>x.lr?.post && x.ipoValBn).map(x=>x.ipoValBn/x.lr.post), peaks = exs.filter(x=>x.peak?.post && x.ipoValBn).map(x=>x.ipoValBn/x.peak.post);
+  document.querySelector('#tbl-cmp-exs tbody').innerHTML = exs.length ? exRow('Last private round, per share', x=>x.lrP?.pps) + exRow('Last pre-IPO secondary price', x=>x.sec?.price)
+    + `<tr><td>IPO valuation ÷ last round post-money</td><td class="r num">${medCell(steps, fx)}</td><td colspan="${EX_POINTS.length-1}" class="flag">${steps.filter(x=>x<1).length} of ${steps.length} IPOs valued below the last private round</td><td></td></tr>`
+    + `<tr><td>IPO valuation ÷ peak private valuation</td><td class="r num">${medCell(peaks, fx)}</td><td colspan="${EX_POINTS.length-1}" class="flag">${peaks.filter(x=>x<1).length} of ${peaks.length} IPOs valued below the peak private round</td><td></td></tr>`
+    : `<tr><td colspan="${EX_POINTS.length+2}" class="empty">No IPO exits in this filter.</td></tr>`;
+  const exCols = [
+    { l:'Company' }, { l:'Sector' }, { d:'First day of trading.', l:'Listed' },
+    { d:'The last priced private round before the IPO: name, date, post-money valuation and price per share.', l:'Last private round' },
+    { d:'Highest post-money valuation of any private round.', l:'Peak private', r:1 },
+    { d:'The latest secondary price found before the IPO, with its date and venue. Indicative.', l:'Last secondary' },
+    { l:'IPO price', r:1 }, { d:'Valuation at the IPO price, as reported (fully diluted where available).', l:'IPO valuation', r:1 },
+    { d:'IPO valuation ÷ last private round post-money.', l:'IPO ÷ last round', r:1 },
+    ...[['ipo','IPO'],['m12','12m'],['now','Latest']].map(([k,l]) => ({ d:`Price ${l==='IPO'?'at the IPO':l==='Latest'?'today':l+' after listing'} ÷ the last private round's price per share.`, l:`Round → ${l}`, r:1, k })),
+    ...[['ipo','IPO'],['m12','12m'],['now','Latest']].map(([k,l]) => ({ d:`Price ${l==='IPO'?'at the IPO':l==='Latest'?'today':l+' after listing'} ÷ the last pre-IPO secondary price.`, l:`Secondary → ${l}`, r:1, k })),
+    { l:'Note', cls:'note-cell' },
+  ];
+  document.querySelector('#tbl-cmp-ex thead').innerHTML = headHtml(exCols);
+  document.querySelector('#tbl-cmp-ex tbody').innerHTML = exs.length ? [...exs].sort((a,b)=>b.ipoDate.localeCompare(a.ipoDate)).map(x => `<tr>
+    <td class="co">${esc(x.name)}<span class="badge b-ls">${esc(x.ticker)}</span></td><td class="wrap">${esc(x.sector)}</td><td>${fDate(x.ipoDate)}</td>
+    <td class="wrap">${x.lr ? `${esc(x.lr.name)} · ${fMon(x.lr.date)}<br><span class="flag">${bn(x.lr.post)}${x.lrP ? ` · ${usd(x.lrP.pps)}/sh${x.lrP.ppsIssue!=null?` effective (issued at ${usd(x.lrP.ppsIssue)})`:''}${x.lrP!==x.lr?` (${esc(x.lrP.name)})`:''}` : ''}</span>` : NA}</td>
+    <td class="r num">${x.peak ? bn(x.peak.post) : NA}</td>
+    <td class="wrap">${x.sec ? `${usd(x.sec.price)}<br><span class="flag">${fMon(x.sec.date)} · ${esc(x.sec.venue||'')}</span>` : NA}</td>
+    <td class="r num">${usd(x.ipoPrice)}</td><td class="r num">${bn(x.ipoValBn)}</td><td class="r num">${x.lr?.post && x.ipoValBn ? mx(x.ipoValBn/x.lr.post) : NA}</td>
+    ${exCols.filter(k=>k.k).map(k => { const base = k.l.startsWith('Round') ? x.lrP?.pps : x.sec?.price; const v = x.after[k.k]; return `<td class="r num">${base && v!=null ? mx(v/base) : NA}</td>`; }).join('')}
+    <td class="note-cell">${esc(x.note||'')}</td></tr>`).join('')
+    : `<tr><td colspan="${exCols.length}" class="empty">No IPO exits in this filter.</td></tr>`;
+
+  // Projected multiples.
+  const s = al.s;
+  document.getElementById('cmp-fw-note').textContent = `Assumptions, not forecasts. Each bucket's base growth a year — Private Growth ${s.gRate}% over ${s.gYears} years to exit, Crossover ${s.xRate}% over ${s.xYears} years — with the bear and bull cases ${s.spread} points a year below and above, as on the Allocation tab. Companies with an IPO filing or reported plans are Crossover; the rest Private Growth. Compare with the realised multiples above.`;
+  const fwCols = [{ l:'Bucket' }, { l:'Case' }, { l:'Growth a year', r:1 }, ...HORIZONS.map(y=>({ l:`${y} year${y>1?'s':''}`, r:1 })), { d:"Multiple at the bucket's years to exit.", l:'At exit', r:1 }];
+  document.querySelector('#tbl-cmp-fw thead').innerHTML = headHtml(fwCols);
+  const ref = (l, xs) => `<tr><td colspan="3" class="flag">${l}</td><td colspan="${HORIZONS.length+1}" class="num">${medCell(xs, fx)}</td></tr>`;
+  document.querySelector('#tbl-cmp-fw tbody').innerHTML = ['G','X'].flatMap(b => ['bear','base','bull'].map(k => { const r = fwRate(s[BUCKETS[b].k.rate], k);
+      return `<tr class="${k==='base'?'all':''}"><td>${BUCKETS[b].short}</td><td>${k[0].toUpperCase()+k.slice(1)}</td><td class="r num">${+r.toFixed(1)}%</td>${HORIZONS.map(y=>`<td class="r num">${mx(fwMult(r,y))}</td>`).join('')}<td class="r num">${mx(fwMult(r, s[BUCKETS[b].k.yrs]))} <span class="flag">${s[BUCKETS[b].k.yrs]}y</span></td></tr>`; })).join('')
+    + ref('Realised for reference: median 2-year multiple from a priced round', ents.map(e=>e.h[2]).filter(x=>x!=null))
+    + ref('Realised for reference: last private round → 12 months after IPO', exs.filter(x=>x.lrP && x.after.m12!=null).map(x=>x.after.m12/x.lrP.pps));
+  const fw = rs.filter(c=>c.impl!=null).sort((a,b)=>b.impl-a.impl);
+  const fwcCols = [{ d:DEF.company, l:'Company' }, { l:'Bucket' }, { d:DEF.curVal, l:'Current valuation', r:1 }, { d:'Base growth a year: the company\'s own where set on the Allocation tab, otherwise its bucket\'s.', l:'Base growth', r:1 },
+    { l:'Years to exit', r:1 }, { l:'Bear', r:1 }, { l:'Base', r:1 }, { l:'Bull', r:1 }, { d:'Current valuation × the base multiple.', l:'Base exit valuation', r:1 }];
+  document.querySelector('#tbl-cmp-fwc thead').innerHTML = headHtml(fwcCols);
+  document.querySelector('#tbl-cmp-fwc tbody').innerHTML = fw.length ? fw.map(c => { const b = bucketOf(c), g = growthOf(c, s, b), y = s[BUCKETS[b].k.yrs], m = k => fwMult(fwRate(g, k), y);
+    return `<tr data-id="${c.id}"><td class="co">${esc(c.name)}</td><td>${BUCKETS[b].short}</td><td class="r num">${bn(c.impl)}</td><td class="r num">${+g.toFixed(1)}%</td><td class="r num">${y}</td>
+      <td class="r num">${mx(m('bear'))}</td><td class="r num">${mx(m('base'))}</td><td class="r num">${mx(m('bull'))}</td><td class="r num">${bn(c.impl*m('base'))}</td></tr>`; }).join('')
+    : `<tr><td colspan="${fwcCols.length}" class="empty">No priced companies in this filter.</td></tr>`;
+}
 
 // ── coverage ──
 // ── IPO pipeline: companies with a filing or reported IPO plans, furthest along first ──
@@ -1629,7 +1898,7 @@ function initAlloc() {
 
 // ── render ──
 // ── views: Analytics / Marquee list / Universe / Methodology / Allocation, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','universe','method','alloc'];
+const VIEWS = ['analytics','marquee','universe','comps','method','alloc'];
 // The Allocation tab is greyed out and cannot be opened until it is ready; set ALLOC_READY to true (and enable its tab button) to open it.
 const ALLOC_READY = false;
 const OPEN_VIEWS = VIEWS.filter(v => ALLOC_READY || v !== 'alloc');
@@ -1640,6 +1909,7 @@ function setView(v) {
   document.querySelectorAll('.tab-btn').forEach(b => b.setAttribute('aria-selected', b.dataset.view === view));
   document.getElementById('tog-stale').hidden = view !== 'analytics';   // only the analytics statistics use it
   document.getElementById('tog-mq').hidden = view === 'marquee';
+  document.getElementById('tog-grp').hidden = view !== 'comps';
   document.querySelector('.filters').hidden = view === 'alloc';   // the allocation works on its own selection
   if (location.hash.slice(1) !== view) history.replaceState(null, '', '#'+view);
   tipEl.style.opacity = 0;
@@ -1657,6 +1927,7 @@ function render() {
   if (view === 'marquee') drawMarquee(rs);
   if (view === 'alloc') drawAlloc();
   if (view === 'universe') drawTable(rs);
+  if (view === 'comps') drawComps(rs);
   if (view === 'method') drawMethod(rs);
   drawDraftBar();
 }
@@ -1684,6 +1955,7 @@ const MASTER_README = [
   ['Marquee list', 'Marquee list · the Marquee rank only (order and membership). Add a row with the company ID to add; delete the row to remove.'],
   ['Watching companies', 'Marquee list → Watching Companies · the watching position (#) only. Add a row with the company ID to add; delete the row to remove.'],
   ['Universe', 'Universe · the company master, grouped by sector as on the page. Edit Company, Liquidity score, prices, Note, Region, and the input columns to the right. Add or remove companies here.'],
+  ['Comparables (read-only)', 'Comparables · trading after a round, multiples from primary rounds, IPO exits and projected multiples, by sector and by valuation band. IPO exits are researched by Claude; ask for changes.'],
   ['Methodology', 'Methodology · every weight, scoring range and tier threshold. The Methodology page text updates to match.'],
   ['Calibration', 'Methodology → Calibration · Current tier, Category and Reason.'],
   ['Allocation settings', 'Allocation → bucket cards and settings panels · bucket shares, cheque sizes and company counts, fund rules, tier weights, exit cases and entry price.'],
@@ -1860,6 +2132,42 @@ function masterWorkbook() {
     { h:'Clarity price type', e:true, v:c=>b(c).ctype, w:28 },
   ], uniRows);
 
+  // Comparables: every summary by sector and by valuation band, then the detail behind it (whole universe, no filters).
+  const med = xs => xs.length ? median(xs) : null;
+  const priced = UNI.filter(c=>c.prem!=null && c.lrAge!=null);
+  const grpCols = by => ({ h:by==='band' ? 'Valuation band' : 'Sector', v:([g])=>g, w:26 });
+  const mcols = (fields) => fields.flatMap(([h, f, z]) => [{ h, v:([,xs])=>med(f(xs)), z }, { h:`${h} (n)`, v:([,xs])=>f(xs).length }]);
+  const ageF = AGES.map(([,l]) => [`${l}`, xs=>xs.filter(c=>ageOf(c.lrAge)===l).map(c=>c.prem), XZ.pct0]).concat([['All', xs=>xs.map(c=>c.prem), XZ.pct0]]);
+  const rdF = HORIZONS.map(y => [`${y} year${y>1?'s':''}`, xs=>xs.map(e=>e.h[y]).filter(x=>x!=null), XZ.mult]).concat([['Latest mark', xs=>xs.map(e=>e.x).filter(x=>x!=null), XZ.mult], ['Annualised', xs=>xs.map(e=>e.irr).filter(x=>x!=null), XZ.pct1]]);
+  const fwRows = ['G','X'].flatMap(b => ['bear','base','bull'].map(k => ({ b, k, r:fwRate(al.s[BUCKETS[b].k.rate], k) })));
+  const comps = xlBlocks([
+    ...['sector','band'].map(by => ({ title:`Trading after a funding round — median premium / discount to last round by months since the round, by ${by==='band'?'valuation band (last round post-money)':'sector'}`,
+      sub:`Companies with a secondary price and a dated last round, as of ${QD_ASOF}`, cols:[grpCols(by), ...mcols(ageF)], rows:groupsOf(priced, by) })),
+    ...['sector','band'].map(by => ({ title:`Multiples from primary rounds — median multiple of the entry price per share, by ${by==='band'?'valuation band (entry round post-money)':'sector'}`,
+      sub:'Marked at the latest later price on or before each anniversary (later round or tender, IPO price, listed price, or today\'s average secondary price). Marks are not realised sales.', cols:[grpCols(by), ...mcols(rdF)], rows:groupsOf(ENTRIES, by) })),
+    { title:'Multiples from primary rounds — each priced round', cols:[
+      { h:'Company', v:e=>e.name, w:24 }, { h:'Listed (ticker)', v:e=>e.exit||'' }, { h:'Sector', v:e=>e.sector, w:26 }, { h:'Round', v:e=>e.round, w:22 }, { h:'Date', v:e=>e.date },
+      { h:'Post-money', v:e=>e.post, z:XZ.bn }, { h:'Price per share', v:e=>e.pps, z:XZ.usd }, ...HORIZONS.map(y=>({ h:`${y}y`, v:e=>e.h[y], z:XZ.mult })),
+      { h:'Latest mark', v:e=>e.x, z:XZ.mult }, { h:'Latest mark is', v:e=>e.last?.what, w:30 }, { h:'Latest mark date', v:e=>e.last?.date }, { h:'Annualised', v:e=>e.irr, z:XZ.pct1 } ], rows:ENTRIES, filter:true },
+    { title:'IPO exits — median multiple per share, by entry point and time after listing', sub:window.EXITS ? `Private data researched ${window.EXITS.researched}; listed prices ${window.EXITS.priceSource} to ${window.EXITS.pricesAsOf}` : 'No IPO exit data',
+      cols:[{ h:'Entry point', v:([l])=>l, w:30 }, ...EX_POINTS.flatMap(([k,l]) => { const f = ([,en]) => EXITS.filter(x=>en(x) && x.after[k]!=null).map(x=>x.after[k]/en(x));
+        return [{ h:l, v:r=>med(f(r)), z:XZ.mult }, { h:`${l} (n)`, v:r=>f(r).length }]; })],
+      rows:[['Last private round, per share', x=>x.lrP?.pps], ['Last pre-IPO secondary price', x=>x.sec?.price]] },
+    { title:'IPO exits — each company', cols:[
+      { h:'Company', v:x=>x.name, w:24 }, { h:'Ticker', v:x=>x.ticker }, { h:'Exchange', v:x=>x.exchange }, { h:'Sector', v:x=>x.sector, w:26 }, { h:'Listed', v:x=>x.ipoDate },
+      { h:'Last private round', v:x=>x.lr?.name, w:22 }, { h:'Last round date', v:x=>x.lr?.date }, { h:'Last round post-money', v:x=>x.lr?.post, z:XZ.bn }, { h:'Last round price per share', v:x=>x.lrP?.pps, z:XZ.usd },
+      { h:'Price per share basis', v:x=>x.lrP ? `${x.lrP.ppsBasis||''}${x.lrP.ppsIssue!=null ? `; effective cost after IPO ratchet, issued at $${x.lrP.ppsIssue}` : ''}${x.lrP!==x.lr ? ` (${x.lrP.name})` : ''}` : '' },
+      { h:'Peak private valuation', v:x=>x.peak?.post, z:XZ.bn }, { h:'Last secondary price', v:x=>x.sec?.price, z:XZ.usd }, { h:'Secondary date', v:x=>x.sec?.date }, { h:'Secondary venue', v:x=>x.sec?.venue, w:20 },
+      { h:'IPO price', v:x=>x.ipoPrice, z:XZ.usd }, { h:'IPO valuation', v:x=>x.ipoValBn, z:XZ.bn }, { h:'IPO valuation basis', v:x=>x.ipoValBasis, w:20 }, { h:'IPO ÷ last round', v:x=>x.lr?.post && x.ipoValBn ? x.ipoValBn/x.lr.post : null, z:XZ.mult },
+      ...EX_POINTS.map(([k,l]) => ({ h:`Round → ${l}`, v:x=>x.lrP && x.after[k]!=null ? x.after[k]/x.lrP.pps : null, z:XZ.mult })),
+      ...EX_POINTS.map(([k,l]) => ({ h:`Secondary → ${l}`, v:x=>x.sec && x.after[k]!=null ? x.after[k]/x.sec.price : null, z:XZ.mult })),
+      { h:'Splits', v:x=>x.splits, w:40 }, { h:'Note', v:x=>x.note, w:50 },
+      { h:'Sources', v:x=>[...new Set([...[x.ipoSrc, x.ipoValSrc].flat().filter(Boolean),...(x.rounds||[]).flatMap(r=>r.src||[]), ...(x.secondary||[]).flatMap(s=>s.src||[])])].join('\n'), w:50 } ], rows:EXITS, filter:true },
+    { title:'Projected multiples of today\'s price — Allocation tab assumptions', sub:'Assumptions, not forecasts', cols:[
+      { h:'Bucket', v:r=>BUCKETS[r.b].short }, { h:'Case', v:r=>r.k }, { h:'Growth a year', v:r=>r.r, z:XZ.pctn },
+      ...HORIZONS.map(y=>({ h:`${y} year${y>1?'s':''}`, v:r=>fwMult(r.r, y), z:XZ.mult })), { h:'Years to exit', v:r=>al.s[BUCKETS[r.b].k.yrs] }, { h:'At exit', v:r=>fwMult(r.r, al.s[BUCKETS[r.b].k.yrs]), z:XZ.mult } ], rows:fwRows },
+  ]);
+
   const method = xlTable([
     { h:'Section', e:false, v:p=>p.sec, w:18 }, { h:'Parameter', e:false, v:p=>p.l, w:52 }, { h:'Value', e:true, v:p=>M[p.k], d:'The value the dashboard uses.' },
     { h:'Unit', e:false, v:p=>p.u, w:16 }, { h:'Default', e:false, v:p=>p.d, d:'The original value, for reference.' }, { h:'Key', e:false, v:p=>p.k, w:22, d:'Links the row to the dashboard. Do not change.' },
@@ -1908,6 +2216,7 @@ function masterWorkbook() {
   XLSX.utils.book_append_sheet(wb, marquee, 'Marquee list');
   XLSX.utils.book_append_sheet(wb, watching, 'Watching companies');
   XLSX.utils.book_append_sheet(wb, universe, 'Universe');
+  XLSX.utils.book_append_sheet(wb, comps, 'Comparables (read-only)');
   XLSX.utils.book_append_sheet(wb, method, 'Methodology');
   XLSX.utils.book_append_sheet(wb, calib, 'Calibration');
   if (ALLOC_READY) for (const [name, ws] of alSheets()) XLSX.utils.book_append_sheet(wb, ws, name);
