@@ -12,6 +12,8 @@ $H = @{ 'User-Agent' = "Perennial Partners $Contact" }   # SEC requires a contac
 $utf8 = New-Object Text.UTF8Encoding($false)
 
 $js = [IO.File]::ReadAllText((Join-Path $root 'quant-data.js'), [Text.Encoding]::UTF8)
+$pbu = Join-Path $root 'pitchbook-universe.js'   # companies added from the PitchBook export are checked too
+if (Test-Path $pbu) { $js += "`n" + [IO.File]::ReadAllText($pbu, [Text.Encoding]::UTF8) }
 $cos = foreach ($m in [regex]::Matches($js, '(?m)^\{"id":"([^"]+)","name":"((?:[^"\\]|\\.)*)"')) {
   [pscustomobject]@{ id = $m.Groups[1].Value; name = [regex]::Unescape($m.Groups[2].Value) } }
 if ($Only) { $Only = $Only -split ','; $cos = $cos | Where-Object { $Only -contains $_.id } }   # -File passes "a,b" as one string
