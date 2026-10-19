@@ -7,13 +7,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261019101922"></script>
-<script src="quant-rounds.js?v=20261019101922" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261019101922" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261019101922" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261019101922" onerror="window.EXITS=null"></script>
-<script src="method-config.js?v=20261019101922" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261019101922" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261019155305"></script>
+<script src="quant-rounds.js?v=20261019155305" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261019155305" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261019155305" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261019155305" onerror="window.EXITS=null"></script>
+<script src="edgar-filings.js?v=20261019155305" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261019155305" onerror="window.IPO_NEWS={}"></script>
+<script src="method-config.js?v=20261019155305" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261019155305" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -741,6 +743,10 @@ const IPO_SHORT = { 'S-1 publicly filed':'S-1 public', 'Confidentially filed':'C
 for (const c of UNI) {
   c.name = cleanName(c.name);
   c.ipo = window.IPO?.[c.id] || null;
+  // Confirmed confidential filings (ipo-news.js): add companies missing from the workbook pipeline, and correct dates marked setDate.
+  c.news = window.IPO_NEWS?.[c.id] || null;
+  if (c.news && !c.ipo) c.ipo = { status:'Confidentially filed', updated:c.news.filed.slice(0,7), val:null };
+  else if (c.news?.setDate && c.ipo) c.ipo = { ...c.ipo, updated:c.news.filed.slice(0,7) };
   // Researched funding history (quant-rounds.js) supersedes the workbook's last round.
   const qrRounds = [...(window.QR?.[c.id]?.rounds || [])].sort((a,b)=>a.date.localeCompare(b.date));
   const lastEq = qrRounds.filter(r=>r.type==='Equity' && r.post!=null).pop();
@@ -1236,6 +1242,10 @@ function drawIpo(rs) {
     { d:DEF.company, l:'Company', cls:'co', f:c=>esc(c.name) },
     { d:'S-1 publicly filed, confidentially filed with the SEC, or IPO plans reported by the company or press.', l:'IPO status', f:c=>esc(c.ipo.status==='Reported' ? 'IPO plans reported' : c.ipo.status) },
     { d:'Month of the latest filing or report about the IPO.', l:'Last filing update', f:c=>fMon(c.ipo.updated+'-01') },
+    { d:`Confidential draft registration (DRS) first submitted, from SEC EDGAR (as of ${window.EDGAR_ASOF||'n/a'}). The SEC only releases drafts alongside the public S-1, so a confidential filer shows "Not public" until then.`, l:'Confidential (DRS)', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['DRS'] ? fDate(e['DRS'].first)+(e['DRS/A']?` <span class="sub">+${e['DRS/A'].n} amend.</span>`:'') : (c.ipo.status==='Confidentially filed' ? '<span class="sub">Not public</span>' : NA); } },
+    { d:'Public S-1 registration statement first filed on SEC EDGAR.', l:'S-1 filed', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['S-1'] ? fDate(e['S-1'].first) : NA; } },
+    { d:'Date of the most recent prospectus amendment (S-1/A) on SEC EDGAR.', l:'S-1/A', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['S-1/A'] ? fDate(e['S-1/A'].last) : NA; } },
+    { d:'Date the confidential filing was made or announced, the regulator it went to (SEC or SEBI), and the confirming sources. Only filings confirmed by two or more independent sources are listed (ipo-news.js).', l:'Filing reported', cls:'wrap', f:c=>c.news ? `${fDate(c.news.filed)} · ${esc(c.news.venue)}<br><span class="sub">${c.news.src.map(s=>`<a href="${esc(s.u)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(s.n)}</a>`).join(' · ')}</span>` : NA },
     { d:'Listing year the company has stated, where it has given one.', l:'Target listing', f:c=>c.ipo.target ? esc(c.ipo.target) : NA },
     { d:'Most recent valuation, from the latest round or secondary pricing, in US$ billions.', l:'Recent valuation', r:1, f:c=>bn(c.ipo.val) },
     { d:DEF.curVal, l:'Implied valuation', r:1, f:c=>c.impl==null ? NA : bn(c.impl) },
