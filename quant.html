@@ -7,17 +7,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261019164637"></script>
-<script src="quant-rounds.js?v=20261019164637" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261019164637" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261019164637" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261019164637" onerror="window.EXITS=null"></script>
-<script src="edgar-filings.js?v=20261019164637" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261019164637" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261019164637" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261019164637" onerror="window.PB={}"></script>
-<script src="method-config.js?v=20261019164637" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261019164637" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261019165439"></script>
+<script src="quant-rounds.js?v=20261019165439" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261019165439" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261019165439" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261019165439" onerror="window.EXITS=null"></script>
+<script src="edgar-filings.js?v=20261019165439" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261019165439" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261019165439" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261019165439" onerror="window.PB={}"></script>
+<script src="method-config.js?v=20261019165439" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261019165439" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -302,6 +302,7 @@
     <button class="tab-btn" role="tab" data-view="analytics" type="button">Analytics</button>
     <button class="tab-btn" role="tab" data-view="marquee" type="button">Marquee list</button>
     <button class="tab-btn" role="tab" data-view="universe" type="button">Universe</button>
+    <button class="tab-btn" role="tab" data-view="ipo" type="button">IPO pipeline</button>
     <button class="tab-btn" role="tab" data-view="comps" type="button">Comparables</button>
     <button class="tab-btn" role="tab" data-view="method" type="button">Methodology</button>
     <button class="tab-btn" role="tab" data-view="alloc" type="button" disabled aria-disabled="true" title="Not ready yet">Allocation <span class="tab-soon">not ready</span></button>
@@ -381,13 +382,15 @@
   </section>
 
   <section>
-    <div class="sec-hd"><h2>IPO pipeline</h2><p id="ipo-sub"></p></div>
-    <div class="tbl-wrap" style="max-height:none"><table id="tbl-ipo"><thead></thead><tbody></tbody></table></div>
-  </section>
-
-  <section>
     <div class="sec-hd"><h2>Data coverage</h2><p>Share of companies in the current filter with each data point. Statistics above use only the companies that have the inputs they need.</p></div>
     <div class="panel"><div class="cov" id="cov"></div></div>
+  </section>
+  </div>
+
+  <div class="view" id="view-ipo" role="tabpanel" hidden>
+  <section>
+    <div class="sec-hd"><h2>IPO pipeline</h2><p id="ipo-sub"></p></div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-ipo"><thead></thead><tbody></tbody></table></div>
   </section>
   </div>
 
@@ -1134,16 +1137,18 @@ const ENTRIES = (() => {
 const fwRate = (base, k) => Math.max(-100, base + CASE_SHIFT[k] * al.s.spread);
 const fwMult = (rate, y) => Math.pow(1 + rate/100, y);
 // Realised multiple on a hypothetical entry at a private round: today's implied valuation (latest secondary prices x shares) ÷ the post-money of
-// the primary round closest to `target` years before the latest price, within lo–hi years (the Allocation buckets' time frames to liquidity).
-function roundMultiple(c, target, lo, hi) {
+// the private round that was lo–hi years before the latest price, taking the one closest to the far end (hi), i.e. the earliest in the bracket.
+// Private rounds are priced equity rounds and company-run tender offers with a post-money valuation (the Allocation buckets' time frames to liquidity).
+function roundMultiple(c, lo, hi) {
   if (c.impl==null) return null;
-  const rounds = (window.QR?.[c.id]?.rounds||[]).filter(r=>r.type==='Equity' && r.post!=null && r.date).map(r=>({ date:r.date, post:r.post, name:r.name }));
+  const rounds = (window.QR?.[c.id]?.rounds||[]).filter(r=>(r.type==='Equity' || (r.type==='Tender' && r.companyRun!==false)) && r.post!=null && r.date)
+    .map(r=>({ date:r.date, post:r.post, name:r.name, tender:r.type==='Tender' }));
   if (c.lrDate && c.lrEv!=null && !c.lrTender && !rounds.some(r=>r.date===c.lrDate)) rounds.push({ date:c.lrDate, post:c.lrEv, name:c.lrName||'Last round' });
   let best = null;
-  for (const r of rounds) { const y = yrsBetween(r.date, QD_ASOF); if (y<lo || y>hi) continue; const d = Math.abs(y-target); if (!best || d<best.d) best = { ...r, d }; }
+  for (const r of rounds) { const y = yrsBetween(r.date, QD_ASOF); if (y<lo || y>hi) continue; const d = hi - y; if (!best || d<best.d) best = { ...r, d }; }
   return best ? { x:c.impl/best.post, round:best } : null;
 }
-const RM3 = c => roundMultiple(c, 3, 2, 4), RM15 = c => roundMultiple(c, 1.5, 1, 2);
+const RM12 = c => roundMultiple(c, 1, 2), RM24 = c => roundMultiple(c, 2, 4);
 
 function cmpKpis(rs, ents, exs) {
   const pr = rs.filter(c=>c.prem!=null && c.lrAge!=null), young = pr.filter(c=>c.lrAge<12), old = pr.filter(c=>c.lrAge>=12);
@@ -1258,20 +1263,20 @@ function drawComps(rs) {
   const ref = (l, xs) => `<tr><td colspan="3" class="flag">${l}</td><td colspan="${HORIZONS.length+1}" class="num">${medCell(xs, fx)}</td></tr>`;
   document.querySelector('#tbl-cmp-fw tbody').innerHTML = ['G','X'].flatMap(b => ['bear','base','bull'].map(k => { const r = fwRate(s[BUCKETS[b].k.rate], k);
       return `<tr class="${k==='base'?'all':''}"><td>${BUCKETS[b].short}</td><td>${k[0].toUpperCase()+k.slice(1)}</td><td class="r num">${+r.toFixed(1)}%</td>${HORIZONS.map(y=>`<td class="r num">${mx(fwMult(r,y))}</td>`).join('')}<td class="r num">${mx(fwMult(r, s[BUCKETS[b].k.yrs]))} <span class="flag">${s[BUCKETS[b].k.yrs]}y</span></td></tr>`; })).join('')
-    + ref('Realised: current valuation ÷ round ~3 years ago (2–4); Private Growth targets 3–5×', rs.map(RM3).filter(Boolean).map(m=>m.x))
-    + ref('Realised: current valuation ÷ round ~1.5 years ago (1–2); Crossover targets 1.5–2×', rs.map(RM15).filter(Boolean).map(m=>m.x))
+    + ref('Realised: current valuation ÷ private round 1–2 years ago (earliest, ~2 yrs); Crossover expects 1.5–2×', rs.map(RM12).filter(Boolean).map(m=>m.x))
+    + ref('Realised: current valuation ÷ private round 2–4 years ago (earliest, ~4 yrs); Private Growth expects 3–5×', rs.map(RM24).filter(Boolean).map(m=>m.x))
     + ref('Realised for reference: median 2-year multiple from a priced round', ents.map(e=>e.h[2]).filter(x=>x!=null))
     + ref('Realised for reference: last private round → 12 months after IPO', exs.filter(x=>x.lrP && x.after.m12!=null).map(x=>x.after.m12/x.lrP.pps));
   const fw = rs.filter(c=>c.impl!=null).sort((a,b)=>b.impl-a.impl);
-  const rmCell = rm => rm ? `${mx(rm.x)}<br><span class="flag">${esc(rm.round.name)}<br>${fMon(rm.round.date)} · ${bn(rm.round.post)}</span>` : NA;
+  const rmCell = rm => rm ? `${mx(rm.x)}<br><span class="flag">${esc(rm.round.name)}${rm.round.tender ? ' (tender)' : ''}<br>${fMon(rm.round.date)} · ${bn(rm.round.post)}</span>` : NA;
   const fwcCols = [{ d:DEF.company, l:'Company' }, { l:'Bucket' }, { d:DEF.curVal, l:'Current valuation', r:1 },
-    { d:`Realised multiple, about 1.5 years: current valuation ÷ the post-money of the primary round closest to 1.5 years before the latest price (rounds 1–2 years old). Compare with the Crossover bucket: 1–2 years to liquidity, 1.5–2× expected. Shows the round used.`, l:'Multiple vs round ~1.5 yrs ago', r:1 },
-    { d:`Realised multiple, about 3 years: current valuation ÷ the post-money of the primary round closest to 3 years before the latest price (rounds 2–4 years old). Compare with the Private Growth bucket: 2–4 years to liquidity, 3–5× expected. Shows the round used.`, l:'Multiple vs round ~3 yrs ago', r:1 },
+    { d:`Current valuation ÷ the post-money of the private round (priced equity round or company-run tender) that was 1–2 years before the latest price, taking the earliest, the one closest to 2 years ago. Compare with the Crossover bucket: 1–2 years to liquidity, 1.5–2× expected. Blank where there is no valued round in that bracket. Shows the round used.`, l:'Multiple on private round 1–2 yrs ago', r:1 },
+    { d:`Current valuation ÷ the post-money of the private round (priced equity round or company-run tender) that was 2–4 years before the latest price, taking the earliest, the one closest to 4 years ago. Compare with the Private Growth bucket: 2–4 years to liquidity, 3–5× expected. Blank where there is no valued round in that bracket. Shows the round used.`, l:'Multiple on private round 2–4 yrs ago', r:1 },
     { d:'Base growth a year: the company\'s own where set on the Allocation tab, otherwise its bucket\'s.', l:'Base growth', r:1 },
     { l:'Years to exit', r:1 }, { l:'Bear', r:1 }, { l:'Base', r:1 }, { l:'Bull', r:1 }, { d:'Current valuation × the base multiple.', l:'Base exit valuation', r:1 }];
   document.querySelector('#tbl-cmp-fwc thead').innerHTML = headHtml(fwcCols);
   document.querySelector('#tbl-cmp-fwc tbody').innerHTML = fw.length ? fw.map(c => { const b = bucketOf(c), g = growthOf(c, s, b), y = s[BUCKETS[b].k.yrs], m = k => fwMult(fwRate(g, k), y);
-    return `<tr data-id="${c.id}"><td class="co">${esc(c.name)}</td><td>${BUCKETS[b].short}</td><td class="r num">${bn(c.impl)}</td><td class="r num rm">${rmCell(RM15(c))}</td><td class="r num rm">${rmCell(RM3(c))}</td><td class="r num">${+g.toFixed(1)}%</td><td class="r num">${y}</td>
+    return `<tr data-id="${c.id}"><td class="co">${esc(c.name)}</td><td>${BUCKETS[b].short}</td><td class="r num">${bn(c.impl)}</td><td class="r num rm">${rmCell(RM12(c))}</td><td class="r num rm">${rmCell(RM24(c))}</td><td class="r num">${+g.toFixed(1)}%</td><td class="r num">${y}</td>
       <td class="r num">${mx(m('bear'))}</td><td class="r num">${mx(m('base'))}</td><td class="r num">${mx(m('bull'))}</td><td class="r num">${bn(c.impl*m('base'))}</td></tr>`; }).join('')
     : `<tr><td colspan="${fwcCols.length}" class="empty">No priced companies in this filter.</td></tr>`;
 }
@@ -1953,7 +1958,7 @@ function initAlloc() {
 
 // ── render ──
 // ── views: Analytics / Marquee list / Universe / Methodology / Allocation, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','universe','comps','method','alloc'];
+const VIEWS = ['analytics','marquee','universe','ipo','comps','method','alloc'];
 // The Allocation tab is greyed out and cannot be opened until it is ready; set ALLOC_READY to true (and enable its tab button) to open it.
 const ALLOC_READY = false;
 const OPEN_VIEWS = VIEWS.filter(v => ALLOC_READY || v !== 'alloc');
@@ -1978,7 +1983,8 @@ function render() {
   document.getElementById('f-count').textContent = view === 'marquee'
     ? `${rs.filter(c=>c.mq).length} of ${UNI.filter(c=>c.mq).length} Marquee companies` : `${rs.length} of ${UNI.length} companies`;
   // Charts are only drawn while their view is visible; hidden canvases have no size.
-  if (view === 'analytics') { drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawIpo(rs); drawCov(rs); }
+  if (view === 'analytics') { drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawCov(rs); }
+  if (view === 'ipo') drawIpo(rs);
   if (view === 'marquee') drawMarquee(rs);
   if (view === 'alloc') drawAlloc();
   if (view === 'universe') drawTable(rs);
@@ -2006,7 +2012,7 @@ const MASTER_README = [
   [],
   ['Sheets', 'Dashboard page · what you can change'],
   ['Analytics (read-only)', 'Analytics · the headline statistics, each chart as a table, and data coverage.'],
-  ['IPO pipeline', 'Analytics → IPO pipeline · IPO status, last filing update, target listing and recent valuation. Add a row (company + ID + status) to add; delete the row to remove.'],
+  ['IPO pipeline', 'IPO pipeline tab · IPO status, last filing update, target listing and recent valuation. Add a row (company + ID + status) to add; delete the row to remove.'],
   ['Marquee list', 'Marquee list · the Marquee rank only (order and membership). Add a row with the company ID to add; delete the row to remove.'],
   ['Watching companies', 'Marquee list → Watching Companies · the watching position (#) only. Add a row with the company ID to add; delete the row to remove.'],
   ['Universe', 'Universe · the company master, grouped by sector as on the page. Edit Company, Liquidity score, prices, Note, Region, and the input columns to the right. Add or remove companies here.'],
