@@ -7,17 +7,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261019161515"></script>
-<script src="quant-rounds.js?v=20261019161515" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261019161515" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261019161515" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261019161515" onerror="window.EXITS=null"></script>
-<script src="edgar-filings.js?v=20261019161515" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261019161515" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261019161515" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261019161515" onerror="window.PB={}"></script>
-<script src="method-config.js?v=20261019161515" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261019161515" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261019162051"></script>
+<script src="quant-rounds.js?v=20261019162051" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261019162051" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261019162051" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261019162051" onerror="window.EXITS=null"></script>
+<script src="edgar-filings.js?v=20261019162051" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261019162051" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261019162051" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261019162051" onerror="window.PB={}"></script>
+<script src="method-config.js?v=20261019162051" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261019162051" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -183,6 +183,7 @@
   td.co { font-weight: 600; color: var(--ink); }
   td.note-cell { white-space: normal; width: 250px; min-width: 250px; color: var(--muted); }   /* wraps, so tables stay narrow */
   td.wrap { white-space: normal; min-width: 90px; }
+  #tbl-cmp-fwc td.rm { white-space: normal; width: 150px; min-width: 150px; max-width: 150px; line-height: 1.3; }   /* multiple, then the round used on a small second line */
   #tbl-mq td.note-cell, #tbl-wl td.note-cell, #tbl-cmp-ex td.note-cell { width: 190px; min-width: 190px; }   /* Marquee and Watching fit a 1440px laptop */
   #tbl-mq td.wrap, #tbl-wl td.wrap, #tbl-cmp-ex td.wrap { min-width: 72px; }
   thead th { cursor: default; }
@@ -1250,15 +1251,15 @@ function drawComps(rs) {
     + ref('Realised for reference: median 2-year multiple from a priced round', ents.map(e=>e.h[2]).filter(x=>x!=null))
     + ref('Realised for reference: last private round → 12 months after IPO', exs.filter(x=>x.lrP && x.after.m12!=null).map(x=>x.after.m12/x.lrP.pps));
   const fw = rs.filter(c=>c.impl!=null).sort((a,b)=>b.impl-a.impl);
-  const rmCell = rm => rm ? `${mx(rm.x)}<br><span class="flag">${esc(rm.round.name)} · ${fMon(rm.round.date)} · ${bn(rm.round.post)}</span>` : NA;
+  const rmCell = rm => rm ? `${mx(rm.x)}<br><span class="flag">${esc(rm.round.name)}<br>${fMon(rm.round.date)} · ${bn(rm.round.post)}</span>` : NA;
   const fwcCols = [{ d:DEF.company, l:'Company' }, { l:'Bucket' }, { d:DEF.curVal, l:'Current valuation', r:1 },
-    { d:`Realised multiple, about 3 years: current valuation ÷ the post-money of the primary round closest to 3 years before the latest price (rounds 2–4 years old). Compare with the Private Growth bucket: 2–4 years to liquidity, 3–5× expected. Shows the round used.`, l:'Multiple vs round ~3 yrs ago', r:1 },
     { d:`Realised multiple, about 1.5 years: current valuation ÷ the post-money of the primary round closest to 1.5 years before the latest price (rounds 1–2 years old). Compare with the Crossover bucket: 1–2 years to liquidity, 1.5–2× expected. Shows the round used.`, l:'Multiple vs round ~1.5 yrs ago', r:1 },
+    { d:`Realised multiple, about 3 years: current valuation ÷ the post-money of the primary round closest to 3 years before the latest price (rounds 2–4 years old). Compare with the Private Growth bucket: 2–4 years to liquidity, 3–5× expected. Shows the round used.`, l:'Multiple vs round ~3 yrs ago', r:1 },
     { d:'Base growth a year: the company\'s own where set on the Allocation tab, otherwise its bucket\'s.', l:'Base growth', r:1 },
     { l:'Years to exit', r:1 }, { l:'Bear', r:1 }, { l:'Base', r:1 }, { l:'Bull', r:1 }, { d:'Current valuation × the base multiple.', l:'Base exit valuation', r:1 }];
   document.querySelector('#tbl-cmp-fwc thead').innerHTML = headHtml(fwcCols);
   document.querySelector('#tbl-cmp-fwc tbody').innerHTML = fw.length ? fw.map(c => { const b = bucketOf(c), g = growthOf(c, s, b), y = s[BUCKETS[b].k.yrs], m = k => fwMult(fwRate(g, k), y);
-    return `<tr data-id="${c.id}"><td class="co">${esc(c.name)}</td><td>${BUCKETS[b].short}</td><td class="r num">${bn(c.impl)}</td><td class="r num">${rmCell(RM3(c))}</td><td class="r num">${rmCell(RM15(c))}</td><td class="r num">${+g.toFixed(1)}%</td><td class="r num">${y}</td>
+    return `<tr data-id="${c.id}"><td class="co">${esc(c.name)}</td><td>${BUCKETS[b].short}</td><td class="r num">${bn(c.impl)}</td><td class="r num rm">${rmCell(RM15(c))}</td><td class="r num rm">${rmCell(RM3(c))}</td><td class="r num">${+g.toFixed(1)}%</td><td class="r num">${y}</td>
       <td class="r num">${mx(m('bear'))}</td><td class="r num">${mx(m('base'))}</td><td class="r num">${mx(m('bull'))}</td><td class="r num">${bn(c.impl*m('base'))}</td></tr>`; }).join('')
     : `<tr><td colspan="${fwcCols.length}" class="empty">No priced companies in this filter.</td></tr>`;
 }

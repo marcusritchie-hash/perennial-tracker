@@ -31,19 +31,19 @@ $out = [ordered]@{}; $unmatched = @(); $i = 0
 foreach ($c in $cos) {
   $i++; if ($i % 25 -eq 0) { Write-Host "  $i / $($cos.Count)" }
   try {
-    $cik = $ovr[$c.id]
-    if (-not $cik) {
-      $q = [uri]::EscapeDataString('"' + $c.name + '"')
-      $r = Get-Json "https://efts.sec.gov/LATEST/search-index?q=$q&forms=S-1%2CS-1%2FA%2C424B4&dateRange=custom&startdt=2019-01-01&enddt=$(Get-Date -Format yyyy-MM-dd)"
-      $want = Norm $c.name
-      $hit = $r.hits.hits | Where-Object { $_._source.display_names | Where-Object { (Norm $_) -eq $want } } | Select-Object -First 1
-      if ($hit) { $cik = $hit._source.ciks[0] }
-    }
-    if (-not $cik) { continue }
-    $cik = ('{0:D10}' -f [int64]$cik)
-    $sub = Get-Json "https://data.sec.gov/submissions/CIK$cik.json"
-    $f = $sub.filings.recent
-    $rows = for ($k = 0; $k -lt $f.form.Count; $k++) { if ($f.form[$k] -in 'DRS', 'DRS/A', 'S-1', 'S-1/A', '424B4') { [pscustomobject]@{ form = $f.form[$k]; date = $f.filingDate[$k] } } }
+    # Find the filer: EDGAR's entity search (the same lookup as the EDGAR company box), exact name match after normalising legal suffixes.
+    # Full-text search is not used for this: it misses filers whose own documents are not indexed under the company name.
+    $ciks = @(); $qn = ($c.name -split ' / ')[0] -replace '\s*\(.*?\)', ''
+    if ($ovr[$c.id]) { $ciks = @($ovr[$c.id]) } else {
+      $r = Get-Json ('https://efts.sec.gov/LATEST/search-index?keysTyped=' + [uri]::EscapeDataString($qn))
+      $want = Norm $qn
+      $ciks = @($r.hits.hits | Where-Object { (Norm $_._source.entity) -eq $want } | Select-Object -First 4 | ForEach-Object { $_._id }) }
+    $sub = $null; $rows = $null
+    foreach ($cik0 in $ciks) {
+      $cik = ('{0:D10}' -f [int64]$cik0)
+      $s1 = Get-Json "https://data.sec.gov/submissions/CIK$cik.json"; $f = $s1.filings.recent
+      $rr = @(for ($k = 0; $k -lt $f.form.Count; $k++) { if ($f.form[$k] -in 'DRS', 'DRS/A', 'S-1', 'S-1/A', '424B4') { [pscustomobject]@{ form = $f.form[$k]; date = $f.filingDate[$k] } } })
+      if ($rr.Count) { $sub = $s1; $rows = $rr; break } }
     if (-not $rows) { continue }
     $e = [ordered]@{ cik = $cik; entity = $sub.name }
     foreach ($form in 'DRS', 'DRS/A', 'S-1', 'S-1/A', '424B4') {
