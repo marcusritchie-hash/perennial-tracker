@@ -7,17 +7,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261019172708"></script>
-<script src="quant-rounds.js?v=20261019172708" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261019172708" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261019172708" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261019172708" onerror="window.EXITS=null"></script>
-<script src="edgar-filings.js?v=20261019172708" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261019172708" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261019172708" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261019172708" onerror="window.PB={}"></script>
-<script src="method-config.js?v=20261019172708" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261019172708" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261020100930"></script>
+<script src="quant-rounds.js?v=20261020100930" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261020100930" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261020100930" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261020100930" onerror="window.EXITS=null"></script>
+<script src="edgar-filings.js?v=20261020100930" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261020100930" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261020100930" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261020100930" onerror="window.PB={}"></script>
+<script src="method-config.js?v=20261020100930" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261020100930" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -142,6 +142,8 @@
   /* filters */
   .filters { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
   .chips { display: flex; gap: 4px; flex-wrap: wrap; }
+  .cmp-subtabs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  #tbl-cmp-peer td.co, #tbl-cmp-peer td.wrap { white-space: normal; min-width: 90px; }
   .chip { font: 600 12px var(--sans); color: var(--ink2); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; cursor: pointer; }
   .chip[aria-pressed="true"] { background: var(--purple); border-color: var(--purple); color: #fff; }
   select, input[type=search] { font: 400 12px var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; }
@@ -303,7 +305,8 @@
     <button class="tab-btn" role="tab" data-view="marquee" type="button">Marquee list</button>
     <button class="tab-btn" role="tab" data-view="universe" type="button">Universe</button>
     <button class="tab-btn" role="tab" data-view="ipo" type="button">IPO pipeline</button>
-    <button class="tab-btn" role="tab" data-view="comps" type="button">Comparables</button>
+    <button class="tab-btn" role="tab" data-view="comps" type="button">Equity comparables</button>
+    <button class="tab-btn" role="tab" data-view="moic" type="button">Returns (MOIC)</button>
     <button class="tab-btn" role="tab" data-view="method" type="button">Methodology</button>
     <button class="tab-btn" role="tab" data-view="alloc" type="button" disabled aria-disabled="true" title="Not ready yet">Allocation <span class="tab-soon">not ready</span></button>
   </nav>
@@ -484,12 +487,16 @@
   </div>
 
   <div class="view" id="view-comps" role="tabpanel" hidden>
-  <div class="kpis" id="cmp-kpis"></div>
-
+  <div class="sec-hd">
+    <h2>Equity comparables</h2>
+    <p>How private companies are priced against their last round and against peers in the same sector or valuation band, and how their valuations have grown. Returns to an investor (MOIC) are on the Returns (MOIC) tab.</p>
+  </div>
+  <div class="kpis" id="cmp-kpis-eq"></div>
   <section>
     <div class="sec-hd">
-      <h2>Trading after a funding round</h2>
-      <p>Where each company's average secondary price sits against its last round today, by how long ago the round closed. Implied valuation (average secondary price × shares outstanding) ÷ last-round post-money − 1. Valuation band is the last round's post-money.</p>
+      <h2>Trading vs last round</h2>
+      <p>Premium / discount = current valuation ÷ last-round post-money − 1. The chart plots companies priced from secondary prices against the months since their last round. The table groups every company with a last round and a current valuation (secondary prices, PitchBook estimates and reported valuations) by the Group by control; use Basis to narrow it to secondary prices only. <b>Valuation × vs 2 / 4 yrs ago</b> = current valuation ÷ the post-money of the round nearest that long ago.</p>
+      <label class="tog" style="margin-top:8px">Basis <select id="cmp-basis" aria-label="Valuation basis for the peer table"><option value="all">All current valuations</option><option value="sec">Secondary prices only</option></select></label>
     </div>
     <div class="grid2">
       <div class="panel">
@@ -499,20 +506,40 @@
         <div class="chart-box" id="cmp-age-box" style="height:340px"><canvas id="c-cmp-age" role="img" aria-label="Premium or discount to last round against months since the round"></canvas></div>
       </div>
       <div class="panel">
-        <h3>Median premium / discount, by months since the round</h3>
-        <div class="sub">Median (number of companies) · share of companies trading below the last round in the last column</div>
-        <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-age"><thead></thead><tbody></tbody></table></div>
+        <h3>Median premium / discount to last round, by peer group</h3>
+        <div class="sub" id="cmp-peer-sub"></div>
+        <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-peer-s"><thead></thead><tbody></tbody></table></div>
       </div>
     </div>
+    <div class="sec-hd" style="margin-top:24px"><h2>Peer table</h2><p>One row per company, largest first. Click a company for its detail; hover a Valuation × cell to see the round it is measured against.</p></div>
+    <div class="tbl-wrap"><table id="tbl-cmp-peer"><thead></thead><tbody></tbody></table></div>
   </section>
+  </div>
+
+  <div class="view" id="view-moic" role="tabpanel" hidden>
+  <div class="sec-hd">
+    <h2>Returns (MOIC)</h2>
+    <p>What an investor would have earned: MOIC from priced rounds, from recent IPOs, and projected from today's price. Separate from the equity comparables.</p>
+  </div>
+  <div class="grid2" style="margin-bottom:18px">
+    <div class="panel">
+      <h3>MOIC: an investor's multiple, per share</h3>
+      <div class="sub">Price per share at the mark ÷ price per share paid. What a holder who bought at the entry point would have, after any dilution from later rounds. Shown in <b>MOIC from primary rounds</b>, the <b>MOIC</b> rows and columns under IPO exits, and <b>Projected MOIC</b>.</div>
+    </div>
+    <div class="panel">
+      <h3>Valuation ×: the company's multiple</h3>
+      <div class="sub">Company valuation ÷ an earlier round's post-money. How far the company's value has moved; not an investor's return, because new shares issued since the round are counted in the valuation. Shown in the <b>Valuation ×</b> rows and columns under IPO exits and the realised columns under Projected MOIC. Premium / discount to the last round is Valuation × − 1.</div>
+    </div>
+  </div>
+  <div class="kpis" id="cmp-kpis-mx" style="grid-template-columns:repeat(4,1fr)"></div>
 
   <section>
     <div class="sec-hd">
-      <h2>Multiples from primary rounds</h2>
-      <p id="cmp-rd-note">Buying at a priced round's price per share (rounds at a $1bn+ post-money), marked at the latest later price on or before each anniversary: a later priced round or tender, the IPO price, the listed share price, or, for private companies with a known share count, today's average secondary price. Rounds with no later price by an anniversary are left out of that column rather than counted as 1.0×. Marks are not realised sales.</p>
+      <h2>MOIC from primary rounds</h2>
+      <p id="cmp-rd-note">MOIC, per share. Buying at a priced round's price per share (rounds at a $1bn+ post-money), marked at the latest later price on or before each anniversary: a later priced round or tender, the IPO price, the listed share price, or, for private companies with a known share count, today's average secondary price. Rounds with no later price by an anniversary are left out of that column rather than counted as 1.0×. Marks are not realised sales.</p>
     </div>
     <div class="panel" style="margin-bottom:18px">
-      <h3>Median multiple of the entry price</h3>
+      <h3>Median MOIC on the entry price</h3>
       <div class="sub" id="cmp-rd-sub"></div>
       <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-rd"><thead></thead><tbody></tbody></table></div>
     </div>
@@ -525,8 +552,8 @@
       <p id="cmp-ex-note"></p>
     </div>
     <div class="panel" style="margin-bottom:18px">
-      <h3>Median multiple, by entry point and time after listing</h3>
-      <div class="sub">Median (number of IPOs) · multiples of the entry price per share</div>
+      <h3>Median MOIC and valuation ×, by entry point and time after listing</h3>
+      <div class="sub">Median (number of IPOs) · MOIC rows are per share; Valuation × rows compare company valuations</div>
       <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-exs"><thead></thead><tbody></tbody></table></div>
     </div>
     <div class="tbl-wrap"><table id="tbl-cmp-ex"><thead></thead><tbody></tbody></table></div>
@@ -534,11 +561,11 @@
 
   <section>
     <div class="sec-hd">
-      <h2>Projected multiples from today's price</h2>
+      <h2>Projected MOIC from today's price</h2>
       <p id="cmp-fw-note"></p>
     </div>
     <div class="panel" style="margin-bottom:18px">
-      <h3>Multiple of today's price, by holding period</h3>
+      <h3>Projected MOIC on today's price, by holding period</h3>
       <div class="sub">Bear / base / bull annual growth compounded · the same assumptions as the Allocation tab</div>
       <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-fw"><thead></thead><tbody></tbody></table></div>
     </div>
@@ -1065,9 +1092,10 @@ const WL_COLS = [
   { d:'Marquee rank, where the company is already on the Marquee list.', l:'Marquee rank', r:1, f:c=>c.mq ?? NA },
   ...MQ_COLS.slice(1),
 ];
-for (const id of ['#tbl','#tbl-mq','#tbl-wl']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
+for (const id of ['#tbl','#tbl-mq','#tbl-wl','#tbl-cmp-peer']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); if(tr) openDetail(UNI.find(c=>c.id===tr.dataset.id)); });
 
-// ── Comparables: secondary pricing by time since the round, multiples from primary rounds, IPO exits and projected multiples ──
+// ── Comparables: secondary pricing by time since the round, MOIC from primary rounds, IPO exits and projected MOIC ──
+// MOIC is per share (price at a mark ÷ price paid); Valuation × is company-level (valuation ÷ an earlier post-money) and includes dilution.
 // IPO exits (ipo-exits.js): private rounds and pre-IPO secondary prices researched per company; listed prices from Yahoo Finance.
 const EXITS = window.EXITS?.companies || [];
 const BANDS = [[5,'Under $5bn'],[20,'$5–20bn'],[100,'$20–100bn'],[Infinity,'$100bn+']];
@@ -1165,10 +1193,10 @@ function cmpKpis(rs, ents, exs) {
   return [
     ['Below last round, round < 12 months old', young.length ? Math.round(yb/young.length*100)+'%' : '—', `${yb} of ${young.length} priced companies`],
     ['Median vs last round, round 12 months +', old.length ? pct(median(old.map(c=>c.prem))) : '—', `n=${old.length} priced companies`],
-    ['Median 2-year multiple from a round', h2.length ? fx(median(h2)) : '—', `n=${h2.length} priced rounds with a later mark`],
-    ['IPO valuation ÷ last private round', step.length ? fx(median(step)) : '—', step.length ? `median · n=${step.length} · ${step.filter(x=>x<1).length} IPOs below the last round` : 'No IPO exits in this filter'],
-    ['Last round → 12 months after IPO', r12.length ? fx(median(r12)) : '—', `median, per share · n=${r12.length}`],
-    ['Last secondary → 12 months after IPO', s12.length ? fx(median(s12)) : '—', `median, per share · n=${s12.length}`],
+    ['MOIC: median 2 years after a round', h2.length ? fx(median(h2)) : '—', `n=${h2.length} priced rounds with a later mark`],
+    ['Valuation ×: IPO ÷ last private round', step.length ? fx(median(step)) : '—', step.length ? `median · n=${step.length} · ${step.filter(x=>x<1).length} IPOs below the last round` : 'No IPO exits in this filter'],
+    ['MOIC: last round → 12 months after IPO', r12.length ? fx(median(r12)) : '—', `median, per share · n=${r12.length}`],
+    ['MOIC: last secondary → 12 months after IPO', s12.length ? fx(median(s12)) : '—', `median, per share · n=${s12.length}`],
   ];
 }
 
@@ -1180,18 +1208,74 @@ function mxTable(id, items, cols) {
     : `<tr><td colspan="${cols.length+1}" class="empty">Nothing in this filter.</td></tr>`;
 }
 
+// ── Equity comparables: Equity comparables / Returns (MOIC) sub-tabs, and the peer table over every company with a last round and a current valuation ──
+F.basis = 'all';
+document.getElementById('cmp-basis').onchange = e => { F.basis = e.target.value; render(); };
+const peerPrem = c => c.cv / c.lrEv - 1;
+// Valuation growth: current valuation ÷ the post-money of the priced round nearest to N years before the data date, within 9 months
+// either side (researched rounds, plus the last round). Company-level and includes dilution; not an investor's MOIC.
+const VX_YEARS = [2, 4], VX_WINDOW = 9;
+function valRef(c, y) {
+  const cut = new Date(ASOF); cut.setMonth(cut.getMonth() - 12*y);
+  const rs = [...(window.QR?.[c.id]?.rounds || []).filter(r=>r.post>0 && r.date && r.type!=='Pending' && r.companyRun!==false), ...(c.lrDate && c.lrEv>0 ? [{ date:c.lrDate, post:c.lrEv, name:c.lrName }] : [])];
+  let best = null, bd = Infinity;
+  for (const r of rs) { const d = Math.abs((new Date(r.date+'T00:00:00') - cut) / (864e5*30.44)); if (d <= VX_WINDOW && d < bd) { best = r; bd = d; } }
+  return best;
+}
+const valX = (c, y) => { const r = valRef(c, y); return r && c.cv!=null ? { x:c.cv/r.post, r } : null; };
+const vxCell = (c, y) => { const v = valX(c, y); return v ? `<span title="vs ${esc(v.r.name||'round')} · ${fDate(v.r.date)} · ${bn(v.r.post)}">${mx(v.x)}</span>` : NA; };
+// Companies with a last round, a current valuation and a dated round; basis 'sec' keeps only those priced from secondary prices.
+const peerSet = (rs, basis = F.basis) => rs.filter(c => !c.listed && c.cv!=null && c.lrEv>0 && c.lrAge!=null && (basis!=='sec' || c.cvSrc==='Secondary'));
+const PEER_COLS = [
+  { d:DEF.company, l:'Company', cls:'co', f:c=>esc(c.name) }, { l:'Sector', cls:'wrap', f:c=>esc(c.sector) }, { d:'Last round post-money: under $5bn, $5–20bn, $20–100bn or $100bn+.', l:'Valuation band', f:c=>esc(c.band||'') },
+  { d:'Name of the last primary round (PitchBook deal type where there is no researched round).', l:'Last round', cls:'wrap', f:c=>esc(c.lrName||'') },
+  { l:'Round date', f:c=>c.lrDate ? fMon(c.lrDate) : NA }, { d:'Months from the last round to the data date.', l:'Months since', r:1, f:c=>c.lrAge==null ? NA : c.lrAge.toFixed(0) },
+  { d:DEF.lrEv, l:'Last round valuation', r:1, f:c=>bn(c.lrEv) }, { d:DEF.curVal, l:'Current valuation', r:1, f:c=>bn(c.cv) },
+  { d:'Where the current valuation comes from: Secondary (average secondary price × shares), PitchBook est. or Reported.', l:'Basis', f:c=>esc(c.cvSrc||'') },
+  { d:'Current valuation ÷ last-round post-money − 1.', l:'Premium / discount', r:1, f:c=>pc(peerPrem(c)) },
+  ...VX_YEARS.map(y => ({ d:`Current valuation ÷ the post-money of the priced round nearest ${y} years ago (within ${VX_WINDOW} months either side). Company valuation multiple, includes dilution; hover for the round. Blank where no round is that close.`, l:`Valuation × vs ${y} yrs ago`, r:1, f:c=>vxCell(c, y) })),
+];
+function drawPeers(rs, kpiHtml) {
+  const ps = peerSet(rs), pr = ps.map(peerPrem), young = ps.filter(c=>c.lrAge<12), old = ps.filter(c=>c.lrAge>=12), nSec = ps.filter(c=>c.cvSrc==='Secondary').length;
+  const below = pr.filter(x=>x<0).length, yb = young.filter(c=>peerPrem(c)<0).length;
+  document.getElementById('cmp-kpis-eq').innerHTML = kpiHtml([
+    ['Companies compared', ps.length, `${nSec} on secondary prices · ${ps.length-nSec} on PitchBook or reported valuations`],
+    ['Median vs last round', pr.length ? pct(median(pr)) : '—', pr.length ? `IQR ${pct(quant(pr,.25))} to ${pct(quant(pr,.75))}` : 'No companies in this filter'],
+    ['Trading below last round', pr.length ? Math.round(below/pr.length*100)+'%' : '—', `${below} of ${pr.length} companies`],
+    ['Round under 12 months old', young.length ? pct(median(young.map(peerPrem))) : '—', `median vs last round · n=${young.length}`],
+    ['Round 12 months + old', old.length ? pct(median(old.map(peerPrem))) : '—', `median vs last round · n=${old.length}`],
+    ['Median time since round', ps.length ? `${median(ps.map(c=>c.lrAge)).toFixed(0)} months` : '—', 'of the last primary round'],
+  ]);
+  document.getElementById('cmp-peer-sub').textContent = `${ps.length} companies · ${F.basis==='sec' ? 'secondary prices only' : 'all current valuations'} · medians shown with the number of companies (n) · valuation data as of ${fDate(QD_ASOF)}`;
+  mxTable('tbl-cmp-peer-s', ps, [
+    { l:'Companies', r:1, cell:xs=>xs.length },
+    ...AGES.map(([,l]) => ({ l, cell:xs=>medCell(xs.filter(c=>ageOf(c.lrAge)===l).map(peerPrem), pc) })),
+    { l:'All rounds', cell:xs=>medCell(xs.map(peerPrem), pc) },
+    ...VX_YEARS.map(y => ({ d:`Median valuation multiple: current valuation ÷ the round nearest ${y} years ago. Only companies with a round that close.`, l:`Valuation × vs ${y} yrs`, cell:xs=>medCell(xs.map(c=>valX(c,y)?.x).filter(x=>x!=null), mx) })),
+    { d:'Share of companies whose current valuation is below the last round.', l:'Below last round', cell:xs=>shareBelow(xs.map(peerPrem), 0) },
+  ]);
+  document.querySelector('#tbl-cmp-peer thead').innerHTML = headHtml(PEER_COLS);
+  const rows = [...ps].sort((a,b)=>b.cv-a.cv);
+  document.querySelector('#tbl-cmp-peer tbody').innerHTML = rows.length ? rows.map(c=>rowHtml(PEER_COLS, c)).join('')
+    : `<tr><td colspan="${PEER_COLS.length}" class="empty">No companies in this filter have a last round and a current valuation.</td></tr>`;
+}
+
 function drawComps(rs) {
   const ids = new Set(rs.map(c=>c.id));
   const exs = EXITS.filter(exOk);
   const ents = ENTRIES.filter(e => e.exit ? exOk(e) : ids.has(e.id));
-  document.getElementById('cmp-kpis').innerHTML = cmpKpis(rs, ents, exs).map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
+  const kpiHtml = a => a.map(([l,v,s])=>`<div class="card"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}</div><div class="kpi-sub">${s}</div></div>`).join('');
+  const eq = view === 'comps';
+  document.getElementById('tog-grp').hidden = false;
+  document.getElementById('cmp-kpis-mx').innerHTML = kpiHtml(cmpKpis(rs, ents, exs));
+  drawPeers(rs, kpiHtml);
 
   // Trading after a round. Premiums above +200% are drawn at the chart edge so one outlier does not flatten the rest.
   const PREM_CAP = 2;
   const pr = rs.filter(c=>c.prem!=null && c.lrAge!=null);
   document.getElementById('cmp-age-sub').textContent = `${pr.length} companies with a secondary price and a dated last round · as of ${fDate(QD_ASOF)}`;
   emptyBox('cmp-age-box','c-cmp-age', pr.length ? '' : 'No companies in this filter have a secondary price and a dated last round.');
-  if (pr.length) {
+  if (pr.length && eq) {
     const o = baseOpts();
     o.scales.x = { ...o.scales.x, min:0, title:{ display:true, text:'Months since the last round' } };
     o.scales.y = { grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:pctAxis, title:{ display:true, text:'vs last round' } };
@@ -1200,25 +1284,20 @@ function drawComps(rs) {
       dp => { const c=pr[dp.dataIndex]; return `<b>${esc(c.name)}</b><br>${pct(c.prem)} vs last round${c.prem > PREM_CAP ? ' <span class="flag">(shown at the +200% edge)</span>' : ''}<br>${c.lrAge.toFixed(0)} months since ${roundTip(c)}`; });
     ch.$co = pr;
   }
-  mxTable('tbl-cmp-age', pr, [
-    ...AGES.map(([,l]) => ({ l, cell:xs=>medCell(xs.filter(c=>ageOf(c.lrAge)===l).map(c=>c.prem), pc) })),
-    { l:'All', cell:xs=>medCell(xs.map(c=>c.prem), pc) },
-    { l:'Below last round', d:'Share of companies whose implied valuation is below the last round.', cell:xs=>shareBelow(xs.map(c=>c.prem), 0) },
-  ]);
 
-  // Multiples from primary rounds.
+  // MOIC from primary rounds.
   const nCo = new Set(ents.map(e=>e.name)).size;
   document.getElementById('cmp-rd-sub').textContent = `${ents.length} priced rounds at ${nCo} companies (${ents.filter(e=>e.exit).length} rounds at companies that have since listed) · grouped by the entry round's post-money when by valuation band`;
   mxTable('tbl-cmp-rd', ents, [
-    ...HORIZONS.map(y => ({ l:`${y} year${y>1?'s':''}`, d:`Multiple of the entry price at the latest mark on or before the ${y}-year anniversary. Rounds younger than ${y} year${y>1?'s':''}, or with no later mark by then, are not counted.`, cell:xs=>medCell(xs.map(e=>e.h[y]).filter(x=>x!=null), fx) })),
-    { l:'Latest mark', d:'Multiple of the entry price at the latest mark of any age.', cell:xs=>medCell(xs.map(e=>e.x).filter(x=>x!=null), fx) },
+    ...HORIZONS.map(y => ({ l:`${y} year${y>1?'s':''}`, d:`MOIC: price per share at the latest mark on or before the ${y}-year anniversary. Rounds younger than ${y} year${y>1?'s':''}, or with no later mark by then, are not counted.`, cell:xs=>medCell(xs.map(e=>e.h[y]).filter(x=>x!=null), fx) })),
+    { l:'Latest mark', d:'MOIC: price per share at the latest mark of any age ÷ the entry price.', cell:xs=>medCell(xs.map(e=>e.x).filter(x=>x!=null), fx) },
     { l:'Annualised', d:'Annual rate implied by the latest mark, for rounds at least a year before it.', cell:xs=>medCell(xs.map(e=>e.irr).filter(x=>x!=null), pc) },
     { l:'Below entry', d:'Share of rounds whose latest mark is below the entry price.', cell:xs=>shareBelow(xs.map(e=>e.x).filter(x=>x!=null), 1) },
   ]);
   const rdCols = [
     { d:DEF.company, l:'Company' }, { l:'Sector' }, { l:'Round' }, { l:'Date' },
     { d:'Post-money valuation of the round, US$.', l:'Post-money', r:1 }, { d:'Price per share of the round, on the current share basis.', l:'Price per share', r:1 },
-    ...HORIZONS.map(y => ({ l:`${y}y`, r:1 })), { d:'Multiple of the entry price at the latest mark, and what the mark is.', l:'Latest mark', r:1 }, { l:'Annualised', r:1 },
+    ...HORIZONS.map(y => ({ l:`${y}y`, r:1 })), { d:'MOIC: price per share at the latest mark ÷ the entry price, and what the mark is.', l:'Latest mark', r:1 }, { l:'Annualised', r:1 },
   ];
   document.querySelector('#tbl-cmp-rdx thead').innerHTML = headHtml(rdCols);
   document.querySelector('#tbl-cmp-rdx tbody').innerHTML = ents.length ? ents.map(e => `<tr${e.id?` data-id="${e.id}"`:''}>
@@ -1229,14 +1308,14 @@ function drawComps(rs) {
 
   // IPO exits.
   const src = window.EXITS ? `Private rounds and pre-IPO secondary prices researched ${fDate(window.EXITS.researched)} from SEC filings, company announcements and the press; listed prices are ${esc(window.EXITS.priceSource)} to ${fDate(window.EXITS.pricesAsOf)}.` : 'IPO exit data is not available.';
-  document.getElementById('cmp-ex-note').innerHTML = `Venture-backed US tech companies that listed from 2024, valued at $2bn or more at the IPO. Multiples are per share: the IPO price and later share prices ÷ the last private round's price per share, or ÷ the last secondary price we found before the IPO. ${src} Secondary prices are indicative and from varied venues; see each row's sources in the Master Excel.`;
+  document.getElementById('cmp-ex-note').innerHTML = `Venture-backed US tech companies that listed from 2024, valued at $2bn or more at the IPO. MOIC is per share: the IPO price and later share prices ÷ the last private round's price per share, or ÷ the last secondary price we found before the IPO. Valuation × is the IPO valuation ÷ a private round's post-money, so it includes shares issued since and is not an investor's return. ${src} Secondary prices are indicative and from varied venues; see each row's sources in the Master Excel.`;
   document.querySelector('#tbl-cmp-exs thead').innerHTML = headHtml([{ l:'Entry point' }, ...EX_POINTS.map(([,l])=>({ l, r:1 })), { l:'Below entry at latest', r:1 }]);
   const exRow = (l, entry) => { const xs = exs.filter(x=>entry(x)!=null);
     return `<tr><td>${l}</td>${EX_POINTS.map(([k])=>`<td class="r num">${medCell(xs.filter(x=>x.after[k]!=null).map(x=>x.after[k]/entry(x)), fx)}</td>`).join('')}<td class="r num">${shareBelow(xs.filter(x=>x.after.now!=null).map(x=>x.after.now/entry(x)), 1)}</td></tr>`; };
   const steps = exs.filter(x=>x.lr?.post && x.ipoValBn).map(x=>x.ipoValBn/x.lr.post), peaks = exs.filter(x=>x.peak?.post && x.ipoValBn).map(x=>x.ipoValBn/x.peak.post);
-  document.querySelector('#tbl-cmp-exs tbody').innerHTML = exs.length ? exRow('Last private round, per share', x=>x.lrP?.pps) + exRow('Last pre-IPO secondary price', x=>x.sec?.price)
-    + `<tr><td>IPO valuation ÷ last round post-money</td><td class="r num">${medCell(steps, fx)}</td><td colspan="${EX_POINTS.length-1}" class="flag">${steps.filter(x=>x<1).length} of ${steps.length} IPOs valued below the last private round</td><td></td></tr>`
-    + `<tr><td>IPO valuation ÷ peak private valuation</td><td class="r num">${medCell(peaks, fx)}</td><td colspan="${EX_POINTS.length-1}" class="flag">${peaks.filter(x=>x<1).length} of ${peaks.length} IPOs valued below the peak private round</td><td></td></tr>`
+  document.querySelector('#tbl-cmp-exs tbody').innerHTML = exs.length ? exRow('MOIC from the last private round, per share', x=>x.lrP?.pps) + exRow('MOIC from the last pre-IPO secondary price', x=>x.sec?.price)
+    + `<tr><td>Valuation ×: IPO valuation ÷ last round post-money</td><td class="r num">${medCell(steps, fx)}</td><td colspan="${EX_POINTS.length-1}" class="flag">${steps.filter(x=>x<1).length} of ${steps.length} IPOs valued below the last private round</td><td></td></tr>`
+    + `<tr><td>Valuation ×: IPO valuation ÷ peak private valuation</td><td class="r num">${medCell(peaks, fx)}</td><td colspan="${EX_POINTS.length-1}" class="flag">${peaks.filter(x=>x<1).length} of ${peaks.length} IPOs valued below the peak private round</td><td></td></tr>`
     : `<tr><td colspan="${EX_POINTS.length+2}" class="empty">No IPO exits in this filter.</td></tr>`;
   const exCols = [
     { l:'Company' }, { l:'Sector' }, { d:'First day of trading.', l:'Listed' },
@@ -1244,9 +1323,9 @@ function drawComps(rs) {
     { d:'Highest post-money valuation of any private round.', l:'Peak private', r:1 },
     { d:'The latest secondary price found before the IPO, with its date and venue. Indicative.', l:'Last secondary' },
     { l:'IPO price', r:1 }, { d:'Valuation at the IPO price, as reported (fully diluted where available).', l:'IPO valuation', r:1 },
-    { d:'IPO valuation ÷ last private round post-money.', l:'IPO ÷ last round', r:1 },
-    ...[['ipo','IPO'],['m12','12m'],['now','Latest']].map(([k,l]) => ({ d:`Price ${l==='IPO'?'at the IPO':l==='Latest'?'today':l+' after listing'} ÷ the last private round's price per share.`, l:`Round → ${l}`, r:1, k })),
-    ...[['ipo','IPO'],['m12','12m'],['now','Latest']].map(([k,l]) => ({ d:`Price ${l==='IPO'?'at the IPO':l==='Latest'?'today':l+' after listing'} ÷ the last pre-IPO secondary price.`, l:`Secondary → ${l}`, r:1, k })),
+    { d:'Valuation ×: IPO valuation ÷ last private round post-money. Includes shares issued since; not an investor\'s return.', l:'Valuation × IPO ÷ last round', r:1 },
+    ...[['ipo','IPO'],['m12','12m'],['now','Latest']].map(([k,l]) => ({ d:`Price ${l==='IPO'?'at the IPO':l==='Latest'?'today':l+' after listing'} ÷ the last private round's price per share.`, l:`MOIC round → ${l}`, r:1, k })),
+    ...[['ipo','IPO'],['m12','12m'],['now','Latest']].map(([k,l]) => ({ d:`Price ${l==='IPO'?'at the IPO':l==='Latest'?'today':l+' after listing'} ÷ the last pre-IPO secondary price.`, l:`MOIC secondary → ${l}`, r:1, k })),
     { l:'Note', cls:'note-cell' },
   ];
   document.querySelector('#tbl-cmp-ex thead').innerHTML = headHtml(exCols);
@@ -1256,31 +1335,31 @@ function drawComps(rs) {
     <td class="r num">${x.peak ? bn(x.peak.post) : NA}</td>
     <td class="wrap">${x.sec ? `${usd(x.sec.price)}<br><span class="flag">${fMon(x.sec.date)} · ${esc(x.sec.venue||'')}</span>` : NA}</td>
     <td class="r num">${usd(x.ipoPrice)}</td><td class="r num">${bn(x.ipoValBn)}</td><td class="r num">${x.lr?.post && x.ipoValBn ? mx(x.ipoValBn/x.lr.post) : NA}</td>
-    ${exCols.filter(k=>k.k).map(k => { const base = k.l.startsWith('Round') ? x.lrP?.pps : x.sec?.price; const v = x.after[k.k]; return `<td class="r num">${base && v!=null ? mx(v/base) : NA}</td>`; }).join('')}
+    ${exCols.filter(k=>k.k).map(k => { const base = k.l.startsWith('MOIC round') ? x.lrP?.pps : x.sec?.price; const v = x.after[k.k]; return `<td class="r num">${base && v!=null ? mx(v/base) : NA}</td>`; }).join('')}
     <td class="note-cell">${esc(x.note||'')}</td></tr>`).join('')
     : `<tr><td colspan="${exCols.length}" class="empty">No IPO exits in this filter.</td></tr>`;
 
-  // Projected multiples.
+  // Projected MOIC.
   const s = al.s;
-  document.getElementById('cmp-fw-note').textContent = `Assumptions, not forecasts. Each bucket's base growth a year — ${LG} ${s.gRate}% over ${s.gYears} years to exit, ${XO} ${s.xRate}% over ${s.xYears} years — with the bear and bull cases ${s.spread} points a year below and above, as on the Allocation tab. Each company uses its investment bucket; Watch companies are shown at the ${LG} assumptions. Compare with the realised multiples above.`;
-  const fwCols = [{ l:'Bucket' }, { l:'Case' }, { l:'Growth a year', r:1 }, ...HORIZONS.map(y=>({ l:`${y} year${y>1?'s':''}`, r:1 })), { d:"Multiple at the bucket's years to exit.", l:'At exit', r:1 }];
+  document.getElementById('cmp-fw-note').textContent = `Assumptions, not forecasts. Each bucket's base growth a year — ${LG} ${s.gRate}% over ${s.gYears} years to exit, ${XO} ${s.xRate}% over ${s.xYears} years — with the bear and bull cases ${s.spread} points a year below and above, as on the Allocation tab. Each company uses its investment bucket; Watch companies are shown at the ${LG} assumptions. Per share, assuming no further dilution. The realised rows below are labelled MOIC or Valuation ×.`;
+  const fwCols = [{ l:'Bucket' }, { l:'Case' }, { l:'Growth a year', r:1 }, ...HORIZONS.map(y=>({ l:`${y} year${y>1?'s':''}`, r:1 })), { d:"Projected MOIC at the bucket's years to exit.", l:'At exit', r:1 }];
   document.querySelector('#tbl-cmp-fw thead').innerHTML = headHtml(fwCols);
   const fx1 = x => x==null || isNaN(x) ? '—' : x.toFixed(1) + '×';
   const ref = (l, xs, f = fx) => `<tr><td colspan="3" class="flag">${l}</td><td colspan="${HORIZONS.length+1}" class="num">${medCell(xs, f)}</td></tr>`;
   document.querySelector('#tbl-cmp-fw tbody').innerHTML = ['G','X'].flatMap(b => ['bear','base','bull'].map(k => { const r = fwRate(s[BUCKETS[b].k.rate], k);
       return `<tr class="${k==='base'?'all':''}"><td>${BUCKETS[b].short}</td><td>${k[0].toUpperCase()+k.slice(1)}</td><td class="r num">${+r.toFixed(1)}%</td>${HORIZONS.map(y=>`<td class="r num">${mx(fwMult(r,y))}</td>`).join('')}<td class="r num">${mx(fwMult(r, s[BUCKETS[b].k.yrs]))} <span class="flag">${s[BUCKETS[b].k.yrs]}y</span></td></tr>`; })).join('')
-    + ref('Realised, all companies: current valuation ÷ private round 1–2 years ago (earliest, ~2 yrs); Crossover expects 1.5–2×', rs.map(RM12).filter(Boolean).map(m=>m.x), fx1)
-    + ref('Realised, secondary-valued only (Secondary): the same, 1–2 years', rs.filter(c=>c.cvSrc==='Secondary').map(RM12).filter(Boolean).map(m=>m.x), fx1)
-    + ref('Realised, all companies: current valuation ÷ private round 2–4 years ago (earliest, ~4 yrs); Private Growth expects 3–5×', rs.map(RM24).filter(Boolean).map(m=>m.x), fx1)
-    + ref('Realised, secondary-valued only (Secondary): the same, 2–4 years', rs.filter(c=>c.cvSrc==='Secondary').map(RM24).filter(Boolean).map(m=>m.x), fx1)
-    + ref('Realised for reference: median 2-year multiple from a priced round', ents.map(e=>e.h[2]).filter(x=>x!=null))
-    + ref('Realised for reference: last private round → 12 months after IPO', exs.filter(x=>x.lrP && x.after.m12!=null).map(x=>x.after.m12/x.lrP.pps));
+    + ref('Valuation ×, realised, all companies: current valuation ÷ private round 1–2 years ago (earliest, ~2 yrs); Crossover expects 1.5–2×', rs.map(RM12).filter(Boolean).map(m=>m.x), fx1)
+    + ref('Valuation ×, realised, secondary-valued only: the same, 1–2 years', rs.filter(c=>c.cvSrc==='Secondary').map(RM12).filter(Boolean).map(m=>m.x), fx1)
+    + ref('Valuation ×, realised, all companies: current valuation ÷ private round 2–4 years ago (earliest, ~4 yrs); Private Growth expects 3–5×', rs.map(RM24).filter(Boolean).map(m=>m.x), fx1)
+    + ref('Valuation ×, realised, secondary-valued only: the same, 2–4 years', rs.filter(c=>c.cvSrc==='Secondary').map(RM24).filter(Boolean).map(m=>m.x), fx1)
+    + ref('MOIC, realised: median 2 years after a priced round', ents.map(e=>e.h[2]).filter(x=>x!=null))
+    + ref('MOIC, realised: last private round → 12 months after IPO, per share', exs.filter(x=>x.lrP && x.after.m12!=null).map(x=>x.after.m12/x.lrP.pps));
   const fw = rs.filter(c=>c.cv!=null).sort((a,b)=>b.cv-a.cv);
   const mx1 = x => x==null || isNaN(x) ? NA : `<span class="${x>=1?'up':'dn'}">${x.toFixed(1)}×</span>`;
   const rmCell = rm => rm ? `${mx1(rm.x)}<br><span class="flag">${esc(rm.round.name)}${rm.round.tender ? ' (tender)' : ''}<br>${fMon(rm.round.date)} · ${bn(rm.round.post)}</span>` : NA;
   const fwcCols = [{ d:DEF.company, l:'Company' }, { l:'Bucket' }, { d:DEF.curVal, l:'Current valuation', r:1 },
-    { d:`Current valuation ÷ the post-money of the private round (priced equity round or company-run tender) that was 1–2 years before the latest price, taking the earliest, the one closest to 2 years ago. Compare with the Crossover bucket: 1–2 years to liquidity, 1.5–2× expected. Blank where there is no valued round in that bracket. Shows the round used.`, l:'Multiple on private round 1–2 yrs ago', r:1 },
-    { d:`Current valuation ÷ the post-money of the private round (priced equity round or company-run tender) that was 2–4 years before the latest price, taking the earliest, the one closest to 4 years ago. Compare with the Private Growth bucket: 2–4 years to liquidity, 3–5× expected. Blank where there is no valued round in that bracket. Shows the round used.`, l:'Multiple on private round 2–4 yrs ago', r:1 }];
+    { d:`Valuation ×, not MOIC: current valuation ÷ the post-money of the private round (priced equity round or company-run tender) that was 1–2 years before the latest price, taking the earliest, the one closest to 2 years ago. Compare with the Crossover bucket: 1–2 years to liquidity, 1.5–2× expected. Blank where there is no valued round in that bracket. Shows the round used.`, l:'Valuation × on private round 1–2 yrs ago', r:1 },
+    { d:`Valuation ×, not MOIC: current valuation ÷ the post-money of the private round (priced equity round or company-run tender) that was 2–4 years before the latest price, taking the earliest, the one closest to 4 years ago. Compare with the Private Growth bucket: 2–4 years to liquidity, 3–5× expected. Blank where there is no valued round in that bracket. Shows the round used.`, l:'Valuation × on private round 2–4 yrs ago', r:1 }];
   document.querySelector('#tbl-cmp-fwc thead').innerHTML = headHtml(fwcCols);
   document.querySelector('#tbl-cmp-fwc tbody').innerHTML = fw.length ? fw.map(c => { const b = bucketOf(c);
     return `<tr data-id="${c.id}"><td class="co">${esc(c.name)}</td><td>${BUCKETS[b].short}</td><td class="r num">${bn(c.cv)}${cvTag(c)}</td><td class="r num rm">${rmCell(RM12(c))}</td><td class="r num rm">${rmCell(RM24(c))}</td></tr>`; }).join('')
@@ -1965,7 +2044,7 @@ function initAlloc() {
 
 // ── render ──
 // ── views: Analytics / Marquee list / Universe / Methodology / Allocation, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','universe','ipo','comps','method','alloc'];
+const VIEWS = ['analytics','marquee','universe','ipo','comps','moic','method','alloc'];
 // The Allocation tab is greyed out and cannot be opened until it is ready; set ALLOC_READY to true (and enable its tab button) to open it.
 const ALLOC_READY = false;
 const OPEN_VIEWS = VIEWS.filter(v => ALLOC_READY || v !== 'alloc');
@@ -1976,7 +2055,7 @@ function setView(v) {
   document.querySelectorAll('.tab-btn').forEach(b => b.setAttribute('aria-selected', b.dataset.view === view));
   document.getElementById('tog-stale').hidden = view !== 'analytics';   // only the analytics statistics use it
   document.getElementById('tog-mq').hidden = view === 'marquee';
-  document.getElementById('tog-grp').hidden = view !== 'comps';
+  document.getElementById('tog-grp').hidden = !['comps','moic'].includes(view);
   document.querySelector('.filters').hidden = view === 'alloc';   // the allocation works on its own selection
   if (location.hash.slice(1) !== view) history.replaceState(null, '', '#'+view);
   tipEl.style.opacity = 0;
@@ -1995,7 +2074,7 @@ function render() {
   if (view === 'marquee') drawMarquee(rs);
   if (view === 'alloc') drawAlloc();
   if (view === 'universe') drawTable(rs);
-  if (view === 'comps') drawComps(rs);
+  if (view === 'comps' || view === 'moic') drawComps(rs);
   if (view === 'method') drawMethod(rs);
   drawDraftBar();
 }
@@ -2023,7 +2102,7 @@ const MASTER_README = [
   ['Marquee list', 'Marquee list · the Marquee rank only (order and membership). Add a row with the company ID to add; delete the row to remove.'],
   ['Watching companies', 'Marquee list → Watching Companies · the watching position (#) only. Add a row with the company ID to add; delete the row to remove.'],
   ['Universe', 'Universe · the company master, grouped by sector as on the page. Edit Company, Liquidity score, prices, Note, Region, and the input columns to the right. Add or remove companies here.'],
-  ['Comparables (read-only)', 'Comparables · trading after a round, multiples from primary rounds, IPO exits and projected multiples, by sector and by valuation band. IPO exits are researched by Claude; ask for changes.'],
+  ['Comparables (read-only)', 'Comparables · Equity comparables (peer table, trading after a round) and Returns (MOIC): MOIC from primary rounds, IPO exits (MOIC per share and valuation ×) and projected MOIC, by sector and by valuation band. IPO exits are researched by Claude; ask for changes.'],
   ['Methodology', 'Methodology · every weight and scoring range. The Methodology page text updates to match.'],
   ['Calibration', 'Methodology → Calibration · Bucket, Category and Reason.'],
   ['Allocation settings', 'Allocation → bucket cards and settings panels · bucket shares, cheque sizes and company counts, fund rules, score tilt, exit cases and entry price.'],
@@ -2210,29 +2289,33 @@ function masterWorkbook() {
   const rdF = HORIZONS.map(y => [`${y} year${y>1?'s':''}`, xs=>xs.map(e=>e.h[y]).filter(x=>x!=null), XZ.mult]).concat([['Latest mark', xs=>xs.map(e=>e.x).filter(x=>x!=null), XZ.mult], ['Annualised', xs=>xs.map(e=>e.irr).filter(x=>x!=null), XZ.pct1]]);
   const fwRows = ['G','X'].flatMap(b => ['bear','base','bull'].map(k => ({ b, k, r:fwRate(al.s[BUCKETS[b].k.rate], k) })));
   const comps = xlBlocks([
+    { title:'Equity comparables — peer table: current valuation vs last round, every company with both', sub:`Premium / discount = current valuation ÷ last-round post-money − 1. Basis: Secondary (average secondary price × shares), PitchBook est. or Reported. Data as of ${QD_ASOF}`, cols:[
+      { h:'Company', v:c=>c.name, w:26 }, { h:'Sector', v:c=>c.sector, w:26 }, { h:'Valuation band', v:c=>c.band, w:14 }, { h:'Last round', v:c=>c.lrName, w:22 }, { h:'Round date', v:c=>c.lrDate },
+      { h:'Months since', v:c=>c.lrAge, z:XZ.s0 }, { h:'Last round valuation', v:c=>c.lrEv, z:XZ.bn }, { h:'Current valuation', v:c=>c.cv, z:XZ.bn }, { h:'Basis', v:c=>c.cvSrc, w:14 },
+      { h:'Premium / discount', v:c=>peerPrem(c), z:XZ.pct0 }, ...VX_YEARS.flatMap(y => [{ h:`Valuation × vs ${y} yrs ago`, v:c=>valX(c,y)?.x, z:XZ.mult }, { h:`${y}-yr reference round`, v:c=>{ const r = valRef(c,y); return r ? `${r.name||'round'} · ${r.date} · $${r.post}bn` : ''; }, w:34 }]) ], rows:peerSet(UNI, 'all').sort((a,b)=>b.cv-a.cv), filter:true },
     ...['sector','band'].map(by => ({ title:`Trading after a funding round — median premium / discount to last round by months since the round, by ${by==='band'?'valuation band (last round post-money)':'sector'}`,
       sub:`Companies with a secondary price and a dated last round, as of ${QD_ASOF}`, cols:[grpCols(by), ...mcols(ageF)], rows:groupsOf(priced, by) })),
-    ...['sector','band'].map(by => ({ title:`Multiples from primary rounds — median multiple of the entry price per share, by ${by==='band'?'valuation band (entry round post-money)':'sector'}`,
+    ...['sector','band'].map(by => ({ title:`MOIC from primary rounds — median MOIC on the entry price per share, by ${by==='band'?'valuation band (entry round post-money)':'sector'}`,
       sub:'Marked at the latest later price on or before each anniversary (later round or tender, IPO price, listed price, or today\'s average secondary price). Marks are not realised sales.', cols:[grpCols(by), ...mcols(rdF)], rows:groupsOf(ENTRIES, by) })),
-    { title:'Multiples from primary rounds — each priced round', cols:[
+    { title:'MOIC from primary rounds — each priced round', cols:[
       { h:'Company', v:e=>e.name, w:24 }, { h:'Listed (ticker)', v:e=>e.exit||'' }, { h:'Sector', v:e=>e.sector, w:26 }, { h:'Round', v:e=>e.round, w:22 }, { h:'Date', v:e=>e.date },
       { h:'Post-money', v:e=>e.post, z:XZ.bn }, { h:'Price per share', v:e=>e.pps, z:XZ.usd }, ...HORIZONS.map(y=>({ h:`${y}y`, v:e=>e.h[y], z:XZ.mult })),
       { h:'Latest mark', v:e=>e.x, z:XZ.mult }, { h:'Latest mark is', v:e=>e.last?.what, w:30 }, { h:'Latest mark date', v:e=>e.last?.date }, { h:'Annualised', v:e=>e.irr, z:XZ.pct1 } ], rows:ENTRIES, filter:true },
-    { title:'IPO exits — median multiple per share, by entry point and time after listing', sub:window.EXITS ? `Private data researched ${window.EXITS.researched}; listed prices ${window.EXITS.priceSource} to ${window.EXITS.pricesAsOf}` : 'No IPO exit data',
+    { title:'IPO exits — median MOIC per share, by entry point and time after listing', sub:window.EXITS ? `Private data researched ${window.EXITS.researched}; listed prices ${window.EXITS.priceSource} to ${window.EXITS.pricesAsOf}` : 'No IPO exit data',
       cols:[{ h:'Entry point', v:([l])=>l, w:30 }, ...EX_POINTS.flatMap(([k,l]) => { const f = ([,en]) => EXITS.filter(x=>en(x) && x.after[k]!=null).map(x=>x.after[k]/en(x));
         return [{ h:l, v:r=>med(f(r)), z:XZ.mult }, { h:`${l} (n)`, v:r=>f(r).length }]; })],
-      rows:[['Last private round, per share', x=>x.lrP?.pps], ['Last pre-IPO secondary price', x=>x.sec?.price]] },
+      rows:[['MOIC from the last private round, per share', x=>x.lrP?.pps], ['MOIC from the last pre-IPO secondary price', x=>x.sec?.price]] },
     { title:'IPO exits — each company', cols:[
       { h:'Company', v:x=>x.name, w:24 }, { h:'Ticker', v:x=>x.ticker }, { h:'Exchange', v:x=>x.exchange }, { h:'Sector', v:x=>x.sector, w:26 }, { h:'Listed', v:x=>x.ipoDate },
       { h:'Last private round', v:x=>x.lr?.name, w:22 }, { h:'Last round date', v:x=>x.lr?.date }, { h:'Last round post-money', v:x=>x.lr?.post, z:XZ.bn }, { h:'Last round price per share', v:x=>x.lrP?.pps, z:XZ.usd },
       { h:'Price per share basis', v:x=>x.lrP ? `${x.lrP.ppsBasis||''}${x.lrP.ppsIssue!=null ? `; effective cost after IPO ratchet, issued at $${x.lrP.ppsIssue}` : ''}${x.lrP!==x.lr ? ` (${x.lrP.name})` : ''}` : '' },
       { h:'Peak private valuation', v:x=>x.peak?.post, z:XZ.bn }, { h:'Last secondary price', v:x=>x.sec?.price, z:XZ.usd }, { h:'Secondary date', v:x=>x.sec?.date }, { h:'Secondary venue', v:x=>x.sec?.venue, w:20 },
-      { h:'IPO price', v:x=>x.ipoPrice, z:XZ.usd }, { h:'IPO valuation', v:x=>x.ipoValBn, z:XZ.bn }, { h:'IPO valuation basis', v:x=>x.ipoValBasis, w:20 }, { h:'IPO ÷ last round', v:x=>x.lr?.post && x.ipoValBn ? x.ipoValBn/x.lr.post : null, z:XZ.mult },
-      ...EX_POINTS.map(([k,l]) => ({ h:`Round → ${l}`, v:x=>x.lrP && x.after[k]!=null ? x.after[k]/x.lrP.pps : null, z:XZ.mult })),
-      ...EX_POINTS.map(([k,l]) => ({ h:`Secondary → ${l}`, v:x=>x.sec && x.after[k]!=null ? x.after[k]/x.sec.price : null, z:XZ.mult })),
+      { h:'IPO price', v:x=>x.ipoPrice, z:XZ.usd }, { h:'IPO valuation', v:x=>x.ipoValBn, z:XZ.bn }, { h:'IPO valuation basis', v:x=>x.ipoValBasis, w:20 }, { h:'Valuation × IPO ÷ last round', v:x=>x.lr?.post && x.ipoValBn ? x.ipoValBn/x.lr.post : null, z:XZ.mult },
+      ...EX_POINTS.map(([k,l]) => ({ h:`MOIC round → ${l}`, v:x=>x.lrP && x.after[k]!=null ? x.after[k]/x.lrP.pps : null, z:XZ.mult })),
+      ...EX_POINTS.map(([k,l]) => ({ h:`MOIC secondary → ${l}`, v:x=>x.sec && x.after[k]!=null ? x.after[k]/x.sec.price : null, z:XZ.mult })),
       { h:'Splits', v:x=>x.splits, w:40 }, { h:'Note', v:x=>x.note, w:50 },
       { h:'Sources', v:x=>[...new Set([...[x.ipoSrc, x.ipoValSrc].flat().filter(Boolean),...(x.rounds||[]).flatMap(r=>r.src||[]), ...(x.secondary||[]).flatMap(s=>s.src||[])])].join('\n'), w:50 } ], rows:EXITS, filter:true },
-    { title:'Projected multiples of today\'s price — Allocation tab assumptions', sub:'Assumptions, not forecasts', cols:[
+    { title:'Projected MOIC on today\'s price — Allocation tab assumptions', sub:'Assumptions, not forecasts', cols:[
       { h:'Bucket', v:r=>BUCKETS[r.b].short }, { h:'Case', v:r=>r.k }, { h:'Growth a year', v:r=>r.r, z:XZ.pctn },
       ...HORIZONS.map(y=>({ h:`${y} year${y>1?'s':''}`, v:r=>fwMult(r.r, y), z:XZ.mult })), { h:'Years to exit', v:r=>al.s[BUCKETS[r.b].k.yrs] }, { h:'At exit', v:r=>fwMult(r.r, al.s[BUCKETS[r.b].k.yrs]), z:XZ.mult } ], rows:fwRows },
   ]);
