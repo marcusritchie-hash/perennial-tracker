@@ -7,17 +7,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261019162051"></script>
-<script src="quant-rounds.js?v=20261019162051" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261019162051" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261019162051" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261019162051" onerror="window.EXITS=null"></script>
-<script src="edgar-filings.js?v=20261019162051" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261019162051" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261019162051" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261019162051" onerror="window.PB={}"></script>
-<script src="method-config.js?v=20261019162051" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261019162051" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261019164637"></script>
+<script src="quant-rounds.js?v=20261019164637" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261019164637" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261019164637" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261019164637" onerror="window.EXITS=null"></script>
+<script src="edgar-filings.js?v=20261019164637" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261019164637" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261019164637" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261019164637" onerror="window.PB={}"></script>
+<script src="method-config.js?v=20261019164637" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261019164637" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -753,6 +753,18 @@ for (const c of UNI) {
   c.news = window.IPO_NEWS?.[c.id] || null;
   if (c.news && !c.ipo) c.ipo = { status:'Confidentially filed', updated:c.news.filed.slice(0,7), val:null };
   else if (c.news?.setDate && c.ipo) c.ipo = { ...c.ipo, updated:c.news.filed.slice(0,7) };
+  // SEC EDGAR (edgar-filings.js): a registration filing in the last 12 months with no final prospectus yet adds a company to the pipeline,
+  // or moves a "Reported" company up. Public S-1 beats a confidential draft.
+  const ed = window.EDGAR?.[c.id];
+  if (ed && !ed['424B4']) {
+    const cut = new Date(ASOF); cut.setFullYear(cut.getFullYear() - 1);
+    const latest = ['DRS','DRS/A','S-1','S-1/A'].map(f=>ed[f]?.last).filter(Boolean).sort().pop();
+    if (latest && new Date(latest+'T00:00:00') >= cut) {
+      const st = ed['S-1'] ? 'S-1 publicly filed' : 'Confidentially filed';
+      if (!c.ipo) c.ipo = { status:st, updated:latest.slice(0,7), val:null };
+      else if (c.ipo.status==='Reported' || (st==='S-1 publicly filed' && c.ipo.status==='Confidentially filed')) c.ipo = { ...c.ipo, status:st, updated:latest.slice(0,7) };
+    }
+  }
   // Researched funding history (quant-rounds.js) supersedes the workbook's last round.
   const qrRounds = [...(window.QR?.[c.id]?.rounds || [])].sort((a,b)=>a.date.localeCompare(b.date));
   const lastEq = qrRounds.filter(r=>r.type==='Equity' && r.post!=null).pop();

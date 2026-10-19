@@ -1,0 +1,16 @@
+id,reason
+factorial,EDGAR "Factorial Inc." is the EV battery maker Factorial Energy, not the Barcelona HR software company
+vng,DRS from 2022 only; stale
+exa,EDGAR "EXA CORP" S-1 2011 is an unrelated older company
+antares,EDGAR "ANTARES CORP." S-1 2023 is an unrelated older company
+axiom,EDGAR "AXIOM CORP." S-1 2013 is an unrelated older company
+volta,EDGAR "Volta Inc." 2020 is the EV charging company, not the London AI compute firm
+alzheon,S-1 from 2018 only; stale
+eve,EDGAR "Eve Holding" 2020 is Embraer's eVTOL unit, not Eve (San Mateo)
+enable,EDGAR "Enable Holdings" 2006 is an unrelated older company
+hydrolix,EDGAR "Hydrolix Inc." S-1 2015 is an unrelated older company
+forterra,EDGAR "Forterra Inc." 2016 is the pipe maker, not the autonomy company
+jasolar,EDGAR JA Solar Holdings is the listed Chinese solar group; the PitchBook entity is a private subsidiary
+glow,"EDGAR ""Glow Holdings"" S-1 Sep 2026 is unverified as the Palo Alto security company; confirm before including"
+redaptive,S-1 2021-22 only; stale
+turo,S-1 2022-2024 only; stale (withdrawn)
