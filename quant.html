@@ -7,17 +7,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261019170004"></script>
-<script src="quant-rounds.js?v=20261019170004" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261019170004" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261019170004" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261019170004" onerror="window.EXITS=null"></script>
-<script src="edgar-filings.js?v=20261019170004" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261019170004" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261019170004" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261019170004" onerror="window.PB={}"></script>
-<script src="method-config.js?v=20261019170004" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261019170004" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261019172708"></script>
+<script src="quant-rounds.js?v=20261019172708" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261019172708" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261019172708" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261019172708" onerror="window.EXITS=null"></script>
+<script src="edgar-filings.js?v=20261019172708" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261019172708" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261019172708" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261019172708" onerror="window.PB={}"></script>
+<script src="method-config.js?v=20261019172708" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261019172708" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -747,6 +747,8 @@ const esc = s => String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>
 const cleanName = n => n.replace(/\s*\((?:private|EU roots)\)\s*$/i,'');
 
 // ── derived metrics ──
+const CV_TIP = { 'Secondary':'Average secondary price across venues × shares outstanding', 'PitchBook est.':'PitchBook\'s valuation estimate (no secondary valuation or other reported valuation)', 'Reported':'Most recent reported valuation from the workbook (no secondary price or share count)' };
+const cvTag = c => c.cvSrc ? ` <span class="flag" title="${esc(CV_TIP[c.cvSrc])}">${c.cvSrc==='PitchBook est.' ? 'PB est.' : c.cvSrc}</span>` : '';
 const PB_PRIMARY = ['Later Stage VC','Early Stage VC','PE Growth/Expansion','Seed Round','Corporate'];   // PitchBook valuation deal types that are a primary round
 const IPO_SHORT = { 'S-1 publicly filed':'S-1 public', 'Confidentially filed':'Confidential filing', 'Reported':'Plans reported' };
 for (const c of UNI) {
@@ -793,6 +795,9 @@ for (const c of UNI) {
   // PitchBook facts (pitchbook-data.js). Where a company has no valuation at all, use PitchBook's valuation estimate.
   c.curValPB = c.curValSrc === 'pitchbook';
   if (c.impl==null && c.curVal==null && !hadLrEv && c.pb?.est!=null) { c.curVal = c.pb.est; c.curValPB = true; }
+  // Current valuation and where it comes from: Secondary (average secondary price × shares), PitchBook est., or Reported (workbook).
+  c.cv = c.impl ?? c.curVal;
+  c.cvSrc = c.impl!=null ? 'Secondary' : c.cv==null ? null : c.curValPB ? 'PitchBook est.' : 'Reported';
   c.lrAge = c.lrDate ? (ASOF - new Date(c.lrDate+'T00:00:00'))/(864e5*30.44) : null;
   c.stale = c.lrAge==null || c.lrAge > STALE_MONTHS;
   c.spread = isUsd && !c.listed && ps.length>=2 ? (Math.max(...ps)-Math.min(...ps))/c.bl : null;
@@ -989,7 +994,7 @@ const DEF = {
   tier: 'Investment bucket confirmed by the investment team: Late Growth (exit defined, 2–4 years to liquidity), Crossover / Pre-IPO (clear liquidity event within 1–2 years) or Watch (monitored, not held). See the Methodology tab.',
   liqWb: "Perennial's liquidity score (0–100): observed secondary pricing (45 pts), trading attention on venue rankings (35 pts) and company scale (20 pts).",
   lrEv: 'Post-money valuation of the last primary round, in US$ billions. "tender" marks a company-run tender used instead because the last round is over 18 months old.',
-  curVal: 'Average secondary price across venues × shares outstanding, in US$ billions. Where there is no secondary price, the most recent reported valuation.',
+  curVal: 'Current valuation in US$ billions, labelled by source. Secondary: average secondary price across venues × shares outstanding. Reported: the most recent reported valuation, where there is no secondary price and share count. PB est.: PitchBook\'s valuation estimate, where the company has no other valuation.',
   venue: v => `Latest indicative price per share on ${v}. Indicative prices are not executed trades.`,
   ipo: 'IPO filing status: S-1 public, confidential filing, or IPO plans reported. The grey text is the last update or target listing year.',
 };
@@ -1001,7 +1006,7 @@ const COLS = [
   { d:DEF.tier, l:'Bucket', cls:'wrap', f:c=>esc(c.tier) },
   { d:DEF.liqWb, l:'Liquidity score', r:1, f:c=>c.liq==null ? NA : c.liq.toFixed(1) },
   { d:DEF.lrEv, l:'Last round EV', r:1, f:c=>c.lrEv==null ? NA : bn(c.lrEv) + (c.lrTender ? ' <span class="flag" title="Company-run tender offer; last primary round is over 18 months old">tender</span>' : '') + (c.lrPB ? ' <span class="flag" title="From PitchBook (last known valuation)">PB</span>' : '') },
-  { d:DEF.curVal + ' "PB est." marks PitchBook\'s valuation estimate, used where the company has no other valuation.', l:'Current valuation', r:1, f:c=>{ const v = c.impl ?? c.curVal; return v==null ? NA : bn(v) + (c.impl==null && c.curValPB ? ' <span class="flag" title="PitchBook valuation estimate">PB est.</span>' : ''); } },
+  { d:DEF.curVal, l:'Current valuation', r:1, f:c=>c.cv==null ? NA : bn(c.cv) + cvTag(c) },
   { d:DEF.venue('Clarity (formerly Hiive)'), l:'Clarity', r:1, f:c=>c.px.c==null ? NA : ccySym(c)+c.px.c.toFixed(2) },
   { d:DEF.venue('Augment (data by Caplight)'), l:'Augment', r:1, f:c=>c.px.a==null ? NA : usd(c.px.a) },
   { d:DEF.venue('Forge'), l:'Forge', r:1, f:c=>c.px.f==null ? NA : usd(c.px.f) },
@@ -1140,13 +1145,13 @@ const fwMult = (rate, y) => Math.pow(1 + rate/100, y);
 // the private round that was lo–hi years before the latest price, taking the one closest to the far end (hi), i.e. the earliest in the bracket.
 // Private rounds are priced equity rounds and company-run tender offers with a post-money valuation (the Allocation buckets' time frames to liquidity).
 function roundMultiple(c, lo, hi) {
-  if (c.impl==null) return null;
+  if (c.cv==null) return null;
   const rounds = (window.QR?.[c.id]?.rounds||[]).filter(r=>(r.type==='Equity' || (r.type==='Tender' && r.companyRun!==false)) && r.post!=null && r.date)
     .map(r=>({ date:r.date, post:r.post, name:r.name, tender:r.type==='Tender' }));
   if (c.lrDate && c.lrEv!=null && !c.lrTender && !rounds.some(r=>r.date===c.lrDate)) rounds.push({ date:c.lrDate, post:c.lrEv, name:c.lrName||'Last round' });
   let best = null;
   for (const r of rounds) { const y = yrsBetween(r.date, QD_ASOF); if (y<lo || y>hi) continue; const d = hi - y; if (!best || d<best.d) best = { ...r, d }; }
-  return best ? { x:c.impl/best.post, round:best } : null;
+  return best ? { x:c.cv/best.post, round:best } : null;
 }
 const RM12 = c => roundMultiple(c, 1, 2), RM24 = c => roundMultiple(c, 2, 4);
 
@@ -1260,24 +1265,25 @@ function drawComps(rs) {
   document.getElementById('cmp-fw-note').textContent = `Assumptions, not forecasts. Each bucket's base growth a year — ${LG} ${s.gRate}% over ${s.gYears} years to exit, ${XO} ${s.xRate}% over ${s.xYears} years — with the bear and bull cases ${s.spread} points a year below and above, as on the Allocation tab. Each company uses its investment bucket; Watch companies are shown at the ${LG} assumptions. Compare with the realised multiples above.`;
   const fwCols = [{ l:'Bucket' }, { l:'Case' }, { l:'Growth a year', r:1 }, ...HORIZONS.map(y=>({ l:`${y} year${y>1?'s':''}`, r:1 })), { d:"Multiple at the bucket's years to exit.", l:'At exit', r:1 }];
   document.querySelector('#tbl-cmp-fw thead').innerHTML = headHtml(fwCols);
-  const ref = (l, xs) => `<tr><td colspan="3" class="flag">${l}</td><td colspan="${HORIZONS.length+1}" class="num">${medCell(xs, fx)}</td></tr>`;
+  const fx1 = x => x==null || isNaN(x) ? '—' : x.toFixed(1) + '×';
+  const ref = (l, xs, f = fx) => `<tr><td colspan="3" class="flag">${l}</td><td colspan="${HORIZONS.length+1}" class="num">${medCell(xs, f)}</td></tr>`;
   document.querySelector('#tbl-cmp-fw tbody').innerHTML = ['G','X'].flatMap(b => ['bear','base','bull'].map(k => { const r = fwRate(s[BUCKETS[b].k.rate], k);
       return `<tr class="${k==='base'?'all':''}"><td>${BUCKETS[b].short}</td><td>${k[0].toUpperCase()+k.slice(1)}</td><td class="r num">${+r.toFixed(1)}%</td>${HORIZONS.map(y=>`<td class="r num">${mx(fwMult(r,y))}</td>`).join('')}<td class="r num">${mx(fwMult(r, s[BUCKETS[b].k.yrs]))} <span class="flag">${s[BUCKETS[b].k.yrs]}y</span></td></tr>`; })).join('')
-    + ref('Realised: current valuation ÷ private round 1–2 years ago (earliest, ~2 yrs); Crossover expects 1.5–2×', rs.map(RM12).filter(Boolean).map(m=>m.x))
-    + ref('Realised: current valuation ÷ private round 2–4 years ago (earliest, ~4 yrs); Private Growth expects 3–5×', rs.map(RM24).filter(Boolean).map(m=>m.x))
+    + ref('Realised, all companies: current valuation ÷ private round 1–2 years ago (earliest, ~2 yrs); Crossover expects 1.5–2×', rs.map(RM12).filter(Boolean).map(m=>m.x), fx1)
+    + ref('Realised, secondary-valued only (Secondary): the same, 1–2 years', rs.filter(c=>c.cvSrc==='Secondary').map(RM12).filter(Boolean).map(m=>m.x), fx1)
+    + ref('Realised, all companies: current valuation ÷ private round 2–4 years ago (earliest, ~4 yrs); Private Growth expects 3–5×', rs.map(RM24).filter(Boolean).map(m=>m.x), fx1)
+    + ref('Realised, secondary-valued only (Secondary): the same, 2–4 years', rs.filter(c=>c.cvSrc==='Secondary').map(RM24).filter(Boolean).map(m=>m.x), fx1)
     + ref('Realised for reference: median 2-year multiple from a priced round', ents.map(e=>e.h[2]).filter(x=>x!=null))
     + ref('Realised for reference: last private round → 12 months after IPO', exs.filter(x=>x.lrP && x.after.m12!=null).map(x=>x.after.m12/x.lrP.pps));
-  const fw = rs.filter(c=>c.impl!=null).sort((a,b)=>b.impl-a.impl);
-  const rmCell = rm => rm ? `${mx(rm.x)}<br><span class="flag">${esc(rm.round.name)}${rm.round.tender ? ' (tender)' : ''}<br>${fMon(rm.round.date)} · ${bn(rm.round.post)}</span>` : NA;
+  const fw = rs.filter(c=>c.cv!=null).sort((a,b)=>b.cv-a.cv);
+  const mx1 = x => x==null || isNaN(x) ? NA : `<span class="${x>=1?'up':'dn'}">${x.toFixed(1)}×</span>`;
+  const rmCell = rm => rm ? `${mx1(rm.x)}<br><span class="flag">${esc(rm.round.name)}${rm.round.tender ? ' (tender)' : ''}<br>${fMon(rm.round.date)} · ${bn(rm.round.post)}</span>` : NA;
   const fwcCols = [{ d:DEF.company, l:'Company' }, { l:'Bucket' }, { d:DEF.curVal, l:'Current valuation', r:1 },
     { d:`Current valuation ÷ the post-money of the private round (priced equity round or company-run tender) that was 1–2 years before the latest price, taking the earliest, the one closest to 2 years ago. Compare with the Crossover bucket: 1–2 years to liquidity, 1.5–2× expected. Blank where there is no valued round in that bracket. Shows the round used.`, l:'Multiple on private round 1–2 yrs ago', r:1 },
-    { d:`Current valuation ÷ the post-money of the private round (priced equity round or company-run tender) that was 2–4 years before the latest price, taking the earliest, the one closest to 4 years ago. Compare with the Private Growth bucket: 2–4 years to liquidity, 3–5× expected. Blank where there is no valued round in that bracket. Shows the round used.`, l:'Multiple on private round 2–4 yrs ago', r:1 },
-    { d:'Base growth a year: the company\'s own where set on the Allocation tab, otherwise its bucket\'s.', l:'Base growth', r:1 },
-    { l:'Years to exit', r:1 }, { l:'Bear', r:1 }, { l:'Base', r:1 }, { l:'Bull', r:1 }, { d:'Current valuation × the base multiple.', l:'Base exit valuation', r:1 }];
+    { d:`Current valuation ÷ the post-money of the private round (priced equity round or company-run tender) that was 2–4 years before the latest price, taking the earliest, the one closest to 4 years ago. Compare with the Private Growth bucket: 2–4 years to liquidity, 3–5× expected. Blank where there is no valued round in that bracket. Shows the round used.`, l:'Multiple on private round 2–4 yrs ago', r:1 }];
   document.querySelector('#tbl-cmp-fwc thead').innerHTML = headHtml(fwcCols);
-  document.querySelector('#tbl-cmp-fwc tbody').innerHTML = fw.length ? fw.map(c => { const b = bucketOf(c), g = growthOf(c, s, b), y = s[BUCKETS[b].k.yrs], m = k => fwMult(fwRate(g, k), y);
-    return `<tr data-id="${c.id}"><td class="co">${esc(c.name)}</td><td>${BUCKETS[b].short}</td><td class="r num">${bn(c.impl)}</td><td class="r num rm">${rmCell(RM12(c))}</td><td class="r num rm">${rmCell(RM24(c))}</td><td class="r num">${+g.toFixed(1)}%</td><td class="r num">${y}</td>
-      <td class="r num">${mx(m('bear'))}</td><td class="r num">${mx(m('base'))}</td><td class="r num">${mx(m('bull'))}</td><td class="r num">${bn(c.impl*m('base'))}</td></tr>`; }).join('')
+  document.querySelector('#tbl-cmp-fwc tbody').innerHTML = fw.length ? fw.map(c => { const b = bucketOf(c);
+    return `<tr data-id="${c.id}"><td class="co">${esc(c.name)}</td><td>${BUCKETS[b].short}</td><td class="r num">${bn(c.cv)}${cvTag(c)}</td><td class="r num rm">${rmCell(RM12(c))}</td><td class="r num rm">${rmCell(RM24(c))}</td></tr>`; }).join('')
     : `<tr><td colspan="${fwcCols.length}" class="empty">No priced companies in this filter.</td></tr>`;
 }
 
@@ -1298,7 +1304,7 @@ function drawIpo(rs) {
     { d:'Date the confidential filing was made or announced, the regulator it went to (SEC or SEBI), and the confirming sources. Only filings confirmed by two or more independent sources are listed (ipo-news.js).', l:'Filing reported', cls:'wrap', f:c=>c.news ? `${fDate(c.news.filed)} · ${esc(c.news.venue)}<br><span class="sub">${c.news.src.map(s=>`<a href="${esc(s.u)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(s.n)}</a>`).join(' · ')}</span>` : NA },
     { d:'Listing year the company has stated, where it has given one.', l:'Target listing', f:c=>c.ipo.target ? esc(c.ipo.target) : NA },
     { d:'Most recent valuation, from the latest round or secondary pricing, in US$ billions.', l:'Recent valuation', r:1, f:c=>bn(c.ipo.val) },
-    { d:DEF.curVal, l:'Implied valuation', r:1, f:c=>c.impl==null ? NA : bn(c.impl) },
+    { d:DEF.curVal, l:'Current valuation', r:1, f:c=>c.cv==null ? NA : bn(c.cv) + cvTag(c) },
     { d:DEF.tier, l:'Bucket', cls:'wrap', f:c=>esc(c.tier) },
     { l:'Sector', f:c=>esc(c.sector) },
   ];
@@ -1336,6 +1342,7 @@ function openDetail(c) {
   const facts = [
     [c.lrTender ? 'Last valuation (tender)' : 'Last round', c.lrName ? `${esc(c.lrName)}` : '—', c.lrDate?fDate(c.lrDate):'date not reported'],
     [c.lrTender ? 'Tender valuation' : 'Last-round valuation', bn(c.lrEv), c.lrTender ? 'company-run tender' : 'post-money'],
+    ['Current valuation', bn(c.cv), c.cvSrc ? esc(CV_TIP[c.cvSrc]) : 'none available'],
     ['Implied valuation', bn(c.impl), c.shares?`${(c.shares/1e6).toFixed(0)}M shares est.`:'share count unknown'],
     [c.lrTender ? 'vs last tender' : 'vs last round', pct(c.prem), c.prem!=null&&c.stale?'stale round':''],
     ['Clarity', c.px.c==null?'—':(c.ccy==='EUR'?'€':c.ccy==='GBP'?'£':'$')+c.px.c.toFixed(2), c.ctype||''],
@@ -2097,7 +2104,8 @@ const XC = {
   tier: { h:'Bucket', v:c=>c.tier, w:20, d:DEF.tier + ' Edit in the Calibration sheet.' },
   liq: { h:'Liquidity score', v:c=>c.base.liq, z:XZ.s1, d:DEF.liqWb },
   lrEv: { h:'Last round EV', v:c=>c.lrEv, z:XZ.bn, d:DEF.lrEv + ' Shows the page value: a researched funding history or a company tender takes precedence over the input column.' },
-  curVal: { h:'Current valuation', v:c=>c.impl ?? c.curVal, z:XZ.bn, d:DEF.curVal },
+  curVal: { h:'Current valuation', v:c=>c.cv, z:XZ.bn, d:DEF.curVal },
+  cvBasis: { h:'Current valuation basis', v:c=>c.cvSrc, w:16, d:'Where the current valuation comes from: Secondary (average secondary price × shares), Reported (workbook) or PitchBook est.' },
   clarity: { h:'Clarity', v:c=>c.base.px.c, z:pxZ, d:DEF.venue('Clarity (formerly Hiive)') },
   augment: { h:'Augment', v:c=>c.base.px.a, z:XZ.usd, d:DEF.venue('Augment (data by Caplight)') },
   forge: { h:'Forge', v:c=>c.base.px.f, z:XZ.usd, d:DEF.venue('Forge') },
@@ -2146,14 +2154,14 @@ function masterWorkbook() {
     { h:'Last filing update', e:true, v:c=>c.ipo.updated, d:'Month of the latest filing or report, as YYYY-MM.' },
     { h:'Target listing', e:true, v:c=>c.ipo.target, d:'Listing year the company has stated, where it has given one.' },
     { h:'Recent valuation', e:true, v:c=>c.ipo.val, z:XZ.bn, d:'Most recent valuation, from the latest round or secondary pricing, in US$ billions.' },
-    { h:'Implied valuation', e:false, v:c=>c.impl, z:XZ.bn, d:DEF.curVal },
+    { h:'Current valuation', e:false, v:c=>c.cv, z:XZ.bn, d:DEF.curVal }, { h:'Current valuation basis', e:false, v:c=>c.cvSrc, w:16, d:'Secondary, Reported or PitchBook est.' },
     ed(XC.tier, false), { h:'Sector', e:false, v:c=>c.sector, w:26 }, ed(XC.id, true),
   ], ipoRows);
 
   // Marquee list, as on the page; only the rank is edited here.
   const marquee = xlTable([
     { h:'Marquee rank', e:true, v:c=>c.mq, z:XZ.int, d:'Position on the Marquee Access Fund list. Delete the row to take a company off; add a row with its ID to add one.' },
-    ...[XC.rank, XC.company, XC.sector, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.region].map(k => ed(k, false)),
+    ...[XC.rank, XC.company, XC.sector, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.cvBasis, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.region].map(k => ed(k, false)),
     ed(XC.id, true),
   ], UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq));
 
@@ -2161,7 +2169,7 @@ function masterWorkbook() {
   const watching = xlTable([
     { h:'#', e:true, v:c=>c.wl, z:XZ.int, d:'Position on the watching list. Delete the row to take a company off; add a row with its ID to add one.' },
     { h:'Marquee rank', e:false, v:c=>c.mq, z:XZ.int, d:'Marquee rank, where the company is already on the Marquee list. Edit in the Marquee list sheet.' },
-    ...[XC.rank, XC.company, XC.sector, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.region].map(k => ed(k, false)),
+    ...[XC.rank, XC.company, XC.sector, XC.tier, XC.liq, XC.srank, XC.lrEv, XC.curVal, XC.cvBasis, XC.clarity, XC.augment, XC.forge, XC.ipo, XC.note, XC.region].map(k => ed(k, false)),
     ed(XC.id, true),
   ], UNI.filter(c=>c.wl).sort((a,b)=>a.wl-b.wl));
 
@@ -2173,7 +2181,7 @@ function masterWorkbook() {
     ed(XC.sector, true), ed(XC.srank, false), ed(XC.rank, false),
     { h:'Marquee list', e:false, v:c=>c.mq ? 'Yes' : '', d:'Yes if the company is on the Marquee list. Edit in the Marquee list sheet.' },
     ed(XC.company, true), ed(XC.tier, false), ed(XC.liq, true),
-    ed(XC.lrEv, false), ed(XC.curVal, false), ed(XC.clarity, true), ed(XC.augment, true), ed(XC.forge, true),
+    ed(XC.lrEv, false), ed(XC.curVal, false), ed(XC.cvBasis, false), ed(XC.clarity, true), ed(XC.augment, true), ed(XC.forge, true),
     ed(XC.ipo, false), ed(XC.note, true), ed(XC.region, true),
     ed(XC.id, true),
     { h:'Action', e:true, v:()=>null, d:'Enter Remove (and an Action reason) to drop the company.' },
