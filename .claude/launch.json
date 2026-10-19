@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "tracker",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": ["-NoProfile", "-File", "C:\\Users\\IXT001\\AppData\\Local\\Temp\\claude\\C--Users-IXT001-AppData-Roaming-Claude-scratch-workspaces-ad2d70de-1ed0-434b-ab5e-0139f86117ff-d0ada477-0257-429b-8c96-ed358e298d71-scratch-2026-10-19-4d7a87\\211a5435-5f7f-4d56-99c1-7fad18d407e0\\scratchpad\\serve.ps1"],
+      "port": 8080
+    }
+  ]
+}
