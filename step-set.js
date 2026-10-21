@@ -11,7 +11,6 @@ window.STEP = {
   "include": ["figureai", "mistralai", "fluidstack", "baseten", "saronic"],
   "exclude": [],
   "bucket": {
-    "databricks": "Crossover / Pre-IPO", "stripe": "Crossover / Pre-IPO", "bytedance": "Crossover / Pre-IPO", "anduril": "Crossover / Pre-IPO", "moonshotai": "Crossover / Pre-IPO",
     "fluidstack": "Late Growth"
   },
   "rule": { "openai": "primary" },

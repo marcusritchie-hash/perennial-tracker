@@ -8,5 +8,7 @@ window.TIER_OVR = {
   "clickhouse": {"tier":"Late Growth","category":"Other","reason":"Placed in Late Growth by the investment team: $15bn Series D led by Dragoneer (Jan 2026).","date":"2026-10-19"},
   "machindustries": {"tier":"Late Growth","category":"Data gap","reason":"Placed in Late Growth: rapid valuation growth ($0.3bn to $3.7bn since 2023) backed by Sequoia, Bedrock and Ribbit; not yet traded on secondary venues.","date":"2026-10-19"},
   "tether":{"tier":"Late Growth","category":"Other","reason":"Placed in Late Growth by the investment team.","date":"2026-10-19"},
+  "moonshotai": {"tier":"Crossover / Pre-IPO","category":"Other","reason":"Placed in Crossover / Pre-IPO by the investment team: going to IPO (PitchBook status: In IPO Registration).","date":"2026-10-22"},
+  "databricks": {"tier":"Crossover / Pre-IPO","category":"Other","reason":"Placed in Crossover / Pre-IPO by the investment team: IPO expected.","date":"2026-10-22"},
   "groq": {"tier":"Watch","category":"Other","reason":"Moved to Watch: after the Dec 2025 NVIDIA licence its leaders left and shareholders were paid out; the remaining inference-cloud business was revalued at $3.5bn (Aug 2026). Monitored until it re-prices.","date":"2026-10-14"}
 };
