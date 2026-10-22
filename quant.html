@@ -7,20 +7,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261022102956"></script>
-<script src="quant-rounds.js?v=20261022102956" onerror="window.QR=null"></script>
-<script src="tier-overrides.js?v=20261022102956" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261022102956" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261022102956" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261022102956" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261022102956" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261022102956" onerror="window.STEP=null"></script>
-<script src="edgar-filings.js?v=20261022102956" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261022102956" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261022102956" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261022102956" onerror="window.PB={}"></script>
-<script src="method-config.js?v=20261022102956" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261022102956" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261022113850"></script>
+<script src="quant-rounds.js?v=20261022113850" onerror="window.QR=null"></script>
+<script src="tier-overrides.js?v=20261022113850" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261022113850" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261022113850" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261022113850" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261022113850" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261022113850" onerror="window.STEP=null"></script>
+<script src="augment-list.js?v=20261022113850" onerror="window.AUGMENT=null"></script>
+<script src="edgar-filings.js?v=20261022113850" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261022113850" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261022113850" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261022113850" onerror="window.PB={}"></script>
+<script src="method-config.js?v=20261022113850" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261022113850" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -936,6 +937,10 @@ const fMon = d => new Date(d+'T00:00:00').toLocaleDateString('en-AU',{month:'sho
 const esc = s => String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cleanName = n => n.replace(/\s*\((?:private|EU roots)\)\s*$/i,'');
 
+// Augment explore list (augment-list.js): a share count can be derived as valuation / price for companies it shows.
+const augNorm = s => String(s||'').toLowerCase().replace(/[^a-z0-9]/g, '');
+const AUG = new Map((window.AUGMENT?.rows || []).map(r => [augNorm(r[0]), r]));
+const augRow = c => { const n = augNorm(c.name); return AUG.get(n) || AUG.get(augNorm(window.AUGMENT?.aliases?.[n])) || null; };
 // ── derived metrics ──
 const CV_TIP = { 'Secondary':'Average secondary price across venues × shares outstanding', 'PitchBook est.':'PitchBook\'s valuation estimate (no secondary valuation or other reported valuation)', 'Reported':'Most recent reported valuation from the workbook (no secondary price or share count)' };
 const cvTag = c => c.cvSrc ? ` <span class="flag" title="${esc(CV_TIP[c.cvSrc])}">${c.cvSrc==='PitchBook est.' ? 'PB est.' : c.cvSrc}</span>` : '';
@@ -987,6 +992,14 @@ for (const c of UNI) {
   const vc = window.VAL_CHECK?.items?.[c.id];
   if (vc?.src==='Augment') { c.bl = vc.price; c.shares = Math.round(vc.val*1e9/vc.price); c.shSrc = 'Augment, 21 Oct 2026'; }
   else if (vc) { c.bl = null; c.curVal = vc.val; c.curValSrc = 'pitchbook'; }
+  // Where we hold venue prices but no share count, derive one from the Augment explore list (shares = its valuation / its price) so the average
+  // venue price becomes a valuation. Skipped where our price is not comparable with Augment's (0.5x to 2x) or the result is more than 2.5x away
+  // from PitchBook's estimate (c.augSkip says why); those stay on the fallbacks.
+  if (!vc && c.bl && !c.shares && c.ccy==='USD') { const a = augRow(c);
+    if (a) { const pr = c.bl / a[2], sh = a[1]*1e9/a[2], v = c.bl*sh/1e9, vs = c.pb?.est ? v/c.pb.est : null;
+      if (pr <= .5 || pr >= 2) c.augSkip = `our price ${usd(c.bl)} vs Augment ${usd(a[2])}`;
+      else if (vs != null && (vs < .4 || vs > 2.5)) c.augSkip = `implied ${bn(v)} vs PitchBook estimate ${bn(c.pb.est)}`;
+      else { c.shares = Math.round(sh); c.shSrc = 'Augment, 22 Oct 2026'; c.augShares = true; } } }
   c.impl = c.bl && c.shares ? c.bl*c.shares/1e9 : null;
   c.prem = c.impl && c.lrEv && !c.listed ? c.impl/c.lrEv - 1 : null;
   // PitchBook facts (pitchbook-data.js). Where a company has no valuation at all, use PitchBook's valuation estimate.
