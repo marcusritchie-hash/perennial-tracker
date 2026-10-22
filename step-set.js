@@ -8,20 +8,22 @@
 window.STEP = {
   "asof": "2026-10",
   "fx": { "EUR": 1.08 },
-  "include": ["figureai", "mistralai", "fluidstack", "baseten", "saronic"],
+  "include": ["figureai", "mistralai", "fluidstack", "baseten", "saronic", "ereborbank"],
   "exclude": [],
   "bucket": {
-    "fluidstack": "Late Growth"
+    "fluidstack": "Late Growth", "ereborbank": "Late Growth"
   },
   "rule": { "openai": "primary" },
   "notes": {
     "openai": "Step-up is primary to primary (Mar 25 to Mar 26).",
-    "neuralink": "Prior round unconfirmed."
+    "neuralink": "Prior round unconfirmed.",
+    "moonshotai": "PitchBook shows rounds at a pace of one every one to three months in 2026; several figures are marked estimated there.",
+    "ereborbank": "PitchBook shows a Seed round of $635m on 13 Feb 2026 at $4.00bn post-money, and an undated Early Stage VC round of $1.50bn at $9.50bn post-money (marked estimated). The date is needed to place the second round."
   },
   "slide": {
     "figureai": { "b": "LG", "x": 15.0, "gap": 19 }, "crusoe": { "b": "LG", "x": 3.0, "gap": 11 }, "mistralai": { "b": "LG", "x": 1.8, "gap": 12 }, "kalshi": { "b": "LG", "x": 2.0, "gap": 6 },
     "polymarket": { "b": "LG", "x": 1.4, "gap": 4 }, "fluidstack": { "b": "LG", "x": 2.4, "gap": 8 }, "openevidence": { "b": "LG", "x": 1.2, "gap": 8 }, "baseten": { "b": "LG", "x": 2.6, "gap": 5 },
-    "neuralink": { "b": "LG", "x": 2.8, "gap": 22 }, "saronic": { "b": "LG", "x": 2.3, "gap": 13 }, "erebor": { "b": "LG", "x": 2.2, "gap": 5, "name": "Erebor Bank" },
+    "neuralink": { "b": "LG", "x": 2.8, "gap": 22 }, "saronic": { "b": "LG", "x": 2.3, "gap": 13 }, "ereborbank": { "b": "LG", "x": 2.2, "gap": 5 },
     "anth": { "b": "PI", "x": 2.5, "gap": 3 }, "openai": { "b": "PI", "x": 2.8, "gap": 12 }, "bytedance": { "b": "PI", "x": 1.1, "gap": 3, "hollow": true }, "databricks": { "b": "PI", "x": 1.4, "gap": 8 },
     "stripe": { "b": "PI", "x": 1.5, "gap": 5, "hollow": true }, "revolut": { "b": "PI", "x": 1.5, "gap": 8, "hollow": true }, "anduril": { "b": "PI", "x": 2.0, "gap": 11 }, "moonshotai": { "b": "PI", "x": 1.8, "gap": 2 }
   },
