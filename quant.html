@@ -7,24 +7,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261023095827"></script>
-<script src="quant-rounds.js?v=20261023095827" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261023095827" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261023095827" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261023095827" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261023095827" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261023095827" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261023095827" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261023095827" onerror="window.STEP=null"></script>
-<script src="augment-list.js?v=20261023095827" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261023095827" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261023095827" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261023095827" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261023095827" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261023095827" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261023095827" onerror="window.QREV={}"></script>
-<script src="method-config.js?v=20261023095827" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261023095827" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261023101955"></script>
+<script src="quant-rounds.js?v=20261023101955" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261023101955" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261023101955" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261023101955" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261023101955" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261023101955" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261023101955" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261023101955" onerror="window.STEP=null"></script>
+<script src="augment-list.js?v=20261023101955" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261023101955" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261023101955" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261023101955" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261023101955" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261023101955" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261023101955" onerror="window.QREV={}"></script>
+<script src="method-config.js?v=20261023101955" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261023101955" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -1884,7 +1884,7 @@ function drawStepExits() {
   sec.hidden = false;
   document.getElementById('stx-a').innerHTML = exitBarsSvg(rows, r=>r.s1, r=>r.m1, 'ex-b1', null);
   document.getElementById('stx-b').innerHTML = exitBarsSvg(rows, r=>r.s2, r=>r.m2, 'ex-b2', r=>r.kind);
-  document.getElementById('stx-foot').textContent = `Post-money valuations; exit at IPO or deal price; months between rounds, approximate. SpaceX values include xAI; Scale AI is implied from Meta's 49% stake; Groq is a licence and team deal with Nvidia; CoreWeave and Cerebras exit values are fully diluted at the IPO price (Cerebras is 1.7× on basic shares, $39.8bn). Past outcomes, not a forecast or target for the Fund. Source: ${RADAR.source}; data to ${fDate(RADAR.asof)}.`;
+  document.getElementById('stx-foot').textContent = `Post-money valuations; exit at IPO or deal price; months between rounds, approximate. SpaceX values include xAI; Scale AI is implied from Meta's 49% stake; Groq is a licence and team deal with Nvidia; the Cerebras exit value is fully diluted at the IPO price (1.7× on basic shares, $39.8bn); CoreWeave's rounds and IPO value are as recorded by PitchBook (company announcements: $19bn last round in May 2024, $23bn fully diluted at the IPO). Past outcomes, not a forecast or target for the Fund. Source: ${RADAR.source}; data to ${fDate(RADAR.asof)}.`;
 }
 const stLink = (r) => (r.src||[]).slice(0, 2).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">${i ? '2' : 'source'}</a>`).join(' ');
 const stRound = r => !r ? NA : `${esc(r.name)}${r.hollow ? ' <span class="flag">(tender / secondary)</span>' : ''}<br><span class="flag">${fDate(r.date)} · ${bnx(r.val)}${r.basis ? ' · ' + esc(r.basis) : ''}</span><br>${r.src?.length ? stLink(r) : `<span class="flag">${esc(r.from==='research' ? 'researched' : r.from)}</span>`}`;
