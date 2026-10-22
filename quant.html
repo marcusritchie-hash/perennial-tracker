@@ -7,24 +7,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261023095549"></script>
-<script src="quant-rounds.js?v=20261023095549" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261023095549" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261023095549" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261023095549" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261023095549" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261023095549" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261023095549" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261023095549" onerror="window.STEP=null"></script>
-<script src="augment-list.js?v=20261023095549" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261023095549" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261023095549" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261023095549" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261023095549" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261023095549" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261023095549" onerror="window.QREV={}"></script>
-<script src="method-config.js?v=20261023095549" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261023095549" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261023095827"></script>
+<script src="quant-rounds.js?v=20261023095827" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261023095827" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261023095827" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261023095827" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261023095827" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261023095827" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261023095827" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261023095827" onerror="window.STEP=null"></script>
+<script src="augment-list.js?v=20261023095827" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261023095827" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261023095827" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261023095827" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261023095827" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261023095827" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261023095827" onerror="window.QREV={}"></script>
+<script src="method-config.js?v=20261023095827" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261023095827" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -148,6 +148,9 @@
   .sv-line { stroke: var(--purple); stroke-opacity: .35; stroke-width: 3; }
   .sv-prior { fill: var(--purple); fill-opacity: .35; } .sv-last { fill: var(--purple); }
   .sv-hollow { fill: var(--surface); stroke: var(--purple); stroke-width: 3; }
+  .sv .ex-b1 { fill: var(--purple); } .sv .ex-b2 { fill: color-mix(in srgb, var(--purple) 72%, #000); }
+  .sv .ex-med { stroke: var(--accent-blue); stroke-width: 3; } .sv .ex-box { fill: var(--surface); stroke: var(--accent-blue); stroke-width: 2; }
+  .sv text.ex-w { fill: #fff; font-weight: 700; } .sv text.ex-mt { font-weight: 700; }
   .sv-row { cursor: pointer; } .sv-row:hover .sv-co, .sv-row:focus .sv-co { fill: var(--brand); font-weight: 700; } .sv-row:focus { outline: none; }
   .tab-btn { font: 600 14px var(--sans); color: var(--ink2); background: none; border: none; border-bottom: 3px solid transparent;
     padding: 10px 18px 9px; cursor: pointer; white-space: nowrap; }
@@ -525,6 +528,18 @@
   </div>
   <div class="legend" style="margin-top:10px"><span><svg width="46" height="12" aria-hidden="true"><line x1="5" y1="6" x2="38" y2="6" stroke="var(--purple)" stroke-opacity=".35" stroke-width="3"/><circle cx="5" cy="6" r="4" fill="var(--purple)" fill-opacity=".35"/><circle cx="38" cy="6" r="5.5" fill="var(--purple)"/></svg> Prior round → last round (equity valuation, post-money, log scale)</span><span><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="var(--surface)" stroke="var(--purple)" stroke-width="2.5"/></svg> Priced by tender or secondary sale</span></div>
   <p class="sub" id="st-foot" style="margin-top:8px"></p>
+
+  <section id="st-exits">
+    <div class="sec-hd">
+      <h2>Recent exits: step-ups before the exit</h2>
+      <p>Companies on our radar that listed or were sold, January 2025 to October 2026, with both rounds disclosed. The left panel is the step-up from the last growth round to the last round; the right panel is the step-up from the last round to the exit. The line marks the median; the figure on the right of each bar is the months between the two points. Calculated from the same figures as the Recent exits table on the Investor Return Analysis tab.</p>
+    </div>
+    <div class="grid2">
+      <div class="panel"><h3>Late Growth to Pre-IPO</h3><div class="sub">Last round ÷ last growth round</div><div id="stx-a"></div></div>
+      <div class="panel"><h3>Pre-IPO to exit</h3><div class="sub">Exit value ÷ last round</div><div id="stx-b"></div></div>
+    </div>
+    <p class="sub" id="stx-foot" style="margin-top:8px"></p>
+  </section>
 
   <section>
     <div class="sec-hd">
@@ -1841,6 +1856,36 @@ function stepSvg(items) {
         + `<text x="${R+36}" y="${y+4}" class="sv-x" text-anchor="end">${stX(r.x)}</text><text x="${R+98}" y="${y+4}" class="sv-g" text-anchor="end">${Math.round(r.gap)}m</text></g>`; }).join('')
     + `<text x="${(L+R)/2}" y="${H-6}" class="sv-ax" text-anchor="middle">Equity valuation, post-money (log scale)</text></svg>`;
 }
+// ── Recent exits: step-up from the last growth round to the last round, and from the last round to the exit (radar-exits.js) ──
+// The same seven names and the same figures as the Recent exits table on the Investor Return Analysis tab, so the two always agree.
+const EXIT_STEP_SET = ['CoreWeave', 'SpaceX', 'Cursor', 'Cerebras', 'Groq', 'Scale AI', 'Wiz'], EXIT_STEP_CAP = 4;
+const exMonths = (a, b) => { const [ay, am] = a.split('-').map(Number), [by, bm] = b.split('-').map(Number); return (by - ay) * 12 + (bm - am); };
+// One horizontal-bar panel: bar = multiple (long bars are cut at EXIT_STEP_CAP and say so), months at the right, median line with a label.
+function exitBarsSvg(rows, x, mo, cls, tag) {
+  const W = 680, L = 150, k = 88, top = 44, rh = 34, bh = 20, H = top + rows.length * rh + 34, base = top + rows.length * rh;
+  const med = median(rows.map(x)), medMo = Math.round(median(rows.map(mo))), mx = L + Math.min(med, EXIT_STEP_CAP) * k;
+  const boxW = 196;
+  return `<svg class="sv" viewBox="0 0 ${W} ${H}" role="img" aria-label="Step-up and months for each company; median ${med.toFixed(1)} times in ${medMo} months">`
+    + [1,2,3,4].map(t => `<line x1="${L + t*k}" x2="${L + t*k}" y1="${top-6}" y2="${base}" class="sv-grid"/><text x="${L + t*k}" y="${base + 18}" class="sv-ax" text-anchor="middle">${t}×</text>`).join('')
+    + rows.map((r, i) => { const y = top + i*rh + rh/2, v = x(r), w = Math.min(v, EXIT_STEP_CAP) * k, cut = v > EXIT_STEP_CAP;
+      return `<g><title>${esc(r.name)}: ${v.toFixed(2)}× in ${mo(r)} months</title><text x="${L-10}" y="${y+4}" class="sv-co" text-anchor="end">${esc(r.name)}${tag ? ' (' + esc(tag(r)) + ')' : ''}</text>`
+        + `<rect x="${L}" y="${y-bh/2}" width="${w}" height="${bh}" class="${cls}"/>`
+        + (cut ? `<text x="${L+w-8}" y="${y+4}" class="ex-w" text-anchor="end">${v.toFixed(1)}× (bar shortened)</text>` : `<text x="${L+w+8}" y="${y+4}" class="sv-x">${v.toFixed(1)}×</text>`)
+        + `<text x="${W-4}" y="${y+4}" class="sv-g" text-anchor="end">${mo(r)} months</text></g>`; }).join('')
+    + `<line x1="${L}" x2="${W-4}" y1="${base}" y2="${base}" class="sv-grid"/>`
+    + `<line x1="${mx}" x2="${mx}" y1="${top-24}" y2="${base}" class="ex-med"/><rect x="${mx-4}" y="${top-38}" width="${boxW}" height="24" rx="5" class="ex-box"/><text x="${mx+6}" y="${top-21}" class="ex-mt">Median ${med.toFixed(1)}× in ${medMo} months</text></svg>`;
+}
+function drawStepExits() {
+  const rows = EXIT_STEP_SET.map(n => RADAR.exits.find(e => e.name === n)).filter(e => e && e.growth?.val && e.last?.val && e.exit?.val)
+    .map(e => ({ name:e.name, kind:e.kind, s1:e.last.val / e.growth.val, m1:exMonths(e.growth.date, e.last.date), s2:e.exit.val / e.last.val, m2:exMonths(e.last.date, e.exit.date), note:e.note }))
+    .sort((a, b) => b.s1 - a.s1);
+  const sec = document.getElementById('st-exits');
+  if (!rows.length) { sec.hidden = true; return; }
+  sec.hidden = false;
+  document.getElementById('stx-a').innerHTML = exitBarsSvg(rows, r=>r.s1, r=>r.m1, 'ex-b1', null);
+  document.getElementById('stx-b').innerHTML = exitBarsSvg(rows, r=>r.s2, r=>r.m2, 'ex-b2', r=>r.kind);
+  document.getElementById('stx-foot').textContent = `Post-money valuations; exit at IPO or deal price; months between rounds, approximate. SpaceX values include xAI; Scale AI is implied from Meta's 49% stake; Groq is a licence and team deal with Nvidia; CoreWeave and Cerebras exit values are fully diluted at the IPO price (Cerebras is 1.7× on basic shares, $39.8bn). Past outcomes, not a forecast or target for the Fund. Source: ${RADAR.source}; data to ${fDate(RADAR.asof)}.`;
+}
 const stLink = (r) => (r.src||[]).slice(0, 2).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">${i ? '2' : 'source'}</a>`).join(' ');
 const stRound = r => !r ? NA : `${esc(r.name)}${r.hollow ? ' <span class="flag">(tender / secondary)</span>' : ''}<br><span class="flag">${fDate(r.date)} · ${bnx(r.val)}${r.basis ? ' · ' + esc(r.basis) : ''}</span><br>${r.src?.length ? stLink(r) : `<span class="flag">${esc(r.from==='research' ? 'researched' : r.from)}</span>`}`;
 function drawStep() {
@@ -1854,6 +1899,7 @@ function drawStep() {
     [shown.length ? `${Math.round(med(r=>r.gap))} months` : '—', 'median time between them', SK.medianGapMonths ? `slide: ${SK.medianGapMonths} months` : ''],
   ].map(([v, l, s]) => `<div class="card"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${s}</div></div>`).join('');
   document.getElementById('st-lg').innerHTML = stepSvg(lg); document.getElementById('st-pi').innerHTML = stepSvg(pi);
+  drawStepExits();
   const noted = shown.filter(r=>STEP.notes?.[r.c.id]).map(r => `${r.c.name}: ${STEP.notes[r.c.id]}`);
   const gone = miss.map(r => `${r.c.name} (${r.n===0 ? 'no priced round' : r.n===1 ? 'no prior valuation' : 'bucket ' + r.bucket})`);
   document.getElementById('st-foot').textContent = `Prior and last priced rounds to ${STEP.asof || fMon(QD_ASOF)}, post-money in US$${STEP.fx?.EUR ? ` (EUR at ${STEP.fx.EUR})` : ''}. Gap = months between the two rounds. ${noted.join(' ')}${gone.length ? ` Not shown: ${gone.join(', ')}.` : ''} Illustrative names only, not holdings of the Fund. Source: company announcements and public reporting.`;
