@@ -22,3 +22,5 @@ Cohere Health,new,,Not Cohere
 Zego Technology,new,,Shenzhen communications software; not Zego (UK motor insurance)
 Baichuan Group,new,,Tangshan rail; not Baichuan AI
 World,new,,Financial services (Worldcoin); not World Labs
+1X,map,1X,Same company; the matcher skips names under 3 characters
+Ro,map,Ro,Same company; the matcher skips names under 3 characters

@@ -39,6 +39,7 @@ foreach ($m in [regex]::Matches($js, '(?m)^\{"id":"([^"]+)","name":"((?:[^"\\]|\
   foreach ($part in ($nm -split ' / ')) { $keys += (Norm $part); $keys += (Norm ($part -replace '\s*\(.*?\)', '')); $p = [regex]::Match($part, '\((.*?)\)'); if ($p.Success) { $keys += (Norm $p.Groups[1].Value) } }
   $uni += [pscustomobject]@{ id = $m.Groups[1].Value; name = $nm; keys = ($keys | Where-Object { $_ -and $_.Length -ge 3 } | Sort-Object -Unique) }; $usedIds[$m.Groups[1].Value] = $true }
 $ovr = @{}; foreach ($r in (Import-Csv (Join-Path $PSScriptRoot 'pitchbook-match.csv'))) { $ovr[$r.pitchbook_name] = $r }
+$ren = @{}; $renFile = Join-Path $PSScriptRoot 'pitchbook-rename.csv'; if (Test-Path $renFile) { foreach ($r in (Import-Csv $renFile)) { $ren[$r.pbid] = $r.display_name } }   # display names for different companies that share a name (ids are unchanged)
 $match = @{}   # pbid -> dashboard id
 foreach ($r in $pb) {
   $o = $ovr[$r.Companies]
@@ -95,7 +96,7 @@ foreach ($r in ($pb | Sort-Object { [double]$_.'Valuation Estimate' } -Descendin
     if ($primary -contains $r.'Last Known Valuation Deal Type' -and $entry.lkv) { $lrEv = $entry.lkv; $lrName = $r.'Last Known Valuation Deal Type'; $lrDate = $entry.lkvDate }
     $note = 'Added from the PitchBook unicorn list, ' + ([datetime]$asof).ToString('MMM yyyy') + '. Current valuation is PitchBook''s estimate.'
     if ($r.'Ownership Status' -eq 'In IPO Registration') { $note += ' PitchBook shows the company in IPO registration.' }
-    $rec = [ordered]@{ id = $id; name = $name; region = (RegionOf $country); hq = $country; sector = (SectorOf $r.'Primary PitchBook Industry Code' $r.'Emerging Spaces'); sub = $r.'Primary PitchBook Industry Code'
+    $rec = [ordered]@{ id = $id; name = $(if ($ren.ContainsKey($pbid)) { $ren[$pbid] } else { $name }); region = (RegionOf $country); hq = $country; sector = (SectorOf $r.'Primary PitchBook Industry Code' $r.'Emerging Spaces'); sub = $r.'Primary PitchBook Industry Code'
       tier = 'Tail'; listed = $false; mq = $null; wl = $null; aug = $null; c50 = $null; forgeTraded = $false; lrEv = $lrEv; lrName = $lrName; lrDate = $lrDate
       curVal = $entry.est; curValSrc = 'pitchbook'; note = $note; ctype = $null; ccy = 'USD'; status = $null; liq = $null; rank = $null; srank = $null; shares = $null; shSrc = $null
       px = [ordered]@{ c = $null; f = $null; a = $null }; pxSrc = 'pitchbook'; hist = $null }
