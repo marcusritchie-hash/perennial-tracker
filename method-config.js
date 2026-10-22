@@ -15,5 +15,6 @@ window.METHOD = {
   "dm.mom.w": 30, "dm.mom.lo": -20, "dm.mom.hi": 30,
   "rule.minPillars": 2,
   "rule.watch.comp": 40, "rule.watch.va": 70,
-  "data.staleMonths": 18
+  "data.staleMonths": 18,
+  "rev.minPeers": 5
 };

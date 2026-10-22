@@ -182,6 +182,13 @@ foreach ($r in $CO) {
       $a = $o.$k; $b = $e[$k]; if (Differs $a $b) { $chg.Add("EDIT    $name · $k : '$a' → '$b'") } }
     if (-not $tracker) { foreach ($k in 'c','a','f') { if (Differs $o.px.$k $e.px[$k]) { $chg.Add("EDIT    $name · price $k : '$($o.px.$k)' → '$($e.px[$k])'") } } }
   }
+  # Reported revenue (US$m), entered by the team in place of PitchBook's estimate. Stored only where entered; a workbook
+  # without these columns keeps the values already in the data.
+  if ($r.Contains('Reported revenue input ($m)')) { $rv = N $r['Reported revenue input ($m)'] "$name reported revenue"; $rs = S $r['Reported revenue source']; $rd = D $r['Reported revenue as of'] "$name reported revenue as of" }
+  elseif ($o) { $rv = $o.revOv; $rs = $o.revOvSrc; $rd = $o.revOvDate } else { $rv = $null; $rs = $null; $rd = $null }
+  if ($rv -ne $null) { $e.revOv = $rv; if ($rs) { $e.revOvSrc = $rs }; if ($rd) { $e.revOvDate = $rd } }
+  elseif ($rs -or $rd) { $warn.Add("$name : reported revenue source or date given without a revenue figure; ignored") }
+  if (-not $isNew) { foreach ($k in 'revOv','revOvSrc','revOvDate') { if (Differs $o.$k $e[$k]) { $chg.Add("EDIT    $name · $k : '$($o.$k)' → '$($e[$k])'") } } }
   $newData[$id] = $e
 
   # bucket decision: a bucket differing from the rule, or any recorded reason, becomes an override. A bucket the team
