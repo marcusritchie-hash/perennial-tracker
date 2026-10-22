@@ -7,24 +7,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261022145757"></script>
-<script src="quant-rounds.js?v=20261022145757" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261022145757" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261022145757" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261022145757" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261022145757" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261022145757" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261022145757" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261022145757" onerror="window.STEP=null"></script>
-<script src="augment-list.js?v=20261022145757" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261022145757" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261022145757" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261022145757" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261022145757" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261022145757" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261022145757" onerror="window.QREV={}"></script>
-<script src="method-config.js?v=20261022145757" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261022145757" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261023105046"></script>
+<script src="quant-rounds.js?v=20261023105046" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261023105046" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261023105046" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261023105046" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261023105046" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261023105046" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261023105046" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261023105046" onerror="window.STEP=null"></script>
+<script src="augment-list.js?v=20261023105046" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261023105046" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261023105046" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261023105046" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261023105046" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261023105046" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261023105046" onerror="window.QREV={}"></script>
+<script src="method-config.js?v=20261023105046" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261023105046" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -552,7 +552,7 @@
   <section>
     <div class="sec-hd">
       <h2>Trading vs last round</h2>
-      <p>Premium / discount = current valuation ÷ last-round post-money − 1. The chart plots companies priced from secondary prices against the months since their last round. The table groups every company with a last round and a current valuation (secondary prices, PitchBook estimates and reported valuations) by the Group by control; use Basis to narrow it to secondary prices only. <b>Valuation × vs 2 / 4 yrs ago</b> = current valuation ÷ the post-money of the round nearest that long ago (company-level, includes dilution). Hover a Valuation × cell to see the round. Listed companies appear below the private ones at their market value.</p>
+      <p>Premium / discount = current valuation ÷ last-round post-money − 1. The chart plots companies priced from secondary prices against the months since their last round. The table groups every company with a last round and a current valuation (secondary prices, PitchBook estimates and reported valuations) by the Group by control; use Basis to narrow it to secondary prices only. <b>Equity valuation × vs 2 / 3 / 4 yrs ago</b> = current valuation ÷ the post-money of the round nearest that long ago (company-level, includes dilution). Hover a Valuation × cell to see the round. Listed companies appear below the private ones at their market value.</p>
       <label class="tog" style="margin-top:8px">Basis <select id="cmp-basis" aria-label="Valuation basis for the peer table"><option value="all">All current valuations</option><option value="sec">Secondary prices only</option></select></label>
       <label class="tog" style="margin-top:8px">Revenue <select id="cmp-rev" aria-label="Revenue data filter for the peer table"><option value="all">All companies</option><option value="has">Has revenue data</option></select></label>
     </div>
@@ -569,7 +569,21 @@
         <div class="tbl-wrap cmp-mx" style="box-shadow:none"><table id="tbl-cmp-peer-s"><thead></thead><tbody></tbody></table></div>
       </div>
     </div>
-    <div class="sec-hd" style="margin-top:24px"><h2>Peer table</h2><p>One row per company, largest first. Click a company for its detail; hover a Valuation × cell to see the round it is measured against.</p></div>
+    <div class="grid2" style="margin-top:18px">
+      <div class="panel">
+        <h3>Median premium / discount to last round, by group</h3>
+        <div class="sub" id="pg-sub1"></div>
+        <div class="legend"><span><i style="background:var(--pos)"></i>Above last round</span><span><i style="background:var(--neg)"></i>Below last round</span></div>
+        <div class="chart-box" id="pg-box1" style="height:340px"><canvas id="c-pg1" role="img" aria-label="Median premium or discount to last round by group"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Median equity valuation × at 2, 3 and 4 years, by group</h3>
+        <div class="sub" id="pg-sub2"></div>
+        <div class="legend"><span><i style="background:var(--purple);opacity:.35"></i>2 years ago</span><span><i style="background:var(--purple);opacity:.65"></i>3 years ago</span><span><i style="background:var(--purple)"></i>4 years ago</span></div>
+        <div class="chart-box" id="pg-box2" style="height:340px"><canvas id="c-pg2" role="img" aria-label="Median equity valuation multiple at 2, 3 and 4 years by group"></canvas></div>
+      </div>
+    </div>
+    <div class="sec-hd" style="margin-top:24px"><h2>Peer table</h2><p>One row per company, largest first. Click a company for its detail; hover an Equity valuation × cell to see the round it is measured against.</p></div>
     <div class="tbl-wrap"><table id="tbl-cmp-peer"><thead></thead><tbody></tbody></table></div>
   </section>
 
@@ -1473,7 +1487,7 @@ const peerPrem = c => c.cv / c.lrEv - 1;
 // Growth over the last N years. The reference is the priced round nearest N years before the data date (within 9 months either side).
 // Valuation × = current valuation ÷ that round's post-money: company-level, so it includes dilution from shares issued since.
 // MOIC = today's price per share ÷ that round's price per share: what an investor who bought then holds now, after dilution.
-const VX_YEARS = [2, 4], VX_WINDOW = 9, NO_MARK = ['Convertible','Debt','Pending'];
+const VX_YEARS = [2, 3, 4], VX_WINDOW = 9, NO_MARK = ['Convertible','Debt','Pending'];
 function cmpRounds(c) {
   if (c._cr) return c._cr;
   const rs = (window.QR?.[c.id]?.rounds || []).filter(r=>r.date && r.type!=='Pending' && r.companyRun!==false && (r.post>0 || r.pps>0)).map(r=>({ ...r, date:nd(r.date) }));
@@ -1508,10 +1522,10 @@ const PEER_COLS = [
   { d:DEF.company, l:'Company', cls:'co', f:c=>`${esc(c.name)}${c.isListedExit ? `<span class="badge b-ls">${esc(c.ticker)}</span>` : ''}` }, { l:'Sector', cls:'wrap', f:c=>esc(c.sector) }, { d:'Last round post-money: under $5bn, $5–20bn, $20–100bn or $100bn+.', l:'Valuation band', f:c=>esc(c.band||'') },
   { d:'Name of the last primary round (PitchBook deal type where there is no researched round).', l:'Last round', cls:'wrap', f:c=>esc(c.lrName||'') },
   { l:'Round date', f:c=>c.lrDate ? fMon(c.lrDate) : NA }, { d:'Months from the last round to the data date.', l:'Months since', r:1, f:c=>c.lrAge==null ? NA : c.lrAge.toFixed(0) },
-  { d:DEF.lrEv, l:'Last round valuation', r:1, f:c=>bn(c.lrEv) }, { d:DEF.curVal + ' For listed companies: market value at the latest share price.', l:'Current valuation', r:1, f:c=>bn(c.cv) },
+  { d:DEF.lrEv, l:'Last round equity valuation', r:1, f:c=>bn(c.lrEv) }, { d:DEF.curVal + ' For listed companies: market value at the latest share price.', l:'Current equity valuation', r:1, f:c=>bn(c.cv) },
   { d:'Where the current valuation comes from: Secondary (average secondary price × shares), PitchBook est., Reported, or Listed (market value).', l:'Basis', f:c=>esc(c.cvSrc||'') },
   { d:'Current valuation ÷ last-round post-money − 1.', l:'Premium / discount', r:1, f:c=>pc(peerPrem(c)) },
-  ...VX_YEARS.map(y => ({ d:`Current valuation ÷ the post-money of the priced round nearest ${y} years ago (within ${VX_WINDOW} months either side). Company valuation multiple, includes dilution; hover for the round. Blank where no round is that close.`, l:`Valuation × vs ${y} yrs ago`, r:1, f:c=>vxCell(c, y) })),
+  ...VX_YEARS.map(y => ({ d:`Current valuation ÷ the post-money of the priced round nearest ${y} years ago (within ${VX_WINDOW} months either side). Company valuation multiple, includes dilution; hover for the round. Blank where no round is that close.`, l:`Equity valuation × vs ${y} yrs ago`, r:1, f:c=>vxCell(c, y) })),
   { d:'Revenue in US$, PitchBook\'s estimate unless marked rep. (reported, entered by the team). Blank where there is no revenue data yet.', l:'Revenue', r:1, f:c=>c.rev==null ? NA : revTxt(c.rev) + (c.revSrc==='Reported' ? ' <span class="flag">rep.</span>' : '') },
   { d:'Revenue growth, % a year, from PitchBook.', l:'Revenue growth', r:1, f:c=>c.revg==null ? NA : pc(c.revg/100) },
   { d:DEF.evRev, l:'EV / Rev', r:1, f:evRevCell },
@@ -1520,6 +1534,25 @@ const PEER_COLS = [
   { d:'Growth-adjusted revenue multiple: EV / Rev ÷ revenue growth in % (e.g. 20× at 40% growth = 0.50). Lower means cheaper for the growth. Only where growth is positive.', l:'Growth-adj. multiple', r:1, f:c=>c.gAdj==null ? NA : c.gAdj.toFixed(2) },
   { d:'Rank on EV / Rev among private companies in the same sector that have revenue data (1 = lowest multiple). "few peers" where fewer than the Methodology minimum have data.', l:'Sector rank, EV / Rev', r:1, f:c=>!c.evRank ? NA : c.evRank.n==null ? `<span class="flag" title="${esc(rankTxt(c))}">few peers</span>` : `<span title="${esc(rankTxt(c))}">${c.evRank.n} of ${c.evRank.of}</span>` },
 ];
+// Two bar charts that document the peer table, by the Group by control (sector or valuation band). Groups with fewer than PG_MIN companies are faded.
+const PG_MIN = 5;
+function drawPeerCharts(ps) {
+  const gs = groupsOf(ps).slice(1).filter(([, xs]) => xs.length);
+  const what = F.grp === 'band' ? 'valuation band' : 'sector';
+  document.getElementById('pg-sub1').textContent = `By ${what} · median with the number of companies (n) · groups under ${PG_MIN} companies are faded`;
+  document.getElementById('pg-sub2').textContent = `By ${what} · median of current equity valuation ÷ the round nearest that long ago · a bar needs at least 3 companies with a round that close · log scale`;
+  emptyBox('pg-box1', 'c-pg1', gs.length ? '' : 'No companies in this filter.'); emptyBox('pg-box2', 'c-pg2', gs.length ? '' : 'No companies in this filter.');
+  if (!gs.length || view !== 'comps') return;
+  const pos = css('--pos'), neg = css('--neg'), d1 = gs.map(([g, xs]) => ({ g, n:xs.length, m:median(xs.map(peerPrem)) })).sort((a, b) => b.m - a.m);
+  const o1 = baseOpts(); o1.indexAxis = 'y'; o1.scales.x.ticks = pctAxis; o1.scales.y.ticks = { autoSkip:false, color:css('--ink') };
+  mk('c-pg1', { type:'bar', data:{ labels:d1.map(d => `${d.g} (n=${d.n})`), datasets:[{ data:d1.map(d=>d.m), backgroundColor:d1.map(d => alpha(d.m >= 0 ? pos : neg, d.n < PG_MIN ? .35 : 1)), borderRadius:4, borderSkipped:'start', barThickness:16 }] }, options:o1 },
+    dp => { const d = d1[dp.dataIndex]; return `<b>${esc(d.g)}</b><br>Median ${pct(d.m)} vs last round<br>${d.n} companies${d.n < PG_MIN ? ' <span class="flag">(few companies)</span>' : ''}`; });
+  const ord = d1.map(d => d.g), by = Object.fromEntries(gs), shade = { 2:.35, 3:.65, 4:1 };
+  const stat = (g, y) => { const v = (by[g] || []).map(c => valX(c, y)?.x).filter(x => x != null); return { n:v.length, m:v.length >= 3 ? median(v) : null }; };
+  const o2 = baseOpts(); o2.indexAxis = 'y'; o2.scales.x = { ...o2.scales.x, type:'logarithmic', min:.5, ticks:{ callback:v => [.5,1,2,5,10,20,50,100].includes(v) ? v + '×' : '' } }; o2.scales.y.ticks = { autoSkip:false, color:css('--ink') };
+  mk('c-pg2', { type:'bar', data:{ labels:ord, datasets:VX_YEARS.map(y => ({ label:`${y} years ago`, data:ord.map(g => stat(g, y).m), backgroundColor:alpha(css('--purple'), shade[y] ?? 1), borderRadius:3, borderSkipped:'start', barThickness:8 })) }, options:o2 },
+    dp => { const g = ord[dp.dataIndex], y = VX_YEARS[dp.datasetIndex], s = stat(g, y); return `<b>${esc(g)}</b><br>${s.m == null ? 'Too few' : mx1(s.m).replace(/<[^>]+>/g, '')} vs ${y} years ago<br>${s.n} companies with a round that close`; });
+}
 function drawPeers(rs, kpiHtml) {
   const ps = peerSet(rs).filter(c => F.rev!=='has' || c.evRev!=null), pr = ps.map(peerPrem), young = ps.filter(c=>c.lrAge<12), old = ps.filter(c=>c.lrAge>=12), nSec = ps.filter(c=>c.cvSrc==='Secondary').length;
   const below = pr.filter(x=>x<0).length;
@@ -1537,7 +1570,7 @@ function drawPeers(rs, kpiHtml) {
     { l:'Companies', r:1, cell:xs=>xs.length },
     ...AGES.map(([,l]) => ({ l, cell:xs=>medCell(xs.filter(c=>ageOf(c.lrAge)===l).map(peerPrem), pc) })),
     { l:'All rounds', cell:xs=>medCell(xs.map(peerPrem), pc) },
-    ...VX_YEARS.map(y => ({ d:`Median valuation multiple: current valuation ÷ the round nearest ${y} years ago. Only companies with a round that close.`, l:`Valuation × ${y} yrs`, cell:xs=>medCell(xs.map(c=>valX(c,y)?.x).filter(x=>x!=null), mx) })),
+    ...VX_YEARS.map(y => ({ d:`Median valuation multiple: current valuation ÷ the round nearest ${y} years ago. Only companies with a round that close.`, l:`Equity valuation × ${y} yrs`, cell:xs=>medCell(xs.map(c=>valX(c,y)?.x).filter(x=>x!=null), mx) })),
     { d:'Share of companies whose current valuation is below the last round.', l:'Below last round', cell:xs=>shareBelow(xs.map(peerPrem), 0) },
     { d:'Median revenue multiple (current valuation ÷ revenue). Only companies with revenue data; n is how many.', l:'EV / Rev', cell:xs=>medCell(xs.map(c=>c.evRev).filter(x=>x!=null), xFmt) },
     { d:'Median EV / ARR (current valuation ÷ ARR, where ARR = the latest reported quarter × 4). Only companies with a reported quarter; n is how many.', l:'EV / ARR', cell:xs=>medCell(xs.map(c=>c.evArr).filter(x=>x!=null), xFmt) },
@@ -1549,6 +1582,7 @@ function drawPeers(rs, kpiHtml) {
   document.querySelector('#tbl-cmp-peer tbody').innerHTML = (ps.length || ls.length) ? [...ps].sort(byCv).map(c=>rowHtml(PEER_COLS, c)).join('')
     + (ls.length ? `<tr class="sec-row"><td colspan="${PEER_COLS.length}">Listed since 2024<span>· ${ls.length} companies · current valuation is market value at the latest share price (IPO valuation × latest price ÷ IPO price)</span></td></tr>` + [...ls].sort(byCv).map(c=>rowHtml(PEER_COLS, c)).join('') : '')
     : `<tr><td colspan="${PEER_COLS.length}" class="empty">No companies in this filter have a last round and a current valuation.</td></tr>`;
+  drawPeerCharts(ps);
 }
 
 // ── Investor Return Analysis: the private journey round by round, until listing (or today for companies still private) ──
@@ -3025,7 +3059,7 @@ function masterWorkbook() {
       { h:'ARR (US$m, latest quarter × 4)', v:c=>c.arr, z:XZ.m }, { h:'EV / ARR', v:c=>c.evArr, z:XZ.mult }, { h:'ARR quarter', v:c=>c.arrQ?.quarter || '', w:12 }, { h:'ARR source', v:c=>c.arrQ ? `${c.arrQ.src || ''} ${c.arrQ.url || ''}`.trim() : '', w:40 },
       { h:'Growth-adj. multiple', v:c=>c.gAdj, z:'0.00' },
       { h:'Sector rank, EV / Rev', v:c=>c.evRank ? (c.evRank.n==null ? 'few peers' : `${c.evRank.n} of ${c.evRank.of}`) : '' },
-      ...VX_YEARS.flatMap(y => [{ h:`Valuation × vs ${y} yrs ago`, v:c=>valX(c,y)?.x, z:XZ.mult }, { h:`${y}-yr reference round`, v:c=>{ const r = valRef(c,y); return r ? `${r.name||'round'} · ${r.date} · $${r.post}bn` : ''; }, w:34 }]),
+      ...VX_YEARS.flatMap(y => [{ h:`Equity valuation × vs ${y} yrs ago`, v:c=>valX(c,y)?.x, z:XZ.mult }, { h:`${y}-yr reference round`, v:c=>{ const r = valRef(c,y); return r ? `${r.name||'round'} · ${r.date} · $${r.post}bn` : ''; }, w:34 }]),
     ],
       rows:[...peerSet(UNI, 'all').sort((a,b)=>b.cv-a.cv), ...LISTED_ITEMS.filter(c=>c.cv!=null && c.lrEv>0).sort((a,b)=>b.cv-a.cv)], filter:true },
     ...['sector','band'].map(by => ({ title:`Trading after a funding round — median premium / discount to last round by months since the round, by ${by==='band'?'valuation band (last round post-money)':'sector'}`,
