@@ -20,6 +20,7 @@
 <script src="ipo-news.js?v=20261022113850" onerror="window.IPO_NEWS={}"></script>
 <script src="pitchbook-universe.js?v=20261022113850" onerror="window.PB_UNIVERSE=[]"></script>
 <script src="pitchbook-data.js?v=20261022113850" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261022113850" onerror="window.QREV={}"></script>
 <script src="method-config.js?v=20261022113850" onerror="window.METHOD={}"></script>
 <script src="site-updated.js?v=20261022113850" onerror="window.SITE_UPDATED=null"></script>
 <style>
@@ -1018,7 +1019,11 @@ for (const c of UNI) {
   // Revenue multiple: current valuation ÷ revenue. Growth-adjusted: that multiple ÷ growth (in %), only where growth is positive.
   c.evRev = c.cv!=null && c.rev>0 ? c.cv*1000/c.rev : null;
   c.gAdj = c.evRev!=null && c.revg>0 ? c.evRev/c.revg : null;
-  c.lrAge = c.lrDate ? (ASOF - new Date(c.lrDate+'T00:00:00'))/(864e5*30.44) : null;
+  // ARR = the latest reported quarter's revenue x 4 (quarterly-revenue.js, from public reporting). EV / ARR = current valuation ÷ ARR.
+  c.arrQ = window.QREV?.[c.id] ?? null;
+  c.arr = c.arrQ?.revM > 0 ? c.arrQ.revM * 4 : null;
+  c.evArr = c.cv!=null && c.arr>0 ? c.cv*1000/c.arr : null;
+  c.lrAge =c.lrDate ? (ASOF - new Date(c.lrDate+'T00:00:00'))/(864e5*30.44) : null;
   c.stale = c.lrAge==null || c.lrAge > STALE_MONTHS;
   c.spread = isUsd && !c.listed && ps.length>=2 ? (Math.max(...ps)-Math.min(...ps))/c.bl : null;
   c.mom = null; c.momFrom = null;
@@ -1037,6 +1042,10 @@ for (const xs of Object.values(REV_PEERS)) { xs.sort((a,b)=>a.evRev-b.evRev);
 const xFmt = x => x>=100 ? x.toFixed(0)+'×' : x>=10 ? x.toFixed(1)+'×' : x.toFixed(2)+'×';
 const revTxt = m => m==null ? '—' : m>=1000 ? '$'+(m/1000).toFixed(1)+'bn' : '$'+Math.round(m)+'m';
 const revSrcTxt = c => c.revSrc ? `${c.revSrc==='Reported' ? 'Reported by the team' : 'PitchBook estimate'}${c.revDate ? ', as of '+fDate(c.revDate) : ''}${c.revOvSrc && c.revSrc==='Reported' ? ' · '+c.revOvSrc : ''}` : '';
+const arrQtr = c => { const m = String(c.arrQ?.quarter || '').match(/Q(\d)\s*(\d{4})/); return m ? `Q${m[1]} ${m[2].slice(2)} × 4` : ''; };
+const arrSrcTxt = c => c.arrQ ? `${c.arrQ.quarter} revenue ${revTxt(c.arrQ.revM)} × 4 = ${revTxt(c.arr)} ARR · Source: ${c.arrQ.src || 'n/a'}${c.arrQ.url ? ' (' + c.arrQ.url + ')' : ''} · reported ${c.arrQ.reported || 'n/a'}${c.arrQ.note ? ' · ' + c.arrQ.note : ''}` : '';
+const arrCell = c => c.arr==null ? NA : `<span title="${esc(arrSrcTxt(c))}">${revTxt(c.arr)}<br><span class="flag">${esc(arrQtr(c))}</span></span>`;
+const evArrCell = c => c.evArr==null ? NA : `<span title="${esc(`Current valuation ${bn(c.cv)} (${c.cvSrc}) ÷ ARR ${revTxt(c.arr)} (${c.arrQ.quarter} revenue × 4)`)}">${xFmt(c.evArr)}</span>`;
 const rankTxt = c => !c.evRank ? '' : c.evRank.n==null ? `too few peers (${c.evRank.of} in sector with revenue)` : `rank ${c.evRank.n} of ${c.evRank.of} in ${c.sector} (1 = lowest) · sector median ${xFmt(c.evRank.med)}`;
 // Table cell: the multiple with a source tooltip, or n/a saying why. Missing data is shown as missing, never as a weak score.
 const evRevCell = c => c.evRev==null
@@ -1469,6 +1478,8 @@ const PEER_COLS = [
   { d:'Revenue in US$, PitchBook\'s estimate unless marked rep. (reported, entered by the team). Blank where there is no revenue data yet.', l:'Revenue', r:1, f:c=>c.rev==null ? NA : revTxt(c.rev) + (c.revSrc==='Reported' ? ' <span class="flag">rep.</span>' : '') },
   { d:'Revenue growth, % a year, from PitchBook.', l:'Revenue growth', r:1, f:c=>c.revg==null ? NA : pc(c.revg/100) },
   { d:DEF.evRev, l:'EV / Rev', r:1, f:evRevCell },
+  { d:'Annualised recurring revenue: the latest reported quarter\'s revenue × 4, from public reporting (company disclosures and press). Hover for the quarter, source and link. Blank where no quarter has been reported or found.', l:'ARR', r:1, f:arrCell },
+  { d:'Calculation: current valuation ÷ ARR. Equity value, not enterprise value, so cash and debt are not netted. Blank where there is no ARR.', l:'EV / ARR', r:1, f:evArrCell },
   { d:'Growth-adjusted revenue multiple: EV / Rev ÷ revenue growth in % (e.g. 20× at 40% growth = 0.50). Lower means cheaper for the growth. Only where growth is positive.', l:'Growth-adj. multiple', r:1, f:c=>c.gAdj==null ? NA : c.gAdj.toFixed(2) },
   { d:'Rank on EV / Rev among private companies in the same sector that have revenue data (1 = lowest multiple). "few peers" where fewer than the Methodology minimum have data.', l:'Sector rank, EV / Rev', r:1, f:c=>!c.evRank ? NA : c.evRank.n==null ? `<span class="flag" title="${esc(rankTxt(c))}">few peers</span>` : `<span title="${esc(rankTxt(c))}">${c.evRank.n} of ${c.evRank.of}</span>` },
 ];
@@ -1492,6 +1503,7 @@ function drawPeers(rs, kpiHtml) {
     ...VX_YEARS.map(y => ({ d:`Median valuation multiple: current valuation ÷ the round nearest ${y} years ago. Only companies with a round that close.`, l:`Valuation × ${y} yrs`, cell:xs=>medCell(xs.map(c=>valX(c,y)?.x).filter(x=>x!=null), mx) })),
     { d:'Share of companies whose current valuation is below the last round.', l:'Below last round', cell:xs=>shareBelow(xs.map(peerPrem), 0) },
     { d:'Median revenue multiple (current valuation ÷ revenue). Only companies with revenue data; n is how many.', l:'EV / Rev', cell:xs=>medCell(xs.map(c=>c.evRev).filter(x=>x!=null), xFmt) },
+    { d:'Median EV / ARR (current valuation ÷ ARR, where ARR = the latest reported quarter × 4). Only companies with a reported quarter; n is how many.', l:'EV / ARR', cell:xs=>medCell(xs.map(c=>c.evArr).filter(x=>x!=null), xFmt) },
   ];
   mxTable('tbl-cmp-peer-s', ps, sumCols);
   if (ls.length) document.querySelector('#tbl-cmp-peer-s tbody').insertAdjacentHTML('beforeend', `<tr><td>Listed since 2024 <span class="flag">market value, latest price</span></td>${sumCols.map(k=>`<td class="r num">${k.cell(ls)}</td>`).join('')}</tr>`);
@@ -2903,7 +2915,9 @@ function masterWorkbook() {
       { h:'Months since', v:c=>c.lrAge, z:XZ.s0 }, { h:'Last round valuation', v:c=>c.lrEv, z:XZ.bn }, { h:'Current valuation', v:c=>c.cv, z:XZ.bn }, { h:'Basis', v:c=>c.cvSrc, w:14 }, { h:'Listed (ticker)', v:c=>c.ticker, w:12 },
       { h:'Premium / discount', v:c=>peerPrem(c), z:XZ.pct0 },
       { h:'Revenue ($m)', v:c=>c.rev, z:XZ.m }, { h:'Revenue basis', v:c=>c.revSrc, w:14 }, { h:'Revenue growth', v:c=>c.revg==null ? null : c.revg/100, z:XZ.pct0 },
-      { h:'EV / Rev', v:c=>c.evRev, z:XZ.mult }, { h:'Growth-adj. multiple', v:c=>c.gAdj, z:'0.00' },
+      { h:'EV / Rev', v:c=>c.evRev, z:XZ.mult },
+      { h:'ARR (US$m, latest quarter × 4)', v:c=>c.arr, z:XZ.m }, { h:'EV / ARR', v:c=>c.evArr, z:XZ.mult }, { h:'ARR quarter', v:c=>c.arrQ?.quarter || '', w:12 }, { h:'ARR source', v:c=>c.arrQ ? `${c.arrQ.src || ''} ${c.arrQ.url || ''}`.trim() : '', w:40 },
+      { h:'Growth-adj. multiple', v:c=>c.gAdj, z:'0.00' },
       { h:'Sector rank, EV / Rev', v:c=>c.evRank ? (c.evRank.n==null ? 'few peers' : `${c.evRank.n} of ${c.evRank.of}`) : '' },
       ...VX_YEARS.flatMap(y => [{ h:`Valuation × vs ${y} yrs ago`, v:c=>valX(c,y)?.x, z:XZ.mult }, { h:`${y}-yr reference round`, v:c=>{ const r = valRef(c,y); return r ? `${r.name||'round'} · ${r.date} · $${r.post}bn` : ''; }, w:34 }]),
     ],
