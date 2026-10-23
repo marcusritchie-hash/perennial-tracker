@@ -7,26 +7,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261023154944"></script>
-<script src="quant-rounds.js?v=20261023154944" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261023154944" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261023154944" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261023154944" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261023154944" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261023154944" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261023154944" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261023154944" onerror="window.STEP=null"></script>
-<script src="stepup-inputs.js?v=20261023154944" onerror="window.STEPUP=null"></script>
-<script src="augment-list.js?v=20261023154944" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261023154944" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261023154944" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261023154944" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261023154944" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261023154944" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261023154944" onerror="window.QREV={}"></script>
+<script src="quant-data.js?v=20261023161013"></script>
+<script src="quant-rounds.js?v=20261023161013" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261023161013" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261023161013" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261023161013" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261023161013" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261023161013" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261023161013" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261023161013" onerror="window.STEP=null"></script>
+<script src="stepup-inputs.js?v=20261023161013" onerror="window.STEPUP=null"></script>
+<script src="augment-list.js?v=20261023161013" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261023161013" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261023161013" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261023161013" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261023161013" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261023161013" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261023161013" onerror="window.QREV={}"></script>
 <script src="public-comps.js?v=20261023135221" onerror="window.PUBCOMPS={}"></script>
-<script src="method-config.js?v=20261023154944" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261023154944" onerror="window.SITE_UPDATED=null"></script>
+<script src="method-config.js?v=20261023161013" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261023161013" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -320,8 +320,9 @@
   .pf-sec .tbl-wrap { box-shadow: none; max-height: none; }
   tr.pf-me td { background: color-mix(in srgb, var(--accent-light-purple) 35%, var(--surface)) !important; font-weight: 600; }
   tr.pf-med td { font-weight: 700; color: var(--ink); border-top: 2px solid var(--brand); }
-  @media (max-width: 1300px) { .pf-kpis { grid-template-columns: repeat(4, 1fr); } }
-  @media (max-width: 760px) { .pf-kpis { grid-template-columns: repeat(2, 1fr); } }
+  .pf-kpis.k6 { grid-template-columns: repeat(6, 1fr); margin-bottom: 16px; }
+  @media (max-width: 1300px) { .pf-kpis, .pf-kpis.k6 { grid-template-columns: repeat(3, 1fr); } .pf-kpis:not(.k6) { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 760px) { .pf-kpis, .pf-kpis.k6, .pf-kpis:not(.k6) { grid-template-columns: repeat(2, 1fr); } }
 
   @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 760px) {
@@ -521,6 +522,36 @@
         <div class="legend" id="pf-px-legend"></div>
         <div class="chart-box" id="pf-px-box" style="height:280px"><canvas id="c-pf-px" role="img" aria-label="Secondary price per share by venue"></canvas></div>
       </div>
+    </div>
+  </div>
+
+  <div class="pf-sec">
+    <h3>Valuation multiples</h3>
+    <div class="sub" id="pf-vm-sub"></div>
+    <div class="pf-kpis k6" id="pf-vm-kpis"></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Entry-point multiples</h3>
+        <div class="sub">Current valuation ÷ the valuation at each of the last three priced rounds, as on the Our book page.</div>
+        <div class="tbl-wrap"><table id="tbl-pf-entry"><thead></thead><tbody></tbody></table></div>
+        <h4 style="margin-top:14px">Exit value needed from today</h4>
+        <div class="sub">Exit valuation for each return multiple on today's valuation, and that ÷ the last round.</div>
+        <div class="tbl-wrap"><table id="tbl-pf-need"><thead></thead><tbody></tbody></table></div>
+      </div>
+      <div class="panel">
+        <h3>Step-up and valuation growth</h3>
+        <div class="sub" id="pf-su-sub"></div>
+        <div class="tbl-wrap"><table id="tbl-pf-su"><thead></thead><tbody></tbody></table></div>
+        <h4 style="margin-top:14px">Trailing and forward revenue multiples</h4>
+        <div class="sub" id="pf-fwd-sub"></div>
+        <div class="tbl-wrap"><table id="tbl-pf-fwd"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>Against recent IPOs: equity value at IPO ÷ revenue</h3>
+      <div class="sub" id="pf-ipo-sub"></div>
+      <div class="legend"><span><i style="background:var(--purple)"></i>This company (trailing, forward)</span><span><i style="background:var(--accent-blue)"></i>Recent IPO</span><span><i style="background:var(--accent-pink);height:2px"></i><span id="pf-ipo-med"></span></span></div>
+      <div class="chart-box" id="pf-ipo-box" style="height:300px"><canvas id="c-pf-ipo" role="img" aria-label="Company revenue multiple against equity value to revenue at recent IPOs"></canvas></div>
     </div>
   </div>
 
@@ -3228,6 +3259,64 @@ function drawProfile() {
       : `${c.name} at ${xFmt(c.evRev)} against a listed median of ${xFmt(pm.evs)} (${(c.evRev/pm.evs).toFixed(1)}× the median). Trailing 12-month sales; read with the revenue-basis note above.`;
     pfBars('c-pf-pmx', it, pm.evs, 'Listed median');
   }
+
+  // valuation multiples: entry points (as Our book), step-up (as Valuations), growth-implied forward revenue, recent IPOs (as Market comparables)
+  const bd = bookData(c), sr = stepRounds(c), sLast = sr[sr.length-1], sPrior = sr[sr.length-2];
+  const stepX = sLast && sPrior ? sLast.val/sPrior.val : null, stepGap = sLast && sPrior ? monthsBetween(sPrior.date, sLast.date) : null;
+  const sPeers = UNI.filter(x => x.sector===c.sector && x.id!==c.id && !x.listed).map(x => { const r = stepRounds(x), a = r[r.length-1], b = r[r.length-2]; return a && b ? { x:a.val/b.val, gap:monthsBetween(b.date, a.date), g:x.ts.growth } : { g:x.ts.growth }; });
+  const sMed = { x:med(sPeers,p=>p.x), gap:med(sPeers,p=>p.gap), g:med(sPeers,p=>p.g), n:sPeers.filter(p=>p.x!=null).length };
+  const fwdOf = x => x.rev>0 && x.revg!=null && x.cv!=null ? x.cv*1000/(x.rev*(1+x.revg/100)) : null;
+  const fwd = fwdOf(c), fwdRev = c.rev>0 && c.revg!=null ? c.rev*(1+c.revg/100) : null;
+  const IR = (window.IPOREV?.companies || []).map(r => { const x = EXITS.find(e=>e.ticker===r.ticker); return x?.ipoValBn && r.fyRevenueM ? { name:x.name, t:x.ticker, date:x.ipoDate, val:x.ipoValBn, rev:r.fyRevenueM, fy:r.fyLabel, g:r.fyPriorM ? r.fyRevenueM/r.fyPriorM - 1 : null, m:x.ipoValBn*1000/r.fyRevenueM } : null; }).filter(Boolean).sort((a,b)=>b.m-a.m);
+  const ipoMed = IR.length ? median(IR.map(r=>r.m)) : null, atIpo = ipoMed!=null && c.rev>0 ? c.rev*ipoMed/1000 : null;
+  const xx = v => v==null ? '—' : v.toFixed(v >= 10 ? 0 : 1) + '×';
+  document.getElementById('pf-vm-sub').textContent = `Multiples on ${c.name}'s own valuation history and against recent IPOs. Entry points are the last three priced rounds as on the Our book page (earlier tenders are skipped; the latest valuation counts even when it is a tender); the step-up uses the last two priced marks, as on the Valuations page. Forward figures are growth-implied: next year's revenue = latest × (1 + PitchBook growth), not a forecast.`;
+  document.getElementById('pf-vm-kpis').innerHTML = [
+    [xx(bd.lr?.x), 'Current ÷ last round', bd.lr ? `${esc(bd.lr.name)} · ${fMon(bd.lr.date)} · ${bnx(bd.lr.val)}` : 'no priced primary round'],
+    [xx(bd.pr?.x), 'Current ÷ prior round', bd.pr ? `${esc(bd.pr.name)} · ${fMon(bd.pr.date)} · ${bnx(bd.pr.val)}` : 'no prior round'],
+    [stepX==null ? '—' : stX(stepX), 'Equity step-up', stepX==null ? 'needs two priced marks' : `${Math.round(stepGap)} months · sector median ${sMed.x==null ? '—' : stX(sMed.x)}`],
+    [c.ts.growth==null ? '—' : pct(c.ts.growth), 'Valuation growth a year', c.ts.growth==null ? 'needs a year of rounds' : `sector median ${pct(sMed.g)}`],
+    [fwd==null ? '—' : xFmt(fwd), 'Forward EV / Revenue', fwd==null ? 'needs revenue and growth' : `on ${revTxt(fwdRev)} implied · trailing ${xFmt(c.evRev)}`],
+    [atIpo==null ? '—' : bn(atIpo), 'Value at recent-IPO multiple', atIpo==null ? 'needs revenue' : `${xFmt(ipoMed)} median · ${pct(atIpo/c.cv-1)} vs current`],
+  ].map(([v,l,s])=>`<div class="card"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${s}</div></div>`).join('');
+
+  const ent = [['Last round', bd.lr], ['Prior round', bd.pr], ['Round before', bd.p2]].filter(([,p])=>p);
+  const te = document.getElementById('tbl-pf-entry');
+  te.querySelector('thead').innerHTML = '<tr><th>Entry point</th><th>Round</th><th class="r">Valuation</th><th class="r">Current ÷ entry</th></tr>';
+  te.querySelector('tbody').innerHTML = ent.length ? ent.map(([l,p])=>`<tr><td class="co">${l}</td><td>${esc(p.name||'')}<br><span class="flag">${fDate(p.date)} · ${Math.round(p.mo)} months ago</span></td><td class="r num">${bnx(p.val)}</td><td class="r num">${p.x==null ? NA : mx1(p.x)}</td></tr>`).join('')
+    : `<tr><td colspan="4" class="empty">No priced rounds compiled for ${esc(c.name)}.</td></tr>`;
+  const B = BUCKETS[c.tier===XO ? 'X' : 'G'], needs = [...new Set([...BOOK_NEEDS, B.ret[0]])].sort((a,b)=>a-b);
+  const tn = document.getElementById('tbl-pf-need');
+  tn.querySelector('thead').innerHTML = '<tr><th>Return</th><th class="r">Exit valuation</th><th class="r">÷ last round</th></tr>';
+  tn.querySelector('tbody').innerHTML = c.cv==null ? `<tr><td colspan="3" class="empty">Needs a current valuation.</td></tr>`
+    : needs.map(m=>`<tr${m===B.ret[0] ? ' class="pf-me"' : ''}><td class="co">${m}×${m===B.ret[0] ? ` <span class="flag">${esc(B.name)} target</span>` : ''}</td><td class="r num">${bnx(c.cv*m)}</td><td class="r num">${bd.lr ? (c.cv*m/bd.lr.val).toFixed(1)+'×' : NA}</td></tr>`).join('');
+
+  document.getElementById('pf-su-sub').textContent = `Step-up = last ÷ prior priced mark (company-level equity value, not MOIC). Valuation growth = yearly rate over 3+ years of rounds (the scoring model's measure). Sector medians over ${sMed.n} other private ${c.sector} companies with two marks.`;
+  const ts = document.getElementById('tbl-pf-su');
+  ts.querySelector('thead').innerHTML = `<tr><th>Measure</th><th class="r">${esc(c.name)}</th><th class="r">Sector median</th></tr>`;
+  ts.querySelector('tbody').innerHTML = [
+    ['Prior mark', sPrior ? `${bnx(sPrior.val)}<br><span class="flag">${esc(sPrior.name)} · ${fMon(sPrior.date)}</span>` : NA, ''],
+    ['Last mark', sLast ? `${bnx(sLast.val)}<br><span class="flag">${esc(sLast.name)} · ${fMon(sLast.date)}</span>` : NA, ''],
+    ['Equity step-up', stepX==null ? NA : stX(stepX), sMed.x==null ? NA : stX(sMed.x)],
+    ['Months between', stepGap==null ? NA : Math.round(stepGap), sMed.gap==null ? NA : Math.round(sMed.gap)],
+    ['Valuation growth a year', c.ts.growth==null ? NA : pct(c.ts.growth), sMed.g==null ? NA : pct(sMed.g)],
+  ].map(([l,a,b])=>`<tr><td class="co">${l}</td><td class="r num">${a}</td><td class="r num">${b}</td></tr>`).join('');
+
+  const cmF = med(comps, fwdOf), smF = med(sectorAll, fwdOf);
+  document.getElementById('pf-fwd-sub').textContent = `Trailing = current valuation ÷ latest revenue; forward = ÷ growth-implied next-year revenue, for ${c.name} and its private comparables alike. Listed peers: EV / Sales (LTM) and price / forward sales (consensus, from the source in the listed table). Price / sales is the closer match, as private multiples here are equity value ÷ revenue.`;
+  const tf = document.getElementById('tbl-pf-fwd');
+  tf.querySelector('thead').innerHTML = `<tr><th>Multiple</th><th class="r">${esc(c.name)}</th><th class="r">Private comps</th><th class="r">Sector</th><th class="r">Listed</th></tr>`;
+  const xf = v => v==null ? NA : xFmt(v);
+  tf.querySelector('tbody').innerHTML = `<tr><td class="co">Trailing</td><td class="r num">${xf(c.evRev)}</td><td class="r num">${xf(cm.evRev)}</td><td class="r num">${xf(sm.evRev)}</td><td class="r num">${xf(pm.evs)}</td></tr>`
+    + `<tr><td class="co">Forward</td><td class="r num">${xf(fwd)}</td><td class="r num">${xf(cmF)}</td><td class="r num">${xf(smF)}</td><td class="r num">${xf(pm.fps)}</td></tr>`;
+
+  document.getElementById('pf-ipo-med').textContent = `Recent-IPO median ${ipoMed==null ? '—' : xFmt(ipoMed)}`;
+  document.getElementById('pf-ipo-sub').textContent = IR.length ? `${IR.length} recent US tech IPOs: equity value at the IPO price ÷ revenue for the last full fiscal year in the prospectus (the Market comparables page's Recent IPOs table). ${c.evRev!=null ? `${c.name} at ${xFmt(c.evRev)} trailing${fwd!=null ? ` and ${xFmt(fwd)} forward` : ''}; at the median it would be valued at ${bn(atIpo)}.` : ''}` : 'Revenue for recent IPOs is still being sourced.';
+  const ii = [...(c.evRev!=null ? [{ name:c.name+' (trailing)', v:c.evRev, me:true, tip:`<b>${esc(c.name)}</b><br>Trailing ${xFmt(c.evRev)}: ${bn(c.cv)} ÷ ${revTxt(c.rev)}` }] : []),
+    ...(fwd!=null ? [{ name:c.name+' (forward)', v:fwd, me:true, tip:`<b>${esc(c.name)}</b><br>Forward ${xFmt(fwd)}: ${bn(c.cv)} ÷ ${revTxt(fwdRev)} implied` }] : []),
+    ...IR.map(r=>({ name:r.name, v:r.m, tip:`<b>${esc(r.name)}</b> · ${esc(r.t)} · IPO ${fMon(r.date)}<br>${xFmt(r.m)}: ${bnx(r.val)} ÷ ${revTxt(r.rev)} (${esc(r.fy||'')})${r.g!=null ? `<br>Revenue growth ${pct(r.g)}` : ''}` }))];
+  if (!IR.length) emptyBox('pf-ipo-box', 'c-pf-ipo', 'Revenue for recent IPOs is still being sourced.');
+  else { emptyBox('pf-ipo-box', 'c-pf-ipo', ''); pfBars('c-pf-ipo', ii, ipoMed, 'Recent-IPO median'); }
 
   // rounds and shareholders
   document.getElementById('pf-rounds').innerHTML = '<h4>Funding rounds</h4>' + (qr?.rounds?.length ? roundsTable([...qr.rounds].reverse()) : '<div class="empty">Funding history not yet compiled for this company.</div>')
