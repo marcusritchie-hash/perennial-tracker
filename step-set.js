@@ -11,7 +11,7 @@ window.STEP = {
   "include": ["figureai", "mistralai", "fluidstack", "baseten", "saronic", "ereborbank"],
   "exclude": [],
   "bucket": {
-    "fluidstack": "Late Growth", "ereborbank": "Late Growth"
+    "fluidstack": "Late Growth", "baseten": "Late Growth", "ereborbank": "Late Growth"
   },
   "rule": { "openai": "primary" },
   "notes": {
