@@ -7,26 +7,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261023161013"></script>
-<script src="quant-rounds.js?v=20261023161013" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261023161013" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261023161013" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261023161013" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261023161013" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261023161013" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261023161013" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261023161013" onerror="window.STEP=null"></script>
-<script src="stepup-inputs.js?v=20261023161013" onerror="window.STEPUP=null"></script>
-<script src="augment-list.js?v=20261023161013" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261023161013" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261023161013" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261023161013" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261023161013" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261023161013" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261023161013" onerror="window.QREV={}"></script>
+<script src="quant-data.js?v=20261023161431"></script>
+<script src="quant-rounds.js?v=20261023161431" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261023161431" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261023161431" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261023161431" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261023161431" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261023161431" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261023161431" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261023161431" onerror="window.STEP=null"></script>
+<script src="stepup-inputs.js?v=20261023161431" onerror="window.STEPUP=null"></script>
+<script src="augment-list.js?v=20261023161431" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261023161431" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261023161431" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261023161431" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261023161431" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261023161431" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261023161431" onerror="window.QREV={}"></script>
 <script src="public-comps.js?v=20261023135221" onerror="window.PUBCOMPS={}"></script>
-<script src="method-config.js?v=20261023161013" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261023161013" onerror="window.SITE_UPDATED=null"></script>
+<script src="method-config.js?v=20261023161431" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261023161431" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -483,7 +483,7 @@
   <div class="view" id="view-profile" role="tabpanel" hidden>
   <div class="pf-pick">
     <label for="pf-co">Company</label>
-    <select id="pf-co" aria-label="Marquee company"></select>
+    <select id="pf-co" aria-label="Marquee or Watching company"></select>
   </div>
   <div class="pf-hd" id="pf-hd"></div>
   <div class="pf-kpis" id="pf-kpis"></div>
@@ -3086,13 +3086,17 @@ function initAlloc() {
   };
 }
 
-// ── company profile: one Marquee company on a page — overview, revenue, valuation and its market comparables ──
+// ── company profile: one Marquee or Watching company on a page — overview, revenue, valuation and its market comparables ──
 const PF_DEFAULT = 'stripe';
 const PF_COMPS = 8;   // comparables: the sector peers nearest in current valuation that have an EV / Revenue multiple
-const pfList = () => UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq);
+// Marquee list first (by rank), then Watching companies that are not already on it (by watching position).
+const pfMq = () => UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq), pfWl = () => UNI.filter(c=>c.wl && !c.mq).sort((a,b)=>a.wl-b.wl);
+const pfList = () => [...pfMq(), ...pfWl()];
 const pfCo = () => { const l = pfList(); return l.find(c=>c.id===F.pid) || l.find(c=>c.id===PF_DEFAULT) || l[0]; };
+const pfTag = c => `${c.mq ? `<span class="badge b-ls">M${c.mq}</span>` : ''}${c.wl ? `<span class="badge b-ls">W${c.wl}</span>` : ''}`;
 const pfSel = document.getElementById('pf-co');
-pfSel.innerHTML = pfList().map(c=>`<option value="${esc(c.id)}">${c.mq}. ${esc(c.name)}</option>`).join('');
+pfSel.innerHTML = `<optgroup label="Marquee list">${pfMq().map(c=>`<option value="${esc(c.id)}">${c.mq}. ${esc(c.name)}</option>`).join('')}</optgroup>`
+  + `<optgroup label="Watching companies">${pfWl().map(c=>`<option value="${esc(c.id)}">${c.wl}. ${esc(c.name)}</option>`).join('')}</optgroup>`;
 pfSel.onchange = e => { F.pid = e.target.value; history.replaceState(null, '', '#profile/'+F.pid); tipEl.style.opacity = 0; render(); };
 document.getElementById('tbl-pf-cmp').onclick = e => { const id = e.target.closest('tr[data-id]')?.dataset.id, c = id && UNI.find(x=>x.id===id); if (c) openDetail(c); };
 function pfComps(c) {
@@ -3122,7 +3126,7 @@ function drawProfile() {
   // header and tiles
   document.getElementById('pf-hd').innerHTML = `<h2>${esc(c.name)}</h2>
     <div class="meta">${[c.sector, c.sub, c.pb?.hq || c.hq || c.region, c.pb?.founded ? 'Founded '+c.pb.founded : null].filter(Boolean).map(esc).join(' · ')}</div>
-    <div><span class="badge b-mq">Marquee #${c.mq}</span><span class="badge b-bk">${esc(c.tier)}</span>${c.ipo ? `<span class="badge b-ls">${esc(IPO_SHORT[c.ipo.status]||c.ipo.status)}</span>` : ''}${c.pb?.status ? `<span class="badge b-ls">${esc(c.pb.status)}</span>` : ''}</div>
+    <div>${c.mq ? `<span class="badge b-mq">Marquee #${c.mq}</span>` : ''}${c.wl ? `<span class="badge b-mq">Watching #${c.wl}</span>` : ''}<span class="badge b-bk">${esc(c.tier)}</span>${c.ipo ? `<span class="badge b-ls">${esc(IPO_SHORT[c.ipo.status]||c.ipo.status)}</span>` : ''}${c.pb?.status ? `<span class="badge b-ls">${esc(c.pb.status)}</span>` : ''}</div>
     ${c.pb?.desc || c.note ? `<p class="pf-desc">${esc(c.pb?.desc || '')}${c.note ? ` <b>Desk note:</b> ${esc(c.note)}` : ''}</p>` : ''}`;
   const spread = c.spread!=null ? ` · spread ${(c.spread*100).toFixed(1)}%` : '';
   document.getElementById('pf-kpis').innerHTML = [
@@ -3198,7 +3202,7 @@ function drawProfile() {
   // market comparables
   document.getElementById('pf-cmp-sub').textContent = `The ${comps.length} private ${c.sector} companies in the universe nearest to ${c.name} in current valuation that have an EV / Revenue multiple. EV / Revenue = current valuation ÷ revenue (equity value; cash and debt not netted). Click a company for its detail.`;
   const cols = [
-    { l:'Company', cls:'co', f:x=>`${esc(x.name)}${x.mq ? `<span class="badge b-ls">M${x.mq}</span>` : ''}` },
+    { l:'Company', cls:'co', f:x=>`${esc(x.name)}${pfTag(x)}` },
     { l:'Bucket', f:x=>esc(x.tier) },
     { l:'Current valuation', r:1, f:x=>`${bn(x.cv)}<br><span class="flag">${esc(x.cvSrc||'')}</span>` },
     { l:'Last round', r:1, f:x=>x.lrEv==null ? NA : `${bn(x.lrEv)}<br><span class="flag">${x.lrDate ? mon(x.lrDate.slice(0,7)) : 'n/d'}</span>` },
@@ -3233,7 +3237,7 @@ function drawProfile() {
   const cur = x => x.ccy==='USD' ? '$' : x.ccy==='EUR' ? '€' : x.ccy==='GBP' ? '£' : x.ccy+' ';
   const xm = v => v==null ? NA : xFmt(v), cp = v => v==null ? NA : `<span class="${v>=0?'up':'dn'}">${v>0?'+':''}${v.toFixed(1)}%</span>`;
   const pcols = [
-    { l:'Company', cls:'co', f:x=>x.me ? `${esc(c.name)}<span class="badge b-ls">M${c.mq}</span>` : esc(x.name) },
+    { l:'Company', cls:'co', f:x=>x.me ? `${esc(c.name)}${pfTag(c)}` : esc(x.name) },
     { l:'Ticker', f:x=>x.me ? '<span class="flag">Private</span>' : esc(x.t) },
     { l:'Mkt cap (bn)', r:1, f:x=>x.me ? bn(c.cv) : `${cur(x)}${x.mcap.toFixed(1)}` },
     { l:'Last price', r:1, f:x=>x.me ? usd(c.bl) : `${cur(x)}${x.px.toFixed(2)}${x.pxDate ? `<br><span class="flag">${fDate(x.pxDate)}</span>` : ''}` },
