@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Perennial — Top 50 Pre-IPO</title>
+<title>Perennial — Top 100 Pre-IPO</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&family=Bitter:wght@400&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -328,8 +328,8 @@
       <img class="hdr-logo" src="assets/perennial-logo-white.png" alt="Perennial">
       <div class="hdr-divider"></div>
       <div>
-        <div class="hdr-title">Top 50 Pre-IPO</div>
-        <div class="hdr-sub">Top 50 by valuation · Clarity (formerly Hiive), Augment &amp; Forge prices refreshed 23 Oct 2026 · movement below is a simulation, not a live feed</div>
+        <div class="hdr-title">Top 100 Pre-IPO</div>
+        <div class="hdr-sub">Top 100 by valuation · Clarity (formerly Hiive), Augment &amp; Forge prices refreshed 23 Oct 2026 · movement below is a simulation, not a live feed</div>
       </div>
     </div>
     <div class="hdr-right">
@@ -338,7 +338,7 @@
     </div>
   </header>
 
-  <div class="rank-note"><b>Who's in:</b> the 50 most valuable pre-IPO companies on Augment that a second platform (Clarity or Forge) also prices. <b>How the list is ranked:</b> by implied market cap, highest first. Use <b>Sort by</b> to re-order.<br>
+  <div class="rank-note"><b>Who's in:</b> the 100 most valuable pre-IPO companies on Augment that a second platform (Clarity or Forge) also prices. <b>How the list is ranked:</b> by implied market cap, highest first. Use <b>Sort by</b> to re-order.<br>
     <b>Implied market cap</b> is an estimate of what the whole company is worth at today's secondary-market prices: the blended share price (the average of the available Clarity, Augment and Forge prices) × the estimated number of shares outstanding. The share count is worked out from Augment's estimated valuation divided by Augment's price, so it is an approximation, not a reported or official valuation.</div>
 
   <div class="src-row">
@@ -349,7 +349,7 @@
   </div>
 
   <div class="metrics">
-    <div class="met"><div class="met-label">Total implied cap</div><div class="met-val" id="m-cap">—</div><div class="met-sub">blended mid · 50 cos</div></div>
+    <div class="met"><div class="met-label">Total implied cap</div><div class="met-val" id="m-cap">—</div><div class="met-sub">blended mid · 100 cos</div></div>
     <div class="met"><div class="met-label">Gainers</div><div class="met-val up" id="m-g">—</div><div class="met-sub met-sub-chg">since previous pull</div></div>
     <div class="met"><div class="met-label">Losers</div><div class="met-val dn" id="m-l">—</div><div class="met-sub met-sub-chg">since previous pull</div></div>
     <div class="met"><div class="met-label">Avg Clarity/Augment spread</div><div class="met-val neu" id="m-sp">—</div><div class="met-sub">cross-platform gap</div></div>
@@ -452,7 +452,8 @@
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
-// TOP 50 by Augment valuation, all three sources read 14 Oct 2026 (list set 12 Oct):
+// TOP 100 by Augment valuation, all three sources read 14 Oct 2026 (list set 12 Oct):
+//   Ranks 51-100 added 23 Oct 2026 (Augment valuation and price, Clarity and Forge read that day); shares = Augment valuation / Augment price.
 //   p1 = Clarity Price (app.clarity.com company pages)
 //   p2 = Forge Price   (forgeglobal.com public company pages)
 //   p3 = Augment Price (app.augment.market company pages, data by Caplight)
@@ -515,6 +516,56 @@ const COS = [
   { id:'psiquantum', name:'PsiQuantum', sec:'Quantum', sc:'sp', shares:170.09e6, col:'#2980d9', p1:28.25, p2:27.39, p3:31.36, struct:'Mixed', rofr:'Moderate', p1rank:19, liveOrders:34 },
   { id:'mercury', name:'Mercury', sec:'Fintech', sc:'fin', shares:293.60e6, col:'#0c8c5e', p1:14.82, p2:null, p3:18.04, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
   { id:'redwood', name:'Redwood Materials', sec:'Energy', sc:'en', shares:126.50e6, col:'#4a6741', p1:35.16, p2:null, p3:39.61, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'clickhouse', name:'ClickHouse', sec:'Data', sc:'da', shares:94.08e6, col:'#8b5cf6', p1:294.21, p2:null, p3:444.28, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'whatnot', name:'Whatnot', sec:'Consumer', sc:'ro', shares:132.62e6, col:'#5b3ea6', p1:98.64, p2:null, p3:161.36, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'appliedintuition', name:'Applied Intuition', sec:'AI', sc:'ai', shares:110.16e6, col:'#1a6bb5', p1:196.49, p2:null, p3:184.27, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'castelion', name:'Castelion', sec:'Defense', sc:'cy', shares:24.75e6, col:'#2980d9', p1:549.12, p2:null, p3:686.75, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'basepower', name:'Base Power', sec:'Energy', sc:'en', shares:377.14e6, col:'#0c8c5e', p1:47.42, p2:null, p3:43.22, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'sandboxaq', name:'SandboxAQ', sec:'AI', sc:'ai', shares:377.16e6, col:'#c0392b', p1:33.58, p2:41.35, p3:37.65, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'vercel', name:'Vercel', sec:'Data', sc:'da', shares:46.23e6, col:'#4a6741', p1:240.12, p2:224.99, p3:294.16, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'openevidence', name:'OpenEvidence', sec:'Health', sc:'cy', shares:24.99e6, col:'#7a5c00', p1:557.48, p2:null, p3:492.27, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'supabase', name:'Supabase', sec:'Data', sc:'da', shares:151.66e6, col:'#b8559e', p1:74.89, p2:null, p3:75.17, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'cohesity', name:'Cohesity', sec:'Data', sc:'da', shares:470.15e6, col:'#d2691e', p1:14.74, p2:15.67, p3:21.27, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'moonshotai', name:'Moonshot AI', sec:'AI', sc:'ai', shares:79.64e6, col:'#8b5cf6', p1:76.84, p2:null, p3:125.57, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'airwallex', name:'Airwallex', sec:'Fintech', sc:'fin', shares:394.12e6, col:'#5b3ea6', p1:24.62, p2:null, p3:23.8, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'fluidstack', name:'Fluidstack', sec:'AI', sc:'ai', shares:55.54e6, col:'#1a6bb5', p1:153.13, p2:null, p3:168.7, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'stokespace', name:'Stoke Space', sec:'Space', sc:'sp', shares:83.76e6, col:'#2980d9', p1:null, p2:119.38, p3:111.51, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'valaratomics', name:'Valar Atomics', sec:'Energy', sc:'en', shares:62.20e6, col:'#0c8c5e', p1:127.06, p2:null, p3:149.85, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'hadrian', name:'Hadrian', sec:'Defense', sc:'cy', shares:117.62e6, col:'#c0392b', p1:81.92, p2:null, p3:75.41, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'clay', name:'Clay', sec:'AI', sc:'ai', shares:321.10e6, col:'#4a6741', p1:18.75, p2:null, p3:26.44, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'sambanova', name:'SambaNova', sec:'AI', sc:'ai', shares:86.55e6, col:'#7a5c00', p1:71.82, p2:70.13, p3:96.24, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'positron', name:'Positron', sec:'AI', sc:'ai', shares:69.56e6, col:'#b8559e', p1:78.68, p2:null, p3:102.93, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'ayarlabs', name:'Ayar Labs', sec:'AI', sc:'ai', shares:71.73e6, col:'#d2691e', p1:89.05, p2:86.87, p3:90.06, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'fivetran', name:'Fivetran', sec:'Data', sc:'da', shares:695.28e6, col:'#8b5cf6', p1:5.72, p2:null, p3:8.27, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'abnormalsecurity', name:'Abnormal Security', sec:'Security', sc:'cy', shares:220.20e6, col:'#5b3ea6', p1:16.0, p2:null, p3:25.84, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'island', name:'Island', sec:'Security', sc:'cy', shares:515.27e6, col:'#1a6bb5', p1:8.38, p2:null, p3:10.48, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'icapitalnetwork', name:'iCapital Network', sec:'Fintech', sc:'fin', shares:428.69e6, col:'#2980d9', p1:11.15, p2:null, p3:12.27, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'runway', name:'Runway', sec:'AI', sc:'ai', shares:362.61e6, col:'#0c8c5e', p1:8.81, p2:null, p3:14.23, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'verkada', name:'Verkada', sec:'Security', sc:'cy', shares:538.95e6, col:'#c0392b', p1:12.88, p2:10.5, p3:9.37, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'diamondfoundry', name:'Diamond Foundry', sec:'Hardware', sc:'sp', shares:74.98e6, col:'#4a6741', p1:67.63, p2:null, p3:67.35, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'tanium', name:'Tanium', sec:'Security', sc:'cy', shares:790.43e6, col:'#7a5c00', p1:null, p2:4.71, p3:6.06, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'nuro', name:'Nuro', sec:'Robotics', sc:'sp', shares:469.09e6, col:'#b8559e', p1:null, p2:8.5, p3:10.19, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'cribl', name:'Cribl', sec:'Data', sc:'da', shares:907.11e6, col:'#d2691e', p1:3.49, p2:4.25, p3:5.06, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'chaosindustries', name:'CHAOS Industries', sec:'Defense', sc:'cy', shares:32.38e6, col:'#8b5cf6', p1:157.2, p2:145.88, p3:140.83, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'machindustries', name:'Mach Industries', sec:'Defense', sc:'cy', shares:614.11e6, col:'#5b3ea6', p1:5.69, p2:null, p3:6.66, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'lightmatter', name:'Lightmatter', sec:'AI', sc:'ai', shares:54.89e6, col:'#1a6bb5', p1:92.99, p2:null, p3:73.78, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'alchemy', name:'Alchemy', sec:'Crypto', sc:'cr', shares:19.77e6, col:'#2980d9', p1:159.26, p2:null, p3:189.2, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'tenstorrent', name:'Tenstorrent', sec:'AI', sc:'ai', shares:39.54e6, col:'#0c8c5e', p1:109.67, p2:null, p3:91.8, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'harness', name:'Harness', sec:'Data', sc:'da', shares:216.33e6, col:'#c0392b', p1:19.03, p2:19.0, p3:16.41, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'snyk', name:'Snyk', sec:'Security', sc:'cy', shares:646.52e6, col:'#4a6741', p1:5.02, p2:null, p3:5.46, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'huntress', name:'Huntress', sec:'Security', sc:'cy', shares:148.71e6, col:'#7a5c00', p1:18.23, p2:15.99, p3:20.51, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'arcticwolf', name:'Arctic Wolf', sec:'Security', sc:'cy', shares:520.65e6, col:'#b8559e', p1:7.67, p2:null, p3:5.57, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'fireblocks', name:'Fireblocks', sec:'Crypto', sc:'cr', shares:493.81e6, col:'#d2691e', p1:5.66, p2:null, p3:5.65, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'koboldmetals', name:'KoBold Metals', sec:'Energy', sc:'en', shares:26.28e6, col:'#8b5cf6', p1:79.54, p2:null, p3:105.04, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'cityblockhealth', name:'Cityblock Health', sec:'Health', sc:'cy', shares:76.52e6, col:'#5b3ea6', p1:null, p2:27.49, p3:36.07, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'airtable', name:'Airtable', sec:'Data', sc:'da', shares:62.59e6, col:'#1a6bb5', p1:42.34, p2:null, p3:43.14, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'aledade', name:'Aledade', sec:'Health', sc:'cy', shares:69.97e6, col:'#2980d9', p1:34.39, p2:null, p3:38.3, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'agilityrobotics', name:'Agility Robotics', sec:'Robotics', sc:'sp', shares:32.46e6, col:'#0c8c5e', p1:68.17, p2:71.0, p3:80.1, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'automattic', name:'Automattic', sec:'Data', sc:'da', shares:88.26e6, col:'#c0392b', p1:22.56, p2:null, p3:26.74, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'starcloud', name:'Starcloud', sec:'AI', sc:'ai', shares:40.88e6, col:'#4a6741', p1:59.25, p2:null, p3:56.51, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'rappi', name:'Rappi', sec:'Consumer', sc:'ro', shares:83.03e6, col:'#7a5c00', p1:17.31, p2:18.21, p3:27.7, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'addepar', name:'Addepar', sec:'Fintech', sc:'fin', shares:913.93e6, col:'#b8559e', p1:2.74, p2:2.2, p3:2.44, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'vardaspaceindustries', name:'Varda Space Industries', sec:'Space', sc:'sp', shares:78.17e6, col:'#d2691e', p1:36.43, p2:null, p3:27.76, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
 ];
 
 // ── PRICE HISTORY ──
@@ -574,6 +625,56 @@ const HIST = {
   psiquantum:  { p1:[['2026-08-07',27.31],['2026-10-07',27.83],['2026-10-12',28.11],['2026-10-14',28.16],['2026-10-15',28.14],['2026-10-19',28.15],['2026-10-23',28.25]], p2:[['2026-08-07',28.54],['2026-09-23',27.35],['2026-10-07',27.01],['2026-10-12',27.01],['2026-10-14',27.01],['2026-10-15',27.01],['2026-10-19',27.09],['2026-10-23',27.39]], p3:[['2026-09-23',28.30],['2026-10-07',29.47],['2026-10-12',29.47],['2026-10-14',29.69],['2026-10-15',29.69],['2026-10-19',29.69],['2026-10-23',31.36]] },
   mercury:     { p1:[['2026-10-12',14.74],['2026-10-14',14.74],['2026-10-15',14.74],['2026-10-19',14.78],['2026-10-23',14.82]], p2:[], p3:[['2026-10-12',16.67],['2026-10-14',17.81],['2026-10-15',17.81],['2026-10-19',17.81],['2026-10-23',18.04]] },
   redwood:     { p1:[['2026-10-12',35.58],['2026-10-14',35.32],['2026-10-15',35.28],['2026-10-19',35.23],['2026-10-23',35.16]], p2:[], p3:[['2026-10-12',38.66],['2026-10-14',38.88],['2026-10-15',38.88],['2026-10-19',38.88],['2026-10-23',39.61]] },
+  clickhouse:    { p1:[['2026-10-23',294.21]], p2:[], p3:[['2026-10-23',444.28]] },
+  whatnot:       { p1:[['2026-10-23',98.64]], p2:[], p3:[['2026-10-23',161.36]] },
+  appliedintuition: { p1:[['2026-10-23',196.49]], p2:[], p3:[['2026-10-23',184.27]] },
+  castelion:     { p1:[['2026-10-23',549.12]], p2:[], p3:[['2026-10-23',686.75]] },
+  basepower:     { p1:[['2026-10-23',47.42]], p2:[], p3:[['2026-10-23',43.22]] },
+  sandboxaq:     { p1:[['2026-10-23',33.58]], p2:[['2026-10-23',41.35]], p3:[['2026-10-23',37.65]] },
+  vercel:        { p1:[['2026-10-23',240.12]], p2:[['2026-10-23',224.99]], p3:[['2026-10-23',294.16]] },
+  openevidence:  { p1:[['2026-10-23',557.48]], p2:[], p3:[['2026-10-23',492.27]] },
+  supabase:      { p1:[['2026-10-23',74.89]], p2:[], p3:[['2026-10-23',75.17]] },
+  cohesity:      { p1:[['2026-10-23',14.74]], p2:[['2026-10-23',15.67]], p3:[['2026-10-23',21.27]] },
+  moonshotai:    { p1:[['2026-10-23',76.84]], p2:[], p3:[['2026-10-23',125.57]] },
+  airwallex:     { p1:[['2026-10-23',24.62]], p2:[], p3:[['2026-10-23',23.8]] },
+  fluidstack:    { p1:[['2026-10-23',153.13]], p2:[], p3:[['2026-10-23',168.7]] },
+  stokespace:    { p1:[], p2:[['2026-10-23',119.38]], p3:[['2026-10-23',111.51]] },
+  valaratomics:  { p1:[['2026-10-23',127.06]], p2:[], p3:[['2026-10-23',149.85]] },
+  hadrian:       { p1:[['2026-10-23',81.92]], p2:[], p3:[['2026-10-23',75.41]] },
+  clay:          { p1:[['2026-10-23',18.75]], p2:[], p3:[['2026-10-23',26.44]] },
+  sambanova:     { p1:[['2026-10-23',71.82]], p2:[['2026-10-23',70.13]], p3:[['2026-10-23',96.24]] },
+  positron:      { p1:[['2026-10-23',78.68]], p2:[], p3:[['2026-10-23',102.93]] },
+  ayarlabs:      { p1:[['2026-10-23',89.05]], p2:[['2026-10-23',86.87]], p3:[['2026-10-23',90.06]] },
+  fivetran:      { p1:[['2026-10-23',5.72]], p2:[], p3:[['2026-10-23',8.27]] },
+  abnormalsecurity: { p1:[['2026-10-23',16.0]], p2:[], p3:[['2026-10-23',25.84]] },
+  island:        { p1:[['2026-10-23',8.38]], p2:[], p3:[['2026-10-23',10.48]] },
+  icapitalnetwork: { p1:[['2026-10-23',11.15]], p2:[], p3:[['2026-10-23',12.27]] },
+  runway:        { p1:[['2026-10-23',8.81]], p2:[], p3:[['2026-10-23',14.23]] },
+  verkada:       { p1:[['2026-10-23',12.88]], p2:[['2026-10-23',10.5]], p3:[['2026-10-23',9.37]] },
+  diamondfoundry: { p1:[['2026-10-23',67.63]], p2:[], p3:[['2026-10-23',67.35]] },
+  tanium:        { p1:[], p2:[['2026-10-23',4.71]], p3:[['2026-10-23',6.06]] },
+  nuro:          { p1:[], p2:[['2026-10-23',8.5]], p3:[['2026-10-23',10.19]] },
+  cribl:         { p1:[['2026-10-23',3.49]], p2:[['2026-10-23',4.25]], p3:[['2026-10-23',5.06]] },
+  chaosindustries: { p1:[['2026-10-23',157.2]], p2:[['2026-10-23',145.88]], p3:[['2026-10-23',140.83]] },
+  machindustries: { p1:[['2026-10-23',5.69]], p2:[], p3:[['2026-10-23',6.66]] },
+  lightmatter:   { p1:[['2026-10-23',92.99]], p2:[], p3:[['2026-10-23',73.78]] },
+  alchemy:       { p1:[['2026-10-23',159.26]], p2:[], p3:[['2026-10-23',189.2]] },
+  tenstorrent:   { p1:[['2026-10-23',109.67]], p2:[], p3:[['2026-10-23',91.8]] },
+  harness:       { p1:[['2026-10-23',19.03]], p2:[['2026-10-23',19.0]], p3:[['2026-10-23',16.41]] },
+  snyk:          { p1:[['2026-10-23',5.02]], p2:[], p3:[['2026-10-23',5.46]] },
+  huntress:      { p1:[['2026-10-23',18.23]], p2:[['2026-10-23',15.99]], p3:[['2026-10-23',20.51]] },
+  arcticwolf:    { p1:[['2026-10-23',7.67]], p2:[], p3:[['2026-10-23',5.57]] },
+  fireblocks:    { p1:[['2026-10-23',5.66]], p2:[], p3:[['2026-10-23',5.65]] },
+  koboldmetals:  { p1:[['2026-10-23',79.54]], p2:[], p3:[['2026-10-23',105.04]] },
+  cityblockhealth: { p1:[], p2:[['2026-10-23',27.49]], p3:[['2026-10-23',36.07]] },
+  airtable:      { p1:[['2026-10-23',42.34]], p2:[], p3:[['2026-10-23',43.14]] },
+  aledade:       { p1:[['2026-10-23',34.39]], p2:[], p3:[['2026-10-23',38.3]] },
+  agilityrobotics: { p1:[['2026-10-23',68.17]], p2:[['2026-10-23',71.0]], p3:[['2026-10-23',80.1]] },
+  automattic:    { p1:[['2026-10-23',22.56]], p2:[], p3:[['2026-10-23',26.74]] },
+  starcloud:     { p1:[['2026-10-23',59.25]], p2:[], p3:[['2026-10-23',56.51]] },
+  rappi:         { p1:[['2026-10-23',17.31]], p2:[['2026-10-23',18.21]], p3:[['2026-10-23',27.7]] },
+  addepar:       { p1:[['2026-10-23',2.74]], p2:[['2026-10-23',2.2]], p3:[['2026-10-23',2.44]] },
+  vardaspaceindustries: { p1:[['2026-10-23',36.43]], p2:[], p3:[['2026-10-23',27.76]] },
 };
 
 let ST={}, hVol=0.5, selCo='anth', dpSrc='all';
