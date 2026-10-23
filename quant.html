@@ -7,26 +7,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261023161431"></script>
-<script src="quant-rounds.js?v=20261023161431" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261023161431" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261023161431" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261023161431" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261023161431" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261023161431" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261023161431" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261023161431" onerror="window.STEP=null"></script>
-<script src="stepup-inputs.js?v=20261023161431" onerror="window.STEPUP=null"></script>
-<script src="augment-list.js?v=20261023161431" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261023161431" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261023161431" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261023161431" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261023161431" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261023161431" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261023161431" onerror="window.QREV={}"></script>
+<script src="quant-data.js?v=20261023161631"></script>
+<script src="quant-rounds.js?v=20261023161631" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261023161631" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261023161631" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261023161631" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261023161631" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261023161631" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261023161631" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261023161631" onerror="window.STEP=null"></script>
+<script src="stepup-inputs.js?v=20261023161631" onerror="window.STEPUP=null"></script>
+<script src="augment-list.js?v=20261023161631" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261023161631" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261023161631" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261023161631" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261023161631" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261023161631" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261023161631" onerror="window.QREV={}"></script>
 <script src="public-comps.js?v=20261023135221" onerror="window.PUBCOMPS={}"></script>
-<script src="method-config.js?v=20261023161431" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261023161431" onerror="window.SITE_UPDATED=null"></script>
+<script src="method-config.js?v=20261023161631" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261023161631" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -461,6 +461,14 @@
     <div class="sec-hd"><h2>IPO pipeline</h2><p id="ipo-sub"></p></div>
     <div class="tbl-wrap" style="max-height:none"><table id="tbl-ipo"><thead></thead><tbody></tbody></table></div>
   </section>
+  <section id="ipo-done-sec">
+    <div class="sec-hd"><h2>Recent IPOs: valuation against the last private round</h2><p id="ipo-done-sub"></p></div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-ipo-done"><thead></thead><tbody></tbody></table></div>
+  </section>
+  <section id="ipo-rev-sec">
+    <div class="sec-hd"><h2>Recent IPOs: equity value at IPO ÷ revenue</h2><p id="rm-ipo-sub"></p></div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-rm-ipo"><thead></thead><tbody></tbody></table></div>
+  </section>
   </div>
 
   <div class="view" id="view-marquee" role="tabpanel" hidden>
@@ -791,11 +799,6 @@
         <div class="chart-box" id="rb-box3"><canvas id="c-rb3" role="img" aria-label="Current valuation against valuation at the sector median multiple, by company"></canvas></div>
       </div>
       <div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-rm-book"><thead></thead><tbody></tbody></table></div>
-    </div>
-    <div class="panel" style="margin-top:18px">
-      <h3>Recent IPOs: equity value at IPO ÷ revenue</h3>
-      <div class="sub" id="rm-ipo-sub"></div>
-      <div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-rm-ipo"><thead></thead><tbody></tbody></table></div>
     </div>
   </section>
   </div>
@@ -1181,13 +1184,15 @@ const augRow = c => { const n = augNorm(c.name); return AUG.get(n) || AUG.get(au
 const CV_TIP = { 'Secondary':'Average secondary price across venues × shares outstanding', 'PitchBook est.':'PitchBook\'s valuation estimate (no secondary valuation or other reported valuation)', 'Reported':'Most recent reported valuation from the workbook (no secondary price or share count)' };
 const cvTag = c => c.cvSrc ? ` <span class="flag" title="${esc(CV_TIP[c.cvSrc])}">${c.cvSrc==='PitchBook est.' ? 'PB est.' : c.cvSrc}</span>` : '';
 const PB_PRIMARY = ['Later Stage VC','Early Stage VC','PE Growth/Expansion','Seed Round','Corporate'];   // PitchBook valuation deal types that are a primary round
-const IPO_SHORT = { 'S-1 publicly filed':'S-1 public', 'Confidentially filed':'Confidential filing', 'Reported':'Plans reported' };
+const IPO_SHORT = { 'S-1 publicly filed':'S-1 public', 'Confidentially filed':'Confidential filing', 'In registration (PitchBook)':'In registration', 'Reported':'Plans reported' };
+const IPO_PB = 'In registration (PitchBook)';   // PitchBook shows the company in IPO registration; shown in the pipeline, but not used for buckets or scores
+const ipoMon = c => c.ipo.updated ? fMon(c.ipo.updated+'-01') : '—';
 for (const c of UNI) {
   c.name = cleanName(c.name);
   c.ipo = window.IPO?.[c.id] || null;
   // Confirmed confidential filings (ipo-news.js): add companies missing from the workbook pipeline, and correct dates marked setDate.
   c.news = window.IPO_NEWS?.[c.id] || null;
-  if (c.news && !c.ipo) c.ipo = { status:'Confidentially filed', updated:c.news.filed.slice(0,7), val:null };
+  if (c.news && !c.ipo) c.ipo = { status:c.news.status || 'Confidentially filed', updated:c.news.filed.slice(0,7), val:null };
   else if (c.news?.setDate && c.ipo) c.ipo = { ...c.ipo, updated:c.news.filed.slice(0,7) };
   // SEC EDGAR (edgar-filings.js): a registration filing in the last 12 months with no final prospectus yet adds a company to the pipeline,
   // or moves a "Reported" company up. Public S-1 beats a confidential draft.
@@ -1201,6 +1206,11 @@ for (const c of UNI) {
       else if (c.ipo.status==='Reported' || (st==='S-1 publicly filed' && c.ipo.status==='Confidentially filed')) c.ipo = { ...c.ipo, status:st, updated:latest.slice(0,7) };
     }
   }
+  // PitchBook "In IPO Registration" (pitchbook-data.js): any exchange, so it covers listings outside the US. Added to the pipeline only; the date is the
+  // IPO deal date PitchBook holds, where it has one. These rows (pbOnly) are left out of the buckets and the scores, which use ipoC.
+  c.pb = window.PB?.[c.id] || null;
+  if (!c.ipo && c.pb && /IPO Registration/i.test(c.pb.status||'')) c.ipo = { status:IPO_PB, updated:c.pb.finType==='IPO' && c.pb.finDate ? c.pb.finDate.slice(0,7) : '', val:null, pbOnly:true };
+  c.ipoC = c.ipo && !c.ipo.pbOnly ? c.ipo : null;
   // Researched funding history (quant-rounds.js) supersedes the workbook's last round.
   const qrRounds = [...(window.QR?.[c.id]?.rounds || [])].sort((a,b)=>a.date.localeCompare(b.date));
   const lastEq = qrRounds.filter(r=>r.type==='Equity' && r.post!=null).pop();
@@ -1489,7 +1499,7 @@ const COLS = [
   { d:DEF.venue('Clarity (formerly Hiive)'), l:'Clarity', r:1, f:c=>c.px.c==null ? NA : ccySym(c)+c.px.c.toFixed(2) },
   { d:DEF.venue('Augment (data by Caplight)'), l:'Augment', r:1, f:c=>c.px.a==null ? NA : usd(c.px.a) },
   { d:DEF.venue('Forge'), l:'Forge', r:1, f:c=>c.px.f==null ? NA : usd(c.px.f) },
-  { d:DEF.ipo, l:'IPO status', cls:'wrap', f:c=>c.ipo ? `${IPO_SHORT[c.ipo.status]||esc(c.ipo.status)} <span class="flag">${c.ipo.target ? 'target '+esc(c.ipo.target) : fMon(c.ipo.updated+'-01')}</span>` : NA },
+  { d:DEF.ipo, l:'IPO status', cls:'wrap', f:c=>c.ipo ? `${IPO_SHORT[c.ipo.status]||esc(c.ipo.status)} <span class="flag">${c.ipo.target ? 'target '+esc(c.ipo.target) : ipoMon(c)}</span>` : NA },
   { d:'Perennial analyst note.', l:'Note', cls:'note-cell', f:c=>esc(c.note||'') },
   { l:'Region', cls:'wrap', f:c=>esc(c.region) },
 ];
@@ -2277,7 +2287,7 @@ function drawRevenue(rs) {
   const bcols = [{ l:'Company', cls:'co' }, { l:'Bucket', cls:'wrap' }, { d:'Revenue, US$ millions, and its source.', l:'Revenue', r:1 }, { d:'Revenue growth, % (PitchBook).', l:'Growth', r:1 }, { d:DEF.curVal, l:'Current valuation', r:1 }, { d:'Current valuation ÷ revenue.', l:'EV / Revenue', r:1 },
     { d:'Median EV / Revenue of the company\'s sector across the whole universe, and the number of companies. Blank where the sector has too few.', l:'Sector median', r:1 }, { d:'EV / Revenue ÷ sector median − 1.', l:'vs sector', r:1 }, { d:'Position within the sector by multiple (1 = lowest).', l:'Rank', r:1 },
     { d:'Revenue × sector median: the valuation the company would have at its sector\'s median multiple, and how that compares with its current valuation.', l:'Valuation at sector median', r:1 },
-    { d:'Revenue × the median equity value ÷ revenue that recent IPOs priced at (the Recent IPOs table below): what the company would be worth if it listed at that multiple, and how that compares with its current valuation. Revenue is a PitchBook estimate unless reported, so read it as a guide.', l:'Valuation at recent-IPO multiple', r:1 }];
+    { d:'Revenue × the median equity value ÷ revenue that recent IPOs priced at (the Recent IPOs table on the IPO pipeline tab): what the company would be worth if it listed at that multiple, and how that compares with its current valuation. Revenue is a PitchBook estimate unless reported, so read it as a guide.', l:'Valuation at recent-IPO multiple', r:1 }];
   const ipoMed = median((window.IPOREV?.companies || []).map(r => { const x = EXITS.find(e => e.ticker === r.ticker); return x?.ipoValBn && r.fyRevenueM ? x.ipoValBn * 1000 / r.fyRevenueM : null; }).filter(v => v != null));
   document.querySelector('#tbl-rm-book thead').innerHTML = headHtml(bcols);
   const rowB = c => { const rk = c.evRank, ok = rk && rk.med != null && rk.n != null, prem = ok ? c.evRev / rk.med - 1 : null, atMed = ok ? c.rev * rk.med / 1000 : null;
@@ -2289,7 +2299,10 @@ function drawRevenue(rs) {
   document.querySelector('#tbl-rm-book tbody').innerHTML = withM.length ? withM.map(rowB).join('') : `<tr><td colspan="${bcols.length}" class="empty">No Marquee or Watching companies have a revenue multiple.</td></tr>`;
   drawBookCharts(withM);
 
-  // Recent IPOs: equity value at the IPO price ÷ the revenue in the prospectus.
+}
+// Recent IPOs: equity value at the IPO price ÷ the revenue in the prospectus. Shown on the IPO pipeline tab (moved from Valuations).
+function drawIpoRevenue() {
+  const all = UNI.filter(c => c.evRev!=null && !c.listed), U = all.length ? rmStats(all) : null;
   const IR = (window.IPOREV?.companies || []).map(r => { const x = EXITS.find(e=>e.ticker===r.ticker); return { r, x, val:x?.ipoValBn, mult:x?.ipoValBn && r.fyRevenueM ? x.ipoValBn*1000/r.fyRevenueM : null, ltm:x?.ipoValBn && r.ltmRevenueM ? x.ipoValBn*1000/r.ltmRevenueM : null, g:r.fyPriorM ? r.fyRevenueM/r.fyPriorM - 1 : null }; }).filter(r=>r.x).sort((a,b)=>b.x.ipoDate.localeCompare(a.x.ipoDate));
   const icols = [{ l:'Company', cls:'co' }, { l:'IPO', cls:'wrap' }, { d:'Valuation at the IPO price (basic shares unless the research notes otherwise), US$.', l:'Equity value at IPO', r:1 }, { d:'Revenue for the last full fiscal year before the IPO, from the prospectus.', l:'Revenue (last FY)', r:1 }, { d:'Revenue growth in that fiscal year.', l:'Growth', r:1 }, { d:'Equity value at IPO ÷ revenue for the last full fiscal year.', l:'Equity value ÷ revenue', r:1 }, { d:'Equity value at IPO ÷ the trailing-twelve-month revenue stated in the prospectus, where it gives one.', l:'On LTM revenue', r:1 }, { l:'Source', cls:'wrap' }];
   document.querySelector('#tbl-rm-ipo thead').innerHTML = headHtml(icols);
@@ -2298,6 +2311,7 @@ function drawRevenue(rs) {
   document.querySelector('#tbl-rm-ipo tbody').innerHTML = IR.length ? IR.map(r => `<tr><td class="co">${esc(r.x.name)}<span class="badge b-ls">${esc(r.x.ticker)}</span></td><td class="wrap">${fMon(r.x.ipoDate)}</td><td class="r num">${bnx(r.val)}</td><td class="r num">${r.r.fyRevenueM!=null ? revTxt(r.r.fyRevenueM) : NA}<br><span class="flag">${esc(r.r.fyLabel||'')}</span></td><td class="r num">${r.g==null ? NA : pct(r.g)}</td><td class="r num"><b>${rmX(r.mult)}</b></td><td class="r num">${rmX(r.ltm)}${r.r.ltmLabel ? `<br><span class="flag">${esc(r.r.ltmLabel)}</span>` : ''}</td><td class="wrap">${(r.r.src||[]).slice(0,2).map((u,i)=>`<a href="${esc(u)}" target="_blank" rel="noopener">${i ? '2' : 'source'}</a>`).join(' ')} <span class="flag">${esc(r.r.basis||'')}${r.r.note ? ' · '+esc(r.r.note) : ''}</span></td></tr>`).join('')
     + (im.length ? `<tr class="all"><td>Median</td><td></td><td></td><td></td><td></td><td class="r num">${rmX(median(im))}</td><td></td><td></td></tr>` : '') : `<tr><td colspan="${icols.length}" class="empty">Revenue for recent IPOs is still being sourced.</td></tr>`;
 }
+
 document.querySelector('#tbl-rm-book tbody').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
 
 function drawComps(rs) {
@@ -2410,19 +2424,19 @@ function drawComps(rs) {
 
 // ── coverage ──
 // ── IPO pipeline: companies with a filing or reported IPO plans, furthest along first ──
-const IPO_ORDER = { 'S-1 publicly filed':0, 'Confidentially filed':1, 'Reported':2 };
+const IPO_ORDER = { 'S-1 publicly filed':0, 'Confidentially filed':1, [IPO_PB]:2, 'Reported':3 };
 function drawIpo(rs) {
-  const d = rs.filter(c=>c.ipo).sort((a,b)=>(IPO_ORDER[a.ipo.status]??9)-(IPO_ORDER[b.ipo.status]??9) || b.ipo.updated.localeCompare(a.ipo.updated));
-  const filed = d.filter(c=>/filed/.test(c.ipo.status)).length;
-  document.getElementById('ipo-sub').textContent = `${d.length} companies in this filter with an IPO filing or reported IPO plans · ${filed} filed · Source: ${window.IPO_SRC||'—'}`;
+  const d = rs.filter(c=>c.ipo).sort((a,b)=>(IPO_ORDER[a.ipo.status]??9)-(IPO_ORDER[b.ipo.status]??9) || (b.ipo.updated||'').localeCompare(a.ipo.updated||'') || a.name.localeCompare(b.name));
+  const filed = d.filter(c=>/filed/.test(c.ipo.status)).length, inReg = d.filter(c=>c.ipo.pbOnly).length;
+  document.getElementById('ipo-sub').textContent = `${d.length} companies in this filter with an IPO filing or reported IPO plans · ${filed} filed with the SEC or confidentially · ${inReg} more in IPO registration per PitchBook · Source: ${window.IPO_SRC||'—'}, SEC EDGAR, PitchBook and press reports`;
   const cols = [
     { d:DEF.company, l:'Company', cls:'co', f:c=>esc(c.name) },
-    { d:'S-1 publicly filed, confidentially filed with the SEC, or IPO plans reported by the company or press.', l:'IPO status', f:c=>esc(c.ipo.status==='Reported' ? 'IPO plans reported' : c.ipo.status) },
-    { d:'Month of the latest filing or report about the IPO.', l:'Last filing update', f:c=>fMon(c.ipo.updated+'-01') },
+    { d:'S-1 publicly filed or confidentially filed, "In registration (PitchBook)" where PitchBook shows the company in IPO registration on any exchange (not checked against the regulator), or IPO plans reported by the company or press.', l:'IPO status', f:c=>esc(c.ipo.status==='Reported' ? 'IPO plans reported' : c.ipo.status) },
+    { d:'Month of the latest filing or report about the IPO. For PitchBook registrations, the IPO deal date PitchBook holds, where it has one.', l:'Last filing update', f:c=>ipoMon(c) },
     { d:`Confidential draft registration (DRS) first submitted, from SEC EDGAR (as of ${window.EDGAR_ASOF||'n/a'}). The SEC only releases drafts alongside the public S-1, so a confidential filer shows "Not public" until then.`, l:'Confidential (DRS)', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['DRS'] ? fDate(e['DRS'].first)+(e['DRS/A']?` <span class="sub">+${e['DRS/A'].n} amend.</span>`:'') : (c.ipo.status==='Confidentially filed' ? '<span class="sub">Not public</span>' : NA); } },
     { d:'Public S-1 registration statement first filed on SEC EDGAR.', l:'S-1 filed', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['S-1'] ? fDate(e['S-1'].first) : NA; } },
     { d:'Date of the most recent prospectus amendment (S-1/A) on SEC EDGAR.', l:'S-1/A', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['S-1/A'] ? fDate(e['S-1/A'].last) : NA; } },
-    { d:'Date the confidential filing was made or announced, the regulator it went to (SEC or SEBI), and the confirming sources. Only filings confirmed by two or more independent sources are listed (ipo-news.js).', l:'Filing reported', cls:'wrap', f:c=>c.news ? `${fDate(c.news.filed)} · ${esc(c.news.venue)}<br><span class="sub">${c.news.src.map(s=>`<a href="${esc(s.u)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(s.n)}</a>`).join(' · ')}</span>` : NA },
+    { d:'Date the filing was made, announced or reported, where it went (SEC, SEBI or HKEX) and the sources (ipo-news.js). Filings with the SEC or SEBI here have two or more independent sources; Hong Kong entries marked "reported" are press reports the company has not confirmed.', l:'Filing reported', cls:'wrap', f:c=>c.news ? `${fDate(c.news.filed)} · ${esc(c.news.venue)}<br><span class="sub">${c.news.src.map(s=>`<a href="${esc(s.u)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(s.n)}</a>`).join(' · ')}</span>` : c.ipo.pbOnly ? '<span class="sub">PitchBook: In IPO Registration<br>(exchange and regulator not stated)</span>' : NA },
     { d:'Listing year the company has stated, where it has given one.', l:'Target listing', f:c=>c.ipo.target ? esc(c.ipo.target) : NA },
     { d:'Most recent valuation, from the latest round or secondary pricing, in US$ billions.', l:'Recent valuation', r:1, f:c=>bn(c.ipo.val) },
     { d:DEF.curVal, l:'Current valuation', r:1, f:c=>c.cv==null ? NA : bn(c.cv) + cvTag(c) },
@@ -2432,6 +2446,24 @@ function drawIpo(rs) {
   document.querySelector('#tbl-ipo thead').innerHTML = headHtml(cols);
   document.querySelector('#tbl-ipo tbody').innerHTML = d.length ? d.map(c=>rowHtml(cols, c)).join('')
     : `<tr><td colspan="${cols.length}" class="empty">No companies in this filter have filed or reported IPO plans.</td></tr>`;
+  drawIpoDone();
+  drawIpoRevenue();
+}
+// Companies on our radar that have already listed (radar-exits.js): they have left the private universe, so they are not in the pipeline above.
+function drawIpoDone() {
+  const sec = document.getElementById('ipo-done-sec'), xs = (window.RADAR?.exits || []).filter(e => e.kind === 'IPO' && e.exit?.val).sort((a, b) => b.exit.date.localeCompare(a.exit.date));
+  sec.hidden = !xs.length; if (!xs.length) return;
+  document.getElementById('ipo-done-sub').textContent = `${xs.length} IPOs from ${fMon(xs[xs.length-1].exit.date + '-01')} to ${fMon(xs[0].exit.date + '-01')} by companies that were private unicorns. These have left the pipeline above. Source: ${RADAR.source}; data to ${fDate(RADAR.asof)}.`;
+  const cols = [
+    { l:'Company', cls:'co', f:e => esc(e.name) },
+    { d:'Month the shares started trading.', l:'Listed', f:e => fMon(e.exit.date + '-01') },
+    { d:'Equity value at the IPO price, US$ billions (fully diluted where the note says so).', l:'IPO valuation', r:1, f:e => bn(e.exit.val) },
+    { d:'The last private round before the IPO: post-money valuation and month.', l:'Last private round', r:1, f:e => e.last?.val ? `${bn(e.last.val)}<br><span class="sub">${fMon(e.last.date + '-01')}</span>` : NA },
+    { d:'IPO valuation ÷ the last private round\'s post-money.', l:'IPO ÷ last round', r:1, f:e => e.last?.val ? mx(e.exit.val / e.last.val) : NA },
+    { l:'Note', cls:'note-cell', f:e => esc(e.note || '') },
+  ];
+  document.querySelector('#tbl-ipo-done thead').innerHTML = headHtml(cols);
+  document.querySelector('#tbl-ipo-done tbody').innerHTML = xs.map(e => `<tr>${cols.map(k => `<td class="${k.r ? 'r num' : ''} ${k.cls || ''}">${k.f(e)}</td>`).join('')}</tr>`).join('');
 }
 document.querySelector('#tbl-ipo tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
 
@@ -2473,7 +2505,7 @@ function openDetail(c) {
     ['Augment', usd(c.px.a), ''],
     ['Forge', usd(c.px.f), ''],
     ['Liquidity score', c.liq==null?'—':c.liq.toFixed(0), c.rank?`#${c.rank} overall · #${c.srank} in sector`:''],
-    ...(c.ipo ? [['IPO status', esc(IPO_SHORT[c.ipo.status]||c.ipo.status), `updated ${fMon(c.ipo.updated+'-01')}${c.ipo.target ? ' · target '+esc(c.ipo.target) : ''} · valuation ${bn(c.ipo.val)}`]] : []),
+    ...(c.ipo ? [['IPO status', esc(IPO_SHORT[c.ipo.status]||c.ipo.status), `updated ${ipoMon(c)}${c.ipo.target ? ' · target '+esc(c.ipo.target) : ''} · valuation ${bn(c.ipo.val)}`]] : []),
     ...(c.pb ? [
       ['PitchBook valuation estimate', bn(c.pb.est), c.pb.lkv!=null ? `last known ${bn(c.pb.lkv)}${c.pb.lkvType ? ' ('+esc(c.pb.lkvType)+')' : ''}` : ''],
       ['Founded · HQ', c.pb.founded || '—', esc(c.pb.hq||'')],
@@ -2538,7 +2570,7 @@ for (const c of UNI) {
   const has = { va: recentPrem!=null || growth!=null, lq: c.nVen>0 || researched, dm: !!(c.aug || c.c50 || c.mom!=null) };
   const va = has.va ? wmean([[lin(recentPrem,mp('va.prem.lo'),mp('va.prem.hi')), mp('va.prem.w')], [lin(growth,mp('va.growth.lo'),mp('va.growth.hi')), mp('va.growth.w')],
     [c.lrAge==null?null:lin(-c.lrAge,-M['va.fresh.zero'],-M['va.fresh.full']), mp('va.fresh.w')],
-    [/filed/.test(c.ipo?.status||'') || tender24 ? M['va.path.filed'] : c.ipo ? M['va.path.plans'] : 0, mp('va.path.w')]]) : null;
+    [/filed/.test(c.ipoC?.status||'') || tender24 ? M['va.path.filed'] : c.ipoC ? M['va.path.plans'] : 0, mp('va.path.w')]]) : null;
   const lq = has.lq ? wmean([[c.nVen/3*100, mp('lq.venues.w')], [c.nVen>=2 ? lin(-c.spread,-mp('lq.spread.zero'),-mp('lq.spread.full')) : c.nVen===1 ? M['lq.spread.single'] : null, mp('lq.spread.w')],
     [val ? lin(Math.log10(val),Math.log10(M['lq.scale.lo']),Math.log10(M['lq.scale.hi'])) : null, mp('lq.scale.w')], [tender24==null ? null : tender24 ? 100 : 0, mp('lq.tender.w')]]) : null;
   // Venue demand lists: Augment Power 20 (21 = honourable mention), Clarity Liquidity Index top 50.
@@ -2551,7 +2583,7 @@ for (const c of UNI) {
   // (workbook Anchor or Conviction). Everything else → Late Growth. Above that floor the score only ranks companies within
   // their bucket.
   const weak = comp==null || (comp < M['rule.watch.comp'] && (va??0) < M['rule.watch.va']);
-  const sug = c.ipo ? XO : weak && !['Anchor','Conviction'].includes(c.base.tier) ? WATCH : LG;
+  const sug = c.ipoC ? XO : weak && !['Anchor','Conviction'].includes(c.base.tier) ? WATCH : LG;
   c.ts = { va, lq, dm, comp, sug, growth };
   c.tier0 = sug;
 }
@@ -3436,7 +3468,7 @@ const XZ = {
   s0: '0', s1: '0.0', int: '#,##0', pctn: '0"%"',
 };
 const pxZ = c => c.ccy==='GBP' ? XZ.gbp : c.ccy==='EUR' ? XZ.eur : XZ.usd;
-const ipoText = c => c.ipo ? `${IPO_SHORT[c.ipo.status]||c.ipo.status} · ${c.ipo.target ? 'target '+c.ipo.target : fMon(c.ipo.updated+'-01')}` : '';
+const ipoText = c => c.ipo ? `${IPO_SHORT[c.ipo.status]||c.ipo.status} · ${c.ipo.target ? 'target '+c.ipo.target : ipoMon(c)}` : '';
 // A worksheet from blocks stacked top to bottom: { title, sub, cols, rows, filter }. A column is { h: header as on the
 // page, v: value, z: number format, d: definition, e: true/false = editable/read-only (omit on read-only sheets), w: width }.
 function xlBlocks(blocks) {
@@ -3527,7 +3559,8 @@ function masterWorkbook() {
   ]);
 
   // IPO pipeline, ordered as on the page.
-  const ipoRows = UNI.filter(c=>c.ipo).sort((a,b)=>(IPO_ORDER[a.ipo.status]??9)-(IPO_ORDER[b.ipo.status]??9) || b.ipo.updated.localeCompare(a.ipo.updated));
+  // The workbook's IPO pipeline sheet takes the three workbook statuses only; PitchBook-only registrations are left out so a re-import cannot choke on them.
+  const ipoRows = UNI.filter(c=>c.ipo && !c.ipo.pbOnly).sort((a,b)=>(IPO_ORDER[a.ipo.status]??9)-(IPO_ORDER[b.ipo.status]??9) || (b.ipo.updated||'').localeCompare(a.ipo.updated||''));
   const ipo = xlTable([
     ed(XC.company, false),
     { h:'IPO status', e:true, w:22, v:c=>c.ipo.status==='Reported' ? 'IPO plans reported' : c.ipo.status, d:'S-1 publicly filed, Confidentially filed, or IPO plans reported.' },

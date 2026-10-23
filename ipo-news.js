@@ -1,11 +1,15 @@
-// Confidential IPO filings confirmed by 2+ independent sources (company announcement or regulatory filing plus press).
+// Confidential IPO filings confirmed by 2+ independent sources (company announcement or regulatory filing plus press). Entries with status "Reported" are press reports the company has not confirmed.
 // Hand-maintained, NOT generated: it survives master-workbook imports. Keyed by company id.
 //   filed   date the confidential filing was made or announced
 //   venue   regulator the draft went to (SEC = confidential draft S-1; SEBI = India confidential DRHP)
 //   src     the confirming sources
+//   status  optional; "Reported" for a filing or plan reported by the press but not confirmed by the company (default: Confidentially filed)
 //   setDate true = this date replaces the workbook's "Last filing update" month (workbook month was wrong or later than the filing)
 // Companies not already in the IPO pipeline are added to it as "Confidentially filed". Checked 19 Oct 2026.
 window.IPO_NEWS = {
+  "moonshotai":  {"filed":"2026-09-03","venue":"HKEX · reported, company has not confirmed","status":"Reported","src":[{"n":"DealStreetAsia","u":"https://www.dealstreetasia.com/stories/moonshot-hong-kong-ipo-494042/"},{"n":"TechNode","u":"https://technode.com/2026/09/03/moonshot-ai-reportedly-submits-confidential-hong-kong-ipo-filing/"}]},
+  "xiaohongshu": {"filed":"2026-06-16","venue":"HKEX · reported plan to file, not confirmed","status":"Reported","src":[{"n":"TechNode","u":"https://technode.com/2026/06/16/xiaohongshu-said-to-prepare-confidential-hong-kong-ipo-filing-this-month/"},{"n":"The Standard","u":"https://www.thestandard.com.hk/finance/article/334698/Xiaohongshu-to-file-for-confidential-Hong-Kong-IPO-Bloomberg"}]},
+  "agibot":      {"filed":"2026-07-24","venue":"HKEX · company confirmed the process has begun","status":"Reported","src":[{"n":"Caixin","u":"https://caixinglobal.com/2026-07-24/agibot-begins-hong-kong-ipo-process-as-chinas-embodied-ai-startups-race-to-list-102467856.html"}]},
   "anth":     {"filed":"2026-06-01","venue":"SEC","setDate":true,"src":[{"n":"Anthropic","u":"https://www.anthropic.com/news/confidential-draft-s1-sec"},{"n":"Crunchbase News","u":"https://news.crunchbase.com/public/ai-unicorn-anthropic-files-confidentially-for-ipo/"}]},
   "openai":   {"filed":"2026-06-08","venue":"SEC","src":[{"n":"CNBC","u":"https://www.cnbc.com/2026/06/08/openai-confidentially-files-for-ipo-prepping-wall-street-for-ai-debut.html"},{"n":"TechCrunch","u":"https://techcrunch.com/2026/06/08/following-anthropic-openai-files-confidentially-for-ipo/"}]},
   "oura":     {"filed":"2026-05-21","venue":"SEC","src":[{"n":"Business Wire","u":"https://www.businesswire.com/news/home/20260521960146/en/URA-Announces-Confidential-Submission-of-Draft-Registration-Statement-for-Proposed-Initial-Public-Offering"}]},
