@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Perennial — Top 100 Pre-IPO</title>
+<title>Perennial — Top 100+ Pre-IPO</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&family=Bitter:wght@400&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -328,7 +328,7 @@
       <img class="hdr-logo" src="assets/perennial-logo-white.png" alt="Perennial">
       <div class="hdr-divider"></div>
       <div>
-        <div class="hdr-title">Top 100 Pre-IPO</div>
+        <div class="hdr-title">Top 100+ Pre-IPO</div>
         <div class="hdr-sub">Top 100 by valuation · Clarity (formerly Hiive), Augment &amp; Forge prices refreshed 23 Oct 2026 · movement below is a simulation, not a live feed</div>
       </div>
     </div>
@@ -338,7 +338,7 @@
     </div>
   </header>
 
-  <div class="rank-note"><b>Who's in:</b> the 100 most valuable pre-IPO companies on Augment that a second platform (Clarity or Forge) also prices. <b>How the list is ranked:</b> by implied market cap, highest first. Use <b>Sort by</b> to re-order.<br>
+  <div class="rank-note"><b>Who's in:</b> the 100 most valuable pre-IPO companies on Augment that a second platform (Clarity or Forge) also prices, plus three smaller companies (DailyPay, Lyten, Gecko Robotics) that have two matching prices but no usable Augment valuation; for those the share count is PitchBook's valuation estimate ÷ the price, so the cap is approximate. <b>How the list is ranked:</b> by implied market cap, highest first. Use <b>Sort by</b> to re-order.<br>
     <b>Implied market cap</b> is an estimate of what the whole company is worth at today's secondary-market prices: the blended share price (the average of the available Clarity, Augment and Forge prices) × the estimated number of shares outstanding. The share count is worked out from Augment's estimated valuation divided by Augment's price, so it is an approximation, not a reported or official valuation.</div>
 
   <div class="src-row">
@@ -349,7 +349,7 @@
   </div>
 
   <div class="metrics">
-    <div class="met"><div class="met-label">Total implied cap</div><div class="met-val" id="m-cap">—</div><div class="met-sub">blended mid · 100 cos</div></div>
+    <div class="met"><div class="met-label">Total implied cap</div><div class="met-val" id="m-cap">—</div><div class="met-sub">blended mid · 103 cos</div></div>
     <div class="met"><div class="met-label">Gainers</div><div class="met-val up" id="m-g">—</div><div class="met-sub met-sub-chg">since previous pull</div></div>
     <div class="met"><div class="met-label">Losers</div><div class="met-val dn" id="m-l">—</div><div class="met-sub met-sub-chg">since previous pull</div></div>
     <div class="met"><div class="met-label">Avg Clarity/Augment spread</div><div class="met-val neu" id="m-sp">—</div><div class="met-sub">cross-platform gap</div></div>
@@ -566,6 +566,9 @@ const COS = [
   { id:'rappi', name:'Rappi', sec:'Consumer', sc:'ro', shares:83.03e6, col:'#7a5c00', p1:17.31, p2:18.21, p3:27.7, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
   { id:'addepar', name:'Addepar', sec:'Fintech', sc:'fin', shares:913.93e6, col:'#b8559e', p1:2.74, p2:2.2, p3:2.44, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
   { id:'vardaspaceindustries', name:'Varda Space Industries', sec:'Space', sc:'sp', shares:78.17e6, col:'#d2691e', p1:36.43, p2:null, p3:27.76, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'dailypay', name:'DailyPay', sec:'Fintech', sc:'fin', shares:70.57e6, col:'#d2691e', p1:null, p2:22.02, p3:24.26, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'lyten', name:'Lyten', sec:'Energy', sc:'en', shares:139.16e6, col:'#0c8c5e', p1:10.9, p2:13.0, p3:null, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
+  { id:'geckorobotics', name:'Gecko Robotics', sec:'Robotics', sc:'sp', shares:35.74e6, col:'#b8559e', p1:50.81, p2:47.46, p3:null, struct:'—', rofr:'—', p1rank:null, liveOrders:0 },
 ];
 
 // ── PRICE HISTORY ──
@@ -675,6 +678,9 @@ const HIST = {
   rappi:         { p1:[['2026-10-23',17.31]], p2:[['2026-10-23',18.21]], p3:[['2026-10-23',27.7]] },
   addepar:       { p1:[['2026-10-23',2.74]], p2:[['2026-10-23',2.2]], p3:[['2026-10-23',2.44]] },
   vardaspaceindustries: { p1:[['2026-10-23',36.43]], p2:[], p3:[['2026-10-23',27.76]] },
+  dailypay:      { p1:[], p2:[['2026-10-23',22.02]], p3:[['2026-10-23',24.26]] },
+  lyten:         { p1:[['2026-10-23',10.9]], p2:[['2026-10-23',13.0]], p3:[] },
+  geckorobotics: { p1:[['2026-10-23',50.81]], p2:[['2026-10-23',47.46]], p3:[] },
 };
 
 let ST={}, hVol=0.5, selCo='anth', dpSrc='all';
