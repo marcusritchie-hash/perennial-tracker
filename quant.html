@@ -7,24 +7,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261023105046"></script>
-<script src="quant-rounds.js?v=20261023105046" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261023105046" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261023105046" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261023105046" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261023105046" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261023105046" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261023105046" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261023105046" onerror="window.STEP=null"></script>
-<script src="augment-list.js?v=20261023105046" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261023105046" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261023105046" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261023105046" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261023105046" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261023105046" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261023105046" onerror="window.QREV={}"></script>
-<script src="method-config.js?v=20261023105046" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261023105046" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261023111115"></script>
+<script src="quant-rounds.js?v=20261023111115" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261023111115" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261023111115" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261023111115" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261023111115" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261023111115" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261023111115" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261023111115" onerror="window.STEP=null"></script>
+<script src="augment-list.js?v=20261023111115" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261023111115" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261023111115" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261023111115" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261023111115" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261023111115" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261023111115" onerror="window.QREV={}"></script>
+<script src="method-config.js?v=20261023111115" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261023111115" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -528,14 +528,6 @@
 
   <section>
     <div class="sec-hd">
-      <h2>Sources and checks</h2>
-      <p>One row per company: both rounds with date, post-money valuation, type and source, the step-up and gap as calculated from our data, and flags for anything to verify (a figure that differs from the presentation slide, a PitchBook valuation that disagrees, a round from PitchBook or the workbook with no researched source, an old last round). Nothing here is estimated unless marked.</p>
-    </div>
-    <div class="tbl-wrap" style="max-height:none"><table id="tbl-st"><thead></thead><tbody></tbody></table></div>
-  </section>
-
-  <section>
-    <div class="sec-hd">
       <h2>Not shown</h2>
       <p>Companies in the set without two priced rounds, and companies on the presentation slide that are not in the dashboard's universe.</p>
     </div>
@@ -609,6 +601,25 @@
     <div class="panel" style="margin-top:18px">
       <h3>Our book vs sector peers</h3>
       <div class="sub" id="rm-book-sub"></div>
+      <div class="grid2" style="margin-bottom:18px">
+        <div class="panel" style="box-shadow:none;border:1px solid var(--line-soft)">
+          <h3>Premium / discount to the sector median</h3>
+          <div class="sub">EV / Revenue ÷ the sector's median − 1. Red = more expensive than the sector, purple = cheaper. Bars capped at +500%.</div>
+          <div class="chart-box" id="rb-box1"><canvas id="c-rb1" role="img" aria-label="Premium or discount to the sector median EV to revenue, by company"></canvas></div>
+        </div>
+        <div class="panel" style="box-shadow:none;border:1px solid var(--line-soft)">
+          <h3>Company multiple vs sector median</h3>
+          <div class="sub">EV / Revenue on a log scale: the dot is the company, the diamond its sector's median.</div>
+          <div class="legend"><span><i style="background:var(--accent-pink);border-radius:50%"></i>Company</span><span><i style="background:var(--ink2);transform:rotate(45deg)"></i>Sector median</span></div>
+          <div class="chart-box" id="rb-box2"><canvas id="c-rb2" role="img" aria-label="Company EV to revenue against its sector median"></canvas></div>
+        </div>
+      </div>
+      <div class="panel" style="box-shadow:none;border:1px solid var(--line-soft);margin-bottom:18px">
+        <h3>Valuation at the sector median vs current</h3>
+        <div class="sub">Current valuation against what revenue × the sector's median multiple would give, on a log scale. Where the pink bar is longer, the company is cheaper than its sector.</div>
+        <div class="legend"><span><i style="background:var(--purple)"></i>Current valuation</span><span><i style="background:var(--accent-pink);opacity:.8"></i>At the sector median multiple</span></div>
+        <div class="chart-box" id="rb-box3"><canvas id="c-rb3" role="img" aria-label="Current valuation against valuation at the sector median multiple, by company"></canvas></div>
+      </div>
       <div class="tbl-wrap" style="max-height:none;box-shadow:none"><table id="tbl-rm-book"><thead></thead><tbody></tbody></table></div>
     </div>
     <div class="panel" style="margin-top:18px">
@@ -1892,31 +1903,8 @@ function drawStep() {
   const gone = miss.map(r => `${r.c.name} (${r.n===0 ? 'no priced round' : r.n===1 ? 'no prior valuation' : 'bucket ' + r.bucket})`);
   document.getElementById('st-foot').textContent = `Prior and last priced rounds to ${STEP.asof || fMon(QD_ASOF)}, post-money in US$${STEP.fx?.EUR ? ` (EUR at ${STEP.fx.EUR})` : ''}. Gap = months between the two rounds. ${noted.join(' ')}${gone.length ? ` Not shown: ${gone.join(', ')}.` : ''} Illustrative names only, not holdings of the Fund. Source: company announcements and public reporting.`;
 
-  // Sources and checks.
+  // Not shown.
   const slide = id => STEP.slide?.[id];
-  const flags = r => { const f = [], c = r.c, s = slide(c.id);
-    if (r.last.hollow) f.push('Last round is a tender or secondary sale');
-    if (monthsBetween(r.last.date, QD_ASOF) > STALE_MONTHS) f.push(`Last round is ${Math.round(monthsBetween(r.last.date, QD_ASOF))} months old`);
-    if (c.pb?.lkv && Math.abs(r.last.val / c.pb.lkv - 1) > .05) f.push(`PitchBook last known valuation ${bnx(c.pb.lkv)} (${fDate(c.pb.lkvDate)}) differs`);
-    if (r.last.from !== 'research') f.push(`Last round from ${r.last.from}, no researched source`);
-    if (r.prior.from !== 'research') f.push(`Prior round from ${r.prior.from}, no researched source`);
-    if (r.prior.basis==='Estimated' || r.last.basis==='Estimated') f.push('A valuation is estimated');
-    if (STEP.bucket?.[c.id] && STEP.bucket[c.id] !== c.tier) f.push(`Bucket set in step-set.js (confirmed: ${c.tier})`);
-    if (s) { const bOk = (s.b==='LG') === (r.key==='lg'), xOk = Math.abs(Math.round(r.x*10)/10 - s.x) < .06, gOk = Math.abs(Math.round(r.gap) - s.gap) <= 1;
-      f.push(bOk && xOk && gOk ? '✓ Matches the slide' : `Slide: ${stX(s.x)}, ${s.gap}m, ${s.b==='LG' ? 'Late Growth' : 'Pre-IPO'}; here ${stX(r.x)}, ${Math.round(r.gap)}m`); }
-    else f.push('Not on the slide');
-    if (STEP.notes?.[c.id]) f.push(STEP.notes[c.id]);
-    return f; };
-  const cols = [
-    { l:'Company', cls:'co', f:r=>`${esc(r.c.name)}<br><span class="flag">${esc(r.bucket)}</span>` }, { d:'The round before the last priced round.', l:'Prior round', cls:'wrap', f:r=>stRound(r.prior) },
-    { d:'The most recent priced round (a tender or secondary sale shows as hollow on the chart).', l:'Last round', cls:'wrap', f:r=>stRound(r.last) },
-    { d:'Equity step-up: last ÷ prior post-money equity valuation (company-level, before dilution; not MOIC).', l:'Equity step-up', r:1, f:r=>stX(r.x) }, { d:'Months between the two rounds.', l:'Gap', r:1, f:r=>Math.round(r.gap)+'m' },
-    { d:'Things to verify. A tick means our figures agree with the presentation slide.', l:'Checks', cls:'wrap', f:r=>flags(r).map(t => `<div class="${/^✓/.test(t) ? 'up' : /^Slide:|differs|old|no researched|estimated/.test(t) ? 'dn' : 'flag'}">${esc(t)}</div>`).join('') },
-  ];
-  document.querySelector('#tbl-st thead').innerHTML = headHtml(cols);
-  document.querySelector('#tbl-st tbody').innerHTML = shown.length ? [...shown].sort((a,b)=>b.last.val - a.last.val).map(r => `<tr data-id="${r.c.id}">${cols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(r)}</td>`).join('')}</tr>`).join('')
-    : '<tr><td colspan="6" class="empty">No companies in this filter.</td></tr>';
-
   const inSet = new Set(all.map(r=>r.c.id)), onSlideOnly = Object.entries(STEP.slide || {}).filter(([id]) => !UNI.some(c=>c.id===id)).map(([id, s]) => ({ name:s.name || id, s }));
   const mcols = [{ l:'Company', cls:'co', f:m=>esc(m.name) }, { l:'Why not shown', f:m=>esc(m.why) }, { d:'What the presentation slide shows for it.', l:'On the slide', f:m=>m.s ? `${stX(m.s.x)} · ${m.s.gap}m · ${m.s.b==='LG' ? 'Late Growth' : 'Pre-IPO'}` : NA }];
   const mrows = [...miss.map(r => ({ name:r.c.name, why:(r.n===0 ? 'No priced round with a post-money valuation in our data' : r.n===1 ? 'Only one priced round held, so no prior valuation' : `Bucket is ${r.bucket}`) + (STEP.notes?.[r.c.id] ? ' · ' + STEP.notes[r.c.id] : ''), s:slide(r.c.id), id:r.c.id })),
@@ -1926,7 +1914,7 @@ function drawStep() {
   document.querySelector('#tbl-st-miss tbody').innerHTML = mrows.length ? mrows.map(m => `<tr${m.id ? ` data-id="${m.id}"` : ''}>${mcols.map(k=>`<td class="${k.cls||''}">${k.f(m)}</td>`).join('')}</tr>`).join('') : '<tr><td colspan="3" class="empty">Every company in the set has two priced rounds.</td></tr>';
 }
 for (const id of ['st-lg','st-pi']) document.getElementById(id).addEventListener('click', e => { const g = e.target.closest('.sv-row'); const co = g && UNI.find(c=>c.id===g.dataset.id); if (co) openDetail(co); });
-for (const id of ['#tbl-st','#tbl-st-miss']) document.querySelector(id+' tbody').addEventListener('click', e => { if (e.target.closest('a')) return; const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
+for (const id of ['#tbl-st-miss']) document.querySelector(id+' tbody').addEventListener('click', e => { if (e.target.closest('a')) return; const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
 
 // ── Revenue multiples (Market comparables): EV / Revenue across the universe, with our book highlighted ──
 const rmStats = xs => { const m = xs.map(c=>c.evRev), g = xs.map(c=>c.revg).filter(x=>x!=null && isFinite(x));
@@ -1934,6 +1922,35 @@ const rmStats = xs => { const m = xs.map(c=>c.evRev), g = xs.map(c=>c.revg).filt
 const rmX = x => x==null ? NA : (x >= 100 ? Math.round(x) : x.toFixed(1)) + '×';
 const rmThin = n => n < M['rev.minPeers'];
 const inBook = c => !!(c.mq || c.wl);
+// Three charts for "Our book vs sector peers", on the companies that have a sector median, in the same order (most expensive vs the sector first).
+const gapLines = { id:'gapLines', beforeDatasetsDraw(chart) { const ctx = chart.ctx, a = chart.getDatasetMeta(0).data, b = chart.getDatasetMeta(1).data; ctx.save(); ctx.strokeStyle = css('--line'); ctx.lineWidth = 2;
+  a.forEach((p, i) => { const q = b[i]; if (!p || !q) return; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); }); ctx.restore(); } };
+function drawBookCharts(withM) {
+  const ok = withM.filter(c => c.evRank?.med != null && c.evRank?.n != null).map(c => ({ c, prem:c.evRev / c.evRank.med - 1, med:c.evRank.med, atMed:c.rev * c.evRank.med / 1000 })).sort((a, b) => b.prem - a.prem);
+  for (const i of [1, 2, 3]) emptyBox(`rb-box${i}`, `c-rb${i}`, ok.length ? '' : 'No companies have a sector median.');
+  if (!ok.length || view !== 'comps') return;
+  const h = ok.length * 24 + 70, names = ok.map(d => d.c.name), pos = css('--pos'), neg = css('--neg'), ink = css('--ink'), line = css('--line-soft');
+  for (const i of [1, 2, 3]) document.getElementById(`rb-box${i}`).style.height = h + 'px';
+  // 1. Premium / discount to the sector median (bars capped at +500%).
+  const o1 = baseOpts(); o1.indexAxis = 'y'; o1.scales.x.ticks = pctAxis; o1.scales.x.position = 'top'; o1.scales.y.ticks = { autoSkip:false, color:ink };
+  mk('c-rb1', { type:'bar', data:{ labels:names, datasets:[{ data:ok.map(d => Math.min(d.prem, 5)), backgroundColor:ok.map(d => d.prem > 0 ? neg : pos), borderRadius:3, borderSkipped:'start', barThickness:14 }] }, options:o1 },
+    dp => { const d = ok[dp.dataIndex]; return `<b>${esc(d.c.name)}</b><br>${rmX(d.c.evRev)} vs sector median ${rmX(d.med)}<br>${pct(d.prem)}${d.prem > 5 ? ' <span class="flag">(bar capped at +500%)</span>' : ''}`; });
+  // 2. Company multiple vs sector median: a dot for the company, a diamond for its sector median, joined by a line.
+  const o2 = baseOpts(), lo = Math.min(...ok.map(d => Math.min(d.c.evRev, d.med))) * .7, hi = Math.max(...ok.map(d => Math.max(d.c.evRev, d.med))) * 1.4;
+  o2.scales.x = { type:'logarithmic', min:lo, max:hi, position:'top', grid:{ color:line }, border:{ color:css('--line') }, ticks:{ callback:v => [1,2,5,10,20,50,100,200,500,1000].includes(v) ? v + '×' : '' } };
+  o2.scales.y = { type:'linear', reverse:true, min:-.5, max:ok.length - .5, grid:{ display:false }, border:{ color:css('--line') }, afterBuildTicks:ax => { ax.ticks = ok.map((_, i) => ({ value:i })); }, ticks:{ autoSkip:false, color:ink, callback:v => names[v] ?? '' } };
+  mk('c-rb2', { type:'scatter', plugins:[gapLines], data:{ datasets:[
+      { label:'Company', data:ok.map((d, i) => ({ x:d.c.evRev, y:i, d })), backgroundColor:css('--accent-pink'), borderColor:css('--surface'), borderWidth:1, pointRadius:6 },
+      { label:'Sector median', data:ok.map((d, i) => ({ x:d.med, y:i, d })), backgroundColor:css('--ink2'), pointStyle:'rectRot', pointRadius:6 } ] }, options:o2 },
+    dp => { const d = dp.raw.d; return `<b>${esc(d.c.name)}</b><br>Company ${rmX(d.c.evRev)} · sector median ${rmX(d.med)}<br>${pct(d.prem)}`; });
+  // 3. Current valuation vs the valuation at the sector median multiple (log scale).
+  const o3 = baseOpts(); o3.indexAxis = 'y'; o3.scales.x = { type:'logarithmic', min:1, position:'top', grid:{ color:line }, border:{ color:css('--line') }, ticks:{ callback:v => [1,2,5,10,20,50,100,200,500,1000,2000].includes(v) ? (v >= 1000 ? '$' + v / 1000 + 'T' : '$' + v + 'bn') : '' } };
+  o3.scales.y.ticks = { autoSkip:false, color:ink };
+  mk('c-rb3', { type:'bar', data:{ labels:names, datasets:[
+      { label:'Current valuation', data:ok.map(d => d.c.cv), backgroundColor:css('--purple'), borderRadius:2, borderSkipped:'start', barThickness:8 },
+      { label:'At the sector median multiple', data:ok.map(d => d.atMed), backgroundColor:alpha(css('--accent-pink'), .8), borderRadius:2, borderSkipped:'start', barThickness:8 } ] }, options:o3 },
+    dp => { const d = ok[dp.dataIndex]; return `<b>${esc(d.c.name)}</b><br>Current ${bnx(d.c.cv)} · at the sector median ${bnx(d.atMed)}<br>${pct(d.atMed / d.c.cv - 1)} vs current`; });
+}
 function drawRevenue(rs) {
   const set = rs.filter(c => c.evRev!=null && !c.listed), all = UNI.filter(c => c.evRev!=null && !c.listed), bookAll = all.filter(inBook), bookSet2 = set.filter(inBook);
   const S = set.length ? rmStats(set) : null, B = bookAll.length ? rmStats(bookAll) : null, U = all.length ? rmStats(all) : null;
@@ -1970,14 +1987,18 @@ function drawRevenue(rs) {
   const bk = UNI.filter(inBook).sort((a,b)=>(a.mq ?? 100 + a.wl) - (b.mq ?? 100 + b.wl)), withM = bk.filter(c=>c.evRev!=null), noM = bk.filter(c=>c.evRev==null);
   const bcols = [{ l:'Company', cls:'co' }, { l:'Bucket', cls:'wrap' }, { d:'Revenue, US$ millions, and its source.', l:'Revenue', r:1 }, { d:'Revenue growth, % (PitchBook).', l:'Growth', r:1 }, { d:DEF.curVal, l:'Current valuation', r:1 }, { d:'Current valuation ÷ revenue.', l:'EV / Revenue', r:1 },
     { d:'Median EV / Revenue of the company\'s sector across the whole universe, and the number of companies. Blank where the sector has too few.', l:'Sector median', r:1 }, { d:'EV / Revenue ÷ sector median − 1.', l:'vs sector', r:1 }, { d:'Position within the sector by multiple (1 = lowest).', l:'Rank', r:1 },
-    { d:'Revenue × sector median: the valuation the company would have at its sector\'s median multiple, and how that compares with its current valuation.', l:'Valuation at sector median', r:1 }];
+    { d:'Revenue × sector median: the valuation the company would have at its sector\'s median multiple, and how that compares with its current valuation.', l:'Valuation at sector median', r:1 },
+    { d:'Revenue × the median equity value ÷ revenue that recent IPOs priced at (the Recent IPOs table below): what the company would be worth if it listed at that multiple, and how that compares with its current valuation. Revenue is a PitchBook estimate unless reported, so read it as a guide.', l:'Valuation at recent-IPO multiple', r:1 }];
+  const ipoMed = median((window.IPOREV?.companies || []).map(r => { const x = EXITS.find(e => e.ticker === r.ticker); return x?.ipoValBn && r.fyRevenueM ? x.ipoValBn * 1000 / r.fyRevenueM : null; }).filter(v => v != null));
   document.querySelector('#tbl-rm-book thead').innerHTML = headHtml(bcols);
   const rowB = c => { const rk = c.evRank, ok = rk && rk.med != null && rk.n != null, prem = ok ? c.evRev / rk.med - 1 : null, atMed = ok ? c.rev * rk.med / 1000 : null;
     return `<tr data-id="${c.id}"><td class="co">${esc(c.name)}${c.mq ? `<span class="badge b-ls">M${c.mq}</span>` : ''}${c.wl ? `<span class="badge b-ls">W${c.wl}</span>` : ''}</td><td class="wrap">${esc(c.tier)}</td>`
       + `<td class="r num"><span title="${esc(revSrcTxt(c))}">${revTxt(c.rev)}</span><br><span class="flag">${esc(c.revSrc||'')}</span></td><td class="r num">${c.revg==null ? NA : Math.round(c.revg)+'%'}</td><td class="r num">${bnx(c.cv)}<br><span class="flag">${esc(c.cvSrc||'')}</span></td><td class="r num"><b>${rmX(c.evRev)}</b></td>`
-      + `<td class="r num">${ok ? `${rmX(rk.med)} <span class="flag">(${rk.of})</span>` : '<span class="flag">too few peers</span>'}</td><td class="r num">${prem==null ? NA : `<span class="${prem > 0 ? 'dn' : 'up'}">${pct(prem)}</span>`}</td><td class="r num">${ok ? `${rk.n} of ${rk.of}` : NA}</td><td class="r num">${atMed==null ? NA : `${bnx(atMed)}<br><span class="flag">${pct(atMed / c.cv - 1)} vs current</span>`}</td></tr>`; };
-  document.getElementById('rm-book-sub').textContent = `${withM.length} of ${bk.length} Marquee and Watching companies have a revenue multiple. Red = more expensive than the sector median, purple = cheaper. Not shown, no revenue or valuation: ${noM.map(c=>c.name).join(', ') || 'none'}.`;
+      + `<td class="r num">${ok ? `${rmX(rk.med)} <span class="flag">(${rk.of})</span>` : '<span class="flag">too few peers</span>'}</td><td class="r num">${prem==null ? NA : `<span class="${prem > 0 ? 'dn' : 'up'}">${pct(prem)}</span>`}</td><td class="r num">${ok ? `${rk.n} of ${rk.of}` : NA}</td><td class="r num">${atMed==null ? NA : `${bnx(atMed)}<br><span class="flag">${pct(atMed / c.cv - 1)} vs current</span>`}</td>`
+      + `<td class="r num">${ipoMed==null || !(c.rev > 0) ? NA : `${bnx(c.rev * ipoMed / 1000)}<br><span class="flag">${pct(c.rev * ipoMed / 1000 / c.cv - 1)} vs current</span>`}</td></tr>`; };
+  document.getElementById('rm-book-sub').textContent = `${withM.length} of ${bk.length} Marquee and Watching companies have a revenue multiple. Red = more expensive than the sector median, purple = cheaper. The last column values each company at the median multiple recent IPOs priced at (${ipoMed == null ? '—' : rmX(ipoMed)} revenue for the last fiscal year). Not shown, no revenue or valuation: ${noM.map(c=>c.name).join(', ') || 'none'}.`;
   document.querySelector('#tbl-rm-book tbody').innerHTML = withM.length ? withM.map(rowB).join('') : `<tr><td colspan="${bcols.length}" class="empty">No Marquee or Watching companies have a revenue multiple.</td></tr>`;
+  drawBookCharts(withM);
 
   // Recent IPOs: equity value at the IPO price ÷ the revenue in the prospectus.
   const IR = (window.IPOREV?.companies || []).map(r => { const x = EXITS.find(e=>e.ticker===r.ticker); return { r, x, val:x?.ipoValBn, mult:x?.ipoValBn && r.fyRevenueM ? x.ipoValBn*1000/r.fyRevenueM : null, ltm:x?.ipoValBn && r.ltmRevenueM ? x.ipoValBn*1000/r.ltmRevenueM : null, g:r.fyPriorM ? r.fyRevenueM/r.fyPriorM - 1 : null }; }).filter(r=>r.x).sort((a,b)=>b.x.ipoDate.localeCompare(a.x.ipoDate));
