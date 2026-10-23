@@ -7,24 +7,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261023111115"></script>
-<script src="quant-rounds.js?v=20261023111115" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261023111115" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261023111115" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261023111115" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261023111115" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261023111115" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261023111115" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261023111115" onerror="window.STEP=null"></script>
-<script src="augment-list.js?v=20261023111115" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261023111115" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261023111115" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261023111115" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261023111115" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261023111115" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261023111115" onerror="window.QREV={}"></script>
-<script src="method-config.js?v=20261023111115" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261023111115" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261023113511"></script>
+<script src="quant-rounds.js?v=20261023113511" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261023113511" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261023113511" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261023113511" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261023113511" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261023113511" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261023113511" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261023113511" onerror="window.STEP=null"></script>
+<script src="augment-list.js?v=20261023113511" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261023113511" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261023113511" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261023113511" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261023113511" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261023113511" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261023113511" onerror="window.QREV={}"></script>
+<script src="method-config.js?v=20261023113511" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261023113511" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -528,6 +528,14 @@
 
   <section>
     <div class="sec-hd">
+      <h2>Rounds behind the chart</h2>
+      <p>One row per company: both rounds with date, post-money valuation, type and source, and the step-up and gap as calculated from our data.</p>
+    </div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-st"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
       <h2>Not shown</h2>
       <p>Companies in the set without two priced rounds, and companies on the presentation slide that are not in the dashboard's universe.</p>
     </div>
@@ -768,6 +776,9 @@
     <p>Our book only: the Marquee list and Watching companies. For the wider market see Market comparables. Built from published valuations and rounds only. Entry points are illustrative: where each company stands against its earlier rounds, and what an exit would need to be. These are not our purchase prices or holdings.</p>
   </div>
   <div class="kpis" id="bk-kpis" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="panel" style="box-shadow:none;border:1px solid var(--line-soft);margin-top:18px"><h3>Equity return since each earlier round</h3><div class="sub">Current valuation ÷ the post-money valuation at the last round, the previous round and the round before, on a log scale. Dashed line = 1× (today equals that round). Most movement since the last round first.</div>
+      <div class="legend"><span><i style="background:var(--purple)"></i>Since last round</span><span><i style="background:var(--purple);opacity:.55"></i>Since previous round</span><span><i style="background:var(--purple);opacity:.25"></i>Since the round before</span></div>
+      <div class="chart-box" id="bk-box1"><canvas id="c-bk1" role="img" aria-label="Equity return since the last three priced rounds, by company"></canvas></div></div>
 
   <section>
     <div class="sec-hd">
@@ -1669,7 +1680,7 @@ function drawJourney(rs, kpiHtml) {
   document.querySelector('#tbl-jr-step tbody').innerHTML = (ipos.length || priv.length)
     ? (ipos.length ? hdr(`Companies that have IPO'd <span>· ${ipos.length} companies · private rounds up to the IPO price</span>`) + [0,1,2,3].map(k=>stepRow(ipos, k, true)).join('') : '')
       + (priv.length ? hdr(`Companies still private <span>· ${priv.length} companies with a price per share and a secondary mark · up to today's average secondary price</span>`) + [0,1,2,3].map(k=>stepRow(priv, k, false)).join('') : '')
-    : '<tr><td colspan="6" class="empty">No companies in this filter.</td></tr>';
+    : '<tr><td colspan="5" class="empty">No companies in this filter.</td></tr>';
 
   // Entry at each stage, to the IPO price.
   document.getElementById('jr-entry-sub').textContent = `${ipos.length} IPOs · median with the number of IPOs (n)`;
@@ -1825,6 +1836,20 @@ function drawBook() {
   document.querySelector('#tbl-bk-exit tbody').innerHTML = D.length ? D.map(d => `<tr data-id="${d.c.id}">${ecols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(d)}</td>`).join('')}</tr>`).join('')
     : `<tr><td colspan="${ecols.length}" class="empty">No Marquee or Watching companies match the current filters.</td></tr>`;
 
+  // Bar chart of the table below, on the companies that have a last round.
+  const vLine = { id:'vLine', afterDatasetsDraw(chart) { const v = chart.options.vline; if (v == null) return; const x = chart.scales.x.getPixelForValue(v), a = chart.chartArea; if (!(x >= a.left && x <= a.right)) return; const ctx = chart.ctx; ctx.save(); ctx.strokeStyle = css('--ink2'); ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(x, a.top); ctx.lineTo(x, a.bottom); ctx.stroke(); ctx.restore(); } };
+  const bl = D.filter(d => d.cv != null && d.lr);
+  emptyBox('bk-box1', 'c-bk1', bl.length ? '' : 'No companies match the current filters.');
+  if (bl.length && view === 'book') {
+    const ink = css('--ink'), line = css('--line-soft'), logAx = (min, fmt) => ({ type:'logarithmic', min, position:'top', grid:{ color:line }, border:{ color:css('--line') }, ticks:{ callback:v => [.5,1,2,3,5,10,20,50,100].includes(v) ? fmt(v) : '' } });
+    const a = [...bl].sort((p, q) => q.lr.x - p.lr.x), na = a.map(d => d.c.name);
+    document.getElementById('bk-box1').style.height = (a.length * 38 + 70) + 'px';
+    const o1 = baseOpts(); o1.indexAxis = 'y'; o1.vline = 1; o1.scales.x = logAx(.5, v => v + '×'); o1.scales.y.ticks = { autoSkip:false, color:ink };
+    const ser = (k, op) => ({ data:a.map(d => d[k]?.x ?? null), backgroundColor:alpha(css('--purple'), op), borderRadius:2, borderSkipped:'start', barThickness:8 });
+    mk('c-bk1', { type:'bar', plugins:[vLine], data:{ labels:na, datasets:[ser('lr', 1), ser('pr', .55), ser('p2', .25)] }, options:o1 },
+      dp => { const d = a[dp.dataIndex], p = d[['lr','pr','p2'][dp.datasetIndex]]; return p ? `<b>${esc(d.c.name)}</b><br>${mx1(p.x).replace(/<[^>]+>/g, '')} since the ${mon(p.date.slice(0,7))} round<br>${bnx(p.val)} then · ${bnx(d.cv)} now` : `<b>${esc(d.c.name)}</b><br>No earlier round`; });
+  }
+
   // Case studies: the four largest companies with three or more priced rounds.
   const cs = withCv.map(d=>({ d, rs:bookRounds(d.c) })).filter(x=>x.rs.length >= 3).sort((a,b)=>b.d.cv - a.d.cv).slice(0, 4);
   document.getElementById('bk-cases').innerHTML = cs.map((x, i) => { const last3 = x.rs.slice(-3), lr = last3[2], first = last3[0];
@@ -1905,6 +1930,15 @@ function drawStep() {
 
   // Not shown.
   const slide = id => STEP.slide?.[id];
+  const cols = [
+    { l:'Company', cls:'co', f:r=>`${esc(r.c.name)}<br><span class="flag">${esc(r.bucket)}</span>` }, { d:'The round before the last priced round.', l:'Prior round', cls:'wrap', f:r=>stRound(r.prior) },
+    { d:'The most recent priced round (a tender or secondary sale shows as hollow on the chart).', l:'Last round', cls:'wrap', f:r=>stRound(r.last) },
+    { d:'Equity step-up: last ÷ prior post-money equity valuation (company-level, before dilution; not MOIC).', l:'Equity step-up', r:1, f:r=>stX(r.x) }, { d:'Months between the two rounds.', l:'Gap', r:1, f:r=>Math.round(r.gap)+'m' },
+  ];
+  document.querySelector('#tbl-st thead').innerHTML = headHtml(cols);
+  document.querySelector('#tbl-st tbody').innerHTML = shown.length ? [...shown].sort((a,b)=>b.last.val - a.last.val).map(r => `<tr data-id="${r.c.id}">${cols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(r)}</td>`).join('')}</tr>`).join('')
+    : '<tr><td colspan="5" class="empty">No companies in this filter.</td></tr>';
+
   const inSet = new Set(all.map(r=>r.c.id)), onSlideOnly = Object.entries(STEP.slide || {}).filter(([id]) => !UNI.some(c=>c.id===id)).map(([id, s]) => ({ name:s.name || id, s }));
   const mcols = [{ l:'Company', cls:'co', f:m=>esc(m.name) }, { l:'Why not shown', f:m=>esc(m.why) }, { d:'What the presentation slide shows for it.', l:'On the slide', f:m=>m.s ? `${stX(m.s.x)} · ${m.s.gap}m · ${m.s.b==='LG' ? 'Late Growth' : 'Pre-IPO'}` : NA }];
   const mrows = [...miss.map(r => ({ name:r.c.name, why:(r.n===0 ? 'No priced round with a post-money valuation in our data' : r.n===1 ? 'Only one priced round held, so no prior valuation' : `Bucket is ${r.bucket}`) + (STEP.notes?.[r.c.id] ? ' · ' + STEP.notes[r.c.id] : ''), s:slide(r.c.id), id:r.c.id })),
@@ -1914,7 +1948,7 @@ function drawStep() {
   document.querySelector('#tbl-st-miss tbody').innerHTML = mrows.length ? mrows.map(m => `<tr${m.id ? ` data-id="${m.id}"` : ''}>${mcols.map(k=>`<td class="${k.cls||''}">${k.f(m)}</td>`).join('')}</tr>`).join('') : '<tr><td colspan="3" class="empty">Every company in the set has two priced rounds.</td></tr>';
 }
 for (const id of ['st-lg','st-pi']) document.getElementById(id).addEventListener('click', e => { const g = e.target.closest('.sv-row'); const co = g && UNI.find(c=>c.id===g.dataset.id); if (co) openDetail(co); });
-for (const id of ['#tbl-st-miss']) document.querySelector(id+' tbody').addEventListener('click', e => { if (e.target.closest('a')) return; const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
+for (const id of ['#tbl-st','#tbl-st-miss']) document.querySelector(id+' tbody').addEventListener('click', e => { if (e.target.closest('a')) return; const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
 
 // ── Revenue multiples (Market comparables): EV / Revenue across the universe, with our book highlighted ──
 const rmStats = xs => { const m = xs.map(c=>c.evRev), g = xs.map(c=>c.revg).filter(x=>x!=null && isFinite(x));
