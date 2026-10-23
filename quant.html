@@ -7,25 +7,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261023135221"></script>
-<script src="quant-rounds.js?v=20261023135221" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261023135221" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261023135221" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261023135221" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261023135221" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261023135221" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261023135221" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261023135221" onerror="window.STEP=null"></script>
-<script src="stepup-inputs.js?v=20261023135221" onerror="window.STEPUP=null"></script>
-<script src="augment-list.js?v=20261023135221" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261023135221" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261023135221" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261023135221" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261023135221" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261023135221" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261023135221" onerror="window.QREV={}"></script>
-<script src="method-config.js?v=20261023135221" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261023135221" onerror="window.SITE_UPDATED=null"></script>
+<script src="quant-data.js?v=20261023154944"></script>
+<script src="quant-rounds.js?v=20261023154944" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261023154944" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261023154944" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261023154944" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261023154944" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261023154944" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261023154944" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261023154944" onerror="window.STEP=null"></script>
+<script src="stepup-inputs.js?v=20261023154944" onerror="window.STEPUP=null"></script>
+<script src="augment-list.js?v=20261023154944" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261023154944" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261023154944" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261023154944" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261023154944" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261023154944" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261023154944" onerror="window.QREV={}"></script>
+<script src="public-comps.js?v=20261023135221" onerror="window.PUBCOMPS={}"></script>
+<script src="method-config.js?v=20261023154944" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261023154944" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -295,6 +296,32 @@
   .stat-list li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line-soft); }
   .stat-list li b { font-family: var(--serif); font-weight: 400; font-size: 16px; color: var(--brand); font-variant-numeric: tabular-nums; }
   @media (max-width: 1100px) { .al-set { grid-template-columns: 1fr 1fr; } }
+  /* company profile */
+  .pf-pick { display: flex; flex-direction: column; gap: 4px; margin-bottom: 18px; }
+  .pf-pick label { font: 700 10px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .pf-pick select { width: 260px; max-width: 100%; font-size: 13px; padding: 7px 10px; }
+  .pf-hd h2 { font: 400 30px var(--serif); color: var(--brand); margin-bottom: 2px; }
+  .pf-hd .meta { font-size: 12px; color: var(--ink2); margin-bottom: 6px; }
+  .pf-hd .badge { margin: 0 6px 0 0; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+  .pf-hd .b-mq { background: var(--purple); color: #fff; }
+  .pf-hd .b-bk { background: var(--accent-light-purple); color: var(--purple); }
+  .pf-desc { font-size: 12px; color: var(--ink2); max-width: 980px; margin: 10px 0 18px; }
+  .pf-kpis { display: grid; grid-template-columns: repeat(8, 1fr); gap: 12px; margin-bottom: 24px; }
+  .pf-kpis .card { padding: 12px 14px; }
+  .pf-kpis .card:nth-child(4n+2) { border-top-color: var(--accent-blue); }
+  .pf-kpis .card:nth-child(4n+3) { border-top-color: var(--accent-pink); }
+  .pf-kpis .card:nth-child(4n+4) { border-top-color: var(--accent-purple); }
+  .pf-kpis .kpi-val { font-size: 22px; }
+  .pf-kpis .kpi-lbl { font-size: 11px; }
+  .pf-sec { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); padding: 18px 20px; margin-bottom: 22px; }
+  .pf-sec > h3 { font: 400 18px var(--serif); color: var(--brand); padding-bottom: 8px; border-bottom: 1px solid var(--brand); margin-bottom: 8px; }
+  .pf-sec > .sub { margin-bottom: 14px; }
+  .pf-sec .panel { box-shadow: none; border: 1px solid var(--line-soft); }
+  .pf-sec .tbl-wrap { box-shadow: none; max-height: none; }
+  tr.pf-me td { background: color-mix(in srgb, var(--accent-light-purple) 35%, var(--surface)) !important; font-weight: 600; }
+  tr.pf-med td { font-weight: 700; color: var(--ink); border-top: 2px solid var(--brand); }
+  @media (max-width: 1300px) { .pf-kpis { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 760px) { .pf-kpis { grid-template-columns: repeat(2, 1fr); } }
 
   @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 760px) {
@@ -335,6 +362,7 @@
   <nav class="tabs" role="tablist" aria-label="Views">
     <button class="tab-btn" role="tab" data-view="analytics" type="button">Analytics</button>
     <button class="tab-btn" role="tab" data-view="marquee" type="button">Marquee list</button>
+    <button class="tab-btn" role="tab" data-view="profile" type="button">Company profile</button>
     <button class="tab-btn" role="tab" data-view="universe" type="button">Universe</button>
     <button class="tab-btn" role="tab" data-view="ipo" type="button">IPO pipeline</button>
     <button class="tab-btn" role="tab" data-view="step" type="button">Valuations</button>
@@ -449,6 +477,80 @@
     </div>
     <div class="tbl-wrap"><table id="tbl-wl"><thead></thead><tbody></tbody></table></div>
   </section>
+  </div>
+
+  <div class="view" id="view-profile" role="tabpanel" hidden>
+  <div class="pf-pick">
+    <label for="pf-co">Company</label>
+    <select id="pf-co" aria-label="Marquee company"></select>
+  </div>
+  <div class="pf-hd" id="pf-hd"></div>
+  <div class="pf-kpis" id="pf-kpis"></div>
+
+  <div class="pf-sec">
+    <h3>Revenue</h3>
+    <div class="sub" id="pf-rev-sub"></div>
+    <div class="tbl-wrap"><table id="tbl-pf-rev"><thead></thead><tbody></tbody></table></div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="panel">
+        <h3>Revenue and run-rate</h3>
+        <div class="sub" id="pf-revc-sub"></div>
+        <div class="chart-box" id="pf-revc-box" style="height:260px"><canvas id="c-pf-rev" role="img" aria-label="Revenue prior year, latest year and annualised run-rate"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Growth vs multiple, against comparables</h3>
+        <div class="sub">EV / Revenue against revenue growth (% a year) for the company and its comparables below.</div>
+        <div class="legend"><span><i style="background:var(--purple)"></i>This company</span><span><i style="background:var(--accent-blue)"></i>Comparable</span></div>
+        <div class="chart-box" id="pf-gm-box" style="height:260px"><canvas id="c-pf-gm" role="img" aria-label="EV to revenue against revenue growth for the company and comparables"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-sec">
+    <h3>Valuation</h3>
+    <div class="sub" id="pf-val-sub"></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Post-money valuation by round</h3>
+        <div class="sub">Priced rounds and company-run tenders (log scale); the pink point is today's valuation.</div>
+        <div class="chart-box" id="pf-vh-box" style="height:280px"><canvas id="c-pf-vh" role="img" aria-label="Post-money valuation by round over time"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Secondary price history</h3>
+        <div class="sub" id="pf-px-sub"></div>
+        <div class="legend" id="pf-px-legend"></div>
+        <div class="chart-box" id="pf-px-box" style="height:280px"><canvas id="c-pf-px" role="img" aria-label="Secondary price per share by venue"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-sec">
+    <h3>Market comparables</h3>
+    <h4>Listed comparables</h4>
+    <div class="sub" id="pf-pub-sub"></div>
+    <div class="tbl-wrap"><table id="tbl-pf-pub"><thead></thead><tbody></tbody></table></div>
+    <div class="panel" id="pf-pub-panel" style="margin:16px 0 22px">
+      <h3>EV / Sales against listed comparables</h3>
+      <div class="sub" id="pf-pmx-sub"></div>
+      <div class="legend"><span><i style="background:var(--purple)"></i>This company</span><span><i style="background:var(--accent-blue)"></i>Listed comparable</span><span><i style="background:var(--accent-pink);height:2px"></i><span id="pf-pmx-med"></span></span></div>
+      <div class="chart-box" id="pf-pmx-box" style="height:320px"><canvas id="c-pf-pmx" role="img" aria-label="EV to sales for the company and its listed comparables, with the median"></canvas></div>
+    </div>
+    <h4>Private comparables</h4>
+    <div class="sub" id="pf-cmp-sub"></div>
+    <div class="tbl-wrap"><table id="tbl-pf-cmp"><thead></thead><tbody></tbody></table></div>
+    <div class="panel" style="margin-top:16px">
+      <h3>EV / Revenue multiples</h3>
+      <div class="sub" id="pf-mx-sub"></div>
+      <div class="legend"><span><i style="background:var(--purple)"></i>This company</span><span><i style="background:var(--accent-blue)"></i>Comparable</span><span><i style="background:var(--accent-pink);height:2px"></i><span id="pf-mx-med"></span></span></div>
+      <div class="chart-box" id="pf-mx-box" style="height:320px"><canvas id="c-pf-mx" role="img" aria-label="EV to revenue for the company and its comparables, with the comparables median"></canvas></div>
+    </div>
+  </div>
+
+  <div class="pf-sec">
+    <h3>Funding rounds and shareholders</h3>
+    <div class="sub">Rounds and shareholders as compiled in quant-rounds.js, with sources.</div>
+    <div id="pf-rounds"></div>
+  </div>
   </div>
 
   <div class="view" id="view-alloc" role="tabpanel" hidden>
@@ -2373,14 +2475,14 @@ function holdersTable(hs) {
   return '<div class="tbl-wrap" style="box-shadow:none;border:1px solid var(--line)"><table><thead><tr><th>Shareholder</th><th>Type</th><th class="r">Stake</th><th>Basis</th><th>Source</th></tr></thead><tbody>' +
     hs.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.type||'')}</td><td class="r num">${x.stake==null?'—':(x.stake*100).toFixed(1)+'%'}</td><td>${esc(x.basis||'')}</td><td class="flag">${esc(x.src||'')}</td></tr>`).join('') + '</tbody></table></div>';
 }
-function drawDetail(c) {
+function drawDetail(c, id = 'c-det') {
   const o = baseOpts();
   o.scales.x = { type:'linear', grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:{ callback:v=>new Date(v).toLocaleDateString('en-AU',{day:'numeric',month:'short'}) } };
   o.scales.y = { grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:{ callback:v=>'$'+v } };
   o.interaction = { mode:'nearest', intersect:false };
   const ds = VENUES.filter(v=>c.hist[v.k]?.length).map(v=>({ label:v.name, data:c.hist[v.k].map(([d,p])=>({x:+new Date(d+'T00:00:00'),y:p})),
     borderColor:css(v.css), backgroundColor:css(v.css), borderWidth:2, pointStyle:v.shape, pointRadius:5, pointBorderColor:css('--surface'), pointBorderWidth:2, tension:0 }));
-  mk('c-det', { type:'line', data:{ datasets:ds }, options:o },
+  mk(id, { type:'line', data:{ datasets:ds }, options:o },
     dp => `<b>${dp.dataset.label}</b><br>${usd(dp.raw.y)} · ${fDate(new Date(dp.raw.x).toISOString().slice(0,10))}`);
 }
 
@@ -2953,14 +3055,196 @@ function initAlloc() {
   };
 }
 
+// ── company profile: one Marquee company on a page — overview, revenue, valuation and its market comparables ──
+const PF_DEFAULT = 'stripe';
+const PF_COMPS = 8;   // comparables: the sector peers nearest in current valuation that have an EV / Revenue multiple
+const pfList = () => UNI.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq);
+const pfCo = () => { const l = pfList(); return l.find(c=>c.id===F.pid) || l.find(c=>c.id===PF_DEFAULT) || l[0]; };
+const pfSel = document.getElementById('pf-co');
+pfSel.innerHTML = pfList().map(c=>`<option value="${esc(c.id)}">${c.mq}. ${esc(c.name)}</option>`).join('');
+pfSel.onchange = e => { F.pid = e.target.value; history.replaceState(null, '', '#profile/'+F.pid); tipEl.style.opacity = 0; render(); };
+document.getElementById('tbl-pf-cmp').onclick = e => { const id = e.target.closest('tr[data-id]')?.dataset.id, c = id && UNI.find(x=>x.id===id); if (c) openDetail(c); };
+function pfComps(c) {
+  const peers = UNI.filter(x => x.sector===c.sector && x.id!==c.id && !x.listed && x.cv!=null && x.evRev!=null);
+  const dist = x => c.cv ? Math.abs(Math.log(x.cv/c.cv)) : -x.cv;
+  return peers.sort((a,b)=>dist(a)-dist(b)).slice(0, PF_COMPS).sort((a,b)=>b.cv-a.cv);
+}
+const gTxt = g => g==null ? '—' : (g>0?'+':'') + g.toFixed(0) + '%';
+// Bar chart of multiples with a dashed median line; items: { name, v, me (the profiled company), tip }.
+function pfBars(id, items, medV, medLabel) {
+  const o = baseOpts(); o.scales.x.grid = { display:false };
+  o.scales.x.ticks = { autoSkip:false, maxRotation:0, callback:function(v){ const s = this.getLabelForValue(v); return s.length > 12 ? s.split(' ') : s; } };
+  o.scales.y = { grid:{color:css('--line-soft')}, border:{color:css('--line')}, beginAtZero:true, ticks:{ callback:v=>v+'×' } };
+  return mk(id, { data:{ labels:items.map(x=>x.name), datasets:[
+    { type:'bar', data:items.map(x=>x.v), backgroundColor:items.map(x=>css(x.me ? '--purple' : '--accent-blue')), borderRadius:4, maxBarThickness:56, order:2 },
+    ...(medV!=null ? [{ type:'line', data:items.map(()=>medV), borderColor:css('--accent-pink'), borderDash:[6,4], borderWidth:1.5, pointRadius:0, order:1 }] : []) ] }, options:o },
+    dp => dp.datasetIndex ? `<b>${medLabel}</b><br>${xFmt(medV)}` : items[dp.dataIndex].tip);
+}
+function drawProfile() {
+  const c = pfCo(); F.pid = c.id; pfSel.value = c.id;
+  const comps = pfComps(c), qr = window.QR?.[c.id];
+  const sectorAll = UNI.filter(x => x.sector===c.sector && x.id!==c.id && !x.listed && x.evRev!=null);
+  const med = (xs, f) => { const v = xs.map(f).filter(x=>x!=null); return v.length ? median(v) : null; };
+  const cm = { evRev:med(comps,x=>x.evRev), revg:med(comps,x=>x.revg), prem:med(comps,x=>x.prem), rev:med(comps,x=>x.rev), gAdj:med(comps,x=>x.gAdj), evArr:med(comps,x=>x.evArr) };
+  const sm = { evRev:med(sectorAll,x=>x.evRev), revg:med(sectorAll,x=>x.revg), prem:med(sectorAll,x=>x.prem), rev:med(sectorAll,x=>x.rev), gAdj:med(sectorAll,x=>x.gAdj), evArr:med(sectorAll,x=>x.evArr) };
+
+  // header and tiles
+  document.getElementById('pf-hd').innerHTML = `<h2>${esc(c.name)}</h2>
+    <div class="meta">${[c.sector, c.sub, c.pb?.hq || c.hq || c.region, c.pb?.founded ? 'Founded '+c.pb.founded : null].filter(Boolean).map(esc).join(' · ')}</div>
+    <div><span class="badge b-mq">Marquee #${c.mq}</span><span class="badge b-bk">${esc(c.tier)}</span>${c.ipo ? `<span class="badge b-ls">${esc(IPO_SHORT[c.ipo.status]||c.ipo.status)}</span>` : ''}${c.pb?.status ? `<span class="badge b-ls">${esc(c.pb.status)}</span>` : ''}</div>
+    ${c.pb?.desc || c.note ? `<p class="pf-desc">${esc(c.pb?.desc || '')}${c.note ? ` <b>Desk note:</b> ${esc(c.note)}` : ''}</p>` : ''}`;
+  const spread = c.spread!=null ? ` · spread ${(c.spread*100).toFixed(1)}%` : '';
+  document.getElementById('pf-kpis').innerHTML = [
+    [bn(c.cv), 'Current valuation', c.cvSrc || 'none available'],
+    [bn(c.lrEv), c.lrTender ? 'Last tender' : 'Last round', `${c.lrName ? esc(c.lrName)+' · ' : ''}${c.lrDate ? fDate(c.lrDate) : 'date not reported'}`],
+    [pct(c.prem), c.lrTender ? 'vs last tender' : 'vs last round', c.prem==null ? 'needs a secondary valuation' : 'current ÷ last − 1'],
+    [usd(c.bl), 'Avg secondary price', c.nVen ? `${c.nVen} venue${c.nVen>1?'s':''}${spread}` : 'no venue prices'],
+    [revTxt(c.rev), 'Revenue', c.revSrc || 'no revenue data yet'],
+    [gTxt(c.revg), 'Revenue growth', c.revg==null ? 'not available' : `a year · comps median ${gTxt(cm.revg)}`],
+    [revTxt(c.arr), 'Run-rate revenue', c.arrQ ? `${esc(c.arrQ.quarter)} × 4` : 'no reported quarter'],
+    [c.evRev==null ? '—' : xFmt(c.evRev), 'EV / Revenue', c.evRev==null ? 'needs revenue and a valuation' : `comps median ${cm.evRev==null ? '—' : xFmt(cm.evRev)}`],
+  ].map(([v,l,s])=>`<div class="card"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${s}</div></div>`).join('');
+
+  // revenue
+  const prior = c.rev!=null && c.revg!=null ? c.rev/(1+c.revg/100) : null;
+  const vsx = (v, m, f) => v==null || m==null ? NA : `${f(m)} <span class="flag">${esc(c.name)} ${v>m ? 'higher' : v<m ? 'lower' : 'level'}</span>`;
+  document.getElementById('pf-rev-sub').textContent = `Annual revenue is PitchBook's estimate (as of ${fDate(window.PB_ASOF)}) unless the team has entered a reported figure. The run-rate is the latest reported quarter × 4, from public reporting. The prior year is implied from PitchBook's growth rate, not reported. Medians are over the ${comps.length} comparables below and over all ${sectorAll.length} other ${c.sector} companies with a multiple.`;
+  const revRows = [
+    ['Revenue, latest year', revTxt(c.rev), vsx(c.rev, cm.rev, revTxt), vsx(c.rev, sm.rev, revTxt), esc(revSrcTxt(c)) || 'no revenue data yet'],
+    ['Revenue, prior year (implied)', revTxt(prior), NA, NA, prior==null ? '' : 'latest ÷ (1 + growth)'],
+    ['Revenue growth', gTxt(c.revg), vsx(c.revg, cm.revg, gTxt), vsx(c.revg, sm.revg, gTxt), c.revg==null ? '' : 'PitchBook, % a year'],
+    ['Latest reported quarter', c.arrQ ? `${revTxt(c.arrQ.revM)} <span class="flag">${esc(c.arrQ.quarter)}</span>` : NA, NA, NA, c.arrQ ? `${esc(c.arrQ.src || '')}${c.arrQ.url ? ` · <a href="${esc(c.arrQ.url)}" target="_blank" rel="noopener">link</a>` : ''}${c.arrQ.note ? ` · ${esc(c.arrQ.note)}` : ''}` : 'no reported quarter yet'],
+    ['Run-rate revenue', revTxt(c.arr), NA, NA, c.arr==null ? '' : 'latest quarter × 4'],
+    ['EV / Revenue', c.evRev==null ? NA : xFmt(c.evRev), vsx(c.evRev, cm.evRev, xFmt), vsx(c.evRev, sm.evRev, xFmt), esc(rankTxt(c))],
+    ['EV / Run-rate', c.evArr==null ? NA : xFmt(c.evArr), vsx(c.evArr, cm.evArr, xFmt), vsx(c.evArr, sm.evArr, xFmt), c.evArr==null ? '' : 'current valuation ÷ run-rate'],
+    ['Growth-adjusted multiple', c.gAdj==null ? NA : c.gAdj.toFixed(2), vsx(c.gAdj, cm.gAdj, x=>x.toFixed(2)), vsx(c.gAdj, sm.gAdj, x=>x.toFixed(2)), 'EV / Revenue ÷ growth in %; lower = cheaper for the growth'],
+  ];
+  const tr = document.getElementById('tbl-pf-rev');
+  tr.querySelector('thead').innerHTML = '<tr><th>Metric</th><th class="r">'+esc(c.name)+'</th><th class="r">Comps median</th><th class="r">Sector median</th><th>Basis / source</th></tr>';
+  tr.querySelector('tbody').innerHTML = revRows.map(([l,v,a,b,s])=>`<tr><td class="co">${l}</td><td class="r num">${v}</td><td class="r num">${a}</td><td class="r num">${b}</td><td class="note-cell">${s}</td></tr>`).join('');
+
+  const bars = [['Prior year (implied)', prior, '--accent-purple'], ['Latest year', c.rev, '--purple'], [c.arrQ ? `Run-rate (${c.arrQ.quarter} × 4)` : 'Run-rate', c.arr, '--accent-blue']].filter(b=>b[1]!=null);
+  document.getElementById('pf-revc-sub').textContent = bars.length ? 'US$ · bars as in the table above' : '';
+  if (!bars.length) emptyBox('pf-revc-box', 'c-pf-rev', 'No revenue data yet for this company.');
+  else { emptyBox('pf-revc-box', 'c-pf-rev', '');
+    const o = baseOpts(); o.scales.y = { grid:{color:css('--line-soft')}, border:{color:css('--line')}, beginAtZero:true, ticks:{ callback:v=>revTxt(v) } }; o.scales.x.grid = { display:false };
+    mk('c-pf-rev', { type:'bar', data:{ labels:bars.map(b=>b[0]), datasets:[{ data:bars.map(b=>b[1]), backgroundColor:bars.map(b=>css(b[2])), borderRadius:4, maxBarThickness:70 }] }, options:o },
+      dp => `<b>${esc(bars[dp.dataIndex][0])}</b><br>${revTxt(dp.raw)}`); }
+
+  const gm = [c, ...comps].filter(x=>x.evRev!=null && x.revg!=null);
+  if (gm.length < 2) emptyBox('pf-gm-box', 'c-pf-gm', 'Needs revenue growth for the company and at least one comparable.');
+  else { emptyBox('pf-gm-box', 'c-pf-gm', '');
+    const o = baseOpts();
+    o.scales.x = { type:'linear', title:{ display:true, text:'Revenue growth, % a year' }, grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:{ callback:v=>v+'%' } };
+    o.scales.y = { type:'logarithmic', title:{ display:true, text:'EV / Revenue' }, grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:{ callback:v=>[1,2,5,10,20,50,100,200,500].includes(v) ? v+'×' : '' } };
+    const ch = mk('c-pf-gm', { type:'scatter', data:{ datasets:[{ data:gm.map(x=>({x:x.revg, y:x.evRev})),
+      backgroundColor:gm.map(x=>css(x===c ? '--purple' : '--accent-blue')), pointRadius:gm.map(x=>x===c ? 8 : 6), pointBorderColor:css('--surface'), pointBorderWidth:1.5 }] }, options:o },
+      dp => { const x = gm[dp.dataIndex]; return `<b>${esc(x.name)}</b><br>EV / Revenue ${xFmt(x.evRev)} · growth ${gTxt(x.revg)}<br>${bn(x.cv)} · revenue ${revTxt(x.rev)}`; });
+    ch.$co = gm; }
+
+  // valuation
+  const marks = (qr?.rounds || []).filter(r=>r.date && r.post>0 && !['Debt','Pending'].includes(r.type) && r.companyRun!==false).map(r=>({ d:nd(r.date), v:r.post, n:r.name, t:r.type }));
+  if (!marks.length && c.lrEv && c.lrDate) marks.push({ d:c.lrDate, v:c.lrEv, n:c.lrName || 'Last round', t:'' });
+  marks.sort((a,b)=>a.d.localeCompare(b.d));
+  const first = marks[0], last = marks[marks.length-1], yrs = first && last && last!==first ? monthsBetween(first.d, last.d)/12 : null;
+  document.getElementById('pf-val-sub').textContent = `${marks.length} priced marks${first ? ` from ${fDate(first.d)} (${bn(first.v)})` : ''}${yrs ? ` to ${fDate(last.d)} (${bn(last.v)}), over ${yrs.toFixed(1)} years` : ''}. Current valuation ${bn(c.cv)}${c.cvSrc ? ' ('+c.cvSrc+')' : ''}${c.pb?.est!=null ? ` · PitchBook estimate ${bn(c.pb.est)}` : ''}.`;
+  if (!marks.length) emptyBox('pf-vh-box', 'c-pf-vh', 'No priced rounds compiled for this company yet.');
+  else { emptyBox('pf-vh-box', 'c-pf-vh', '');
+    const o = baseOpts(), tx = d => +new Date(d+'T00:00:00');
+    o.scales.x = { type:'linear', grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:{ callback:v=>new Date(v).getFullYear() } };
+    o.scales.y = { type:'logarithmic', grid:{color:css('--line-soft')}, border:{color:css('--line')}, ticks:{ callback:v=>/^[125]/.test(String(v)) ? bn(v) : '' } };
+    const pts = marks.map(m=>({ x:tx(m.d), y:m.v, m })), now = c.cv!=null ? [{ x:+ASOF, y:c.cv, m:{ n:'Current valuation ('+(c.cvSrc||'')+')', d:QD_ASOF, v:c.cv } }] : [];
+    mk('c-pf-vh', { type:'line', data:{ datasets:[
+      { data:pts, borderColor:css('--purple'), backgroundColor:css('--purple'), borderWidth:2, pointRadius:pts.map(p=>p.m.t==='Tender' ? 3 : 4), pointStyle:pts.map(p=>p.m.t==='Tender' ? 'rectRot' : 'circle'), tension:0 },
+      { data:now, borderColor:css('--accent-pink'), backgroundColor:css('--accent-pink'), pointRadius:7, showLine:false } ] }, options:{ ...o, interaction:{ mode:'nearest', intersect:false } } },
+      dp => `<b>${esc(dp.raw.m.n)}</b><br>${bn(dp.raw.m.v)} · ${fDate(dp.raw.m.d)}`); }
+  const hasHist = c.hist && VENUES.some(v=>c.hist[v.k]?.length);
+  document.getElementById('pf-px-sub').textContent = hasHist ? `Price per share by venue · current average ${usd(c.bl)}${c.mom!=null ? ` · ${pct(c.mom,1)} since ${fDate(c.momFrom)}` : ''}` : '';
+  document.getElementById('pf-px-legend').innerHTML = hasHist ? venueLegend(VENUES.filter(v=>c.hist[v.k]?.length)) : '';
+  if (!hasHist) emptyBox('pf-px-box', 'c-pf-px', 'No verified price history yet.');
+  else { emptyBox('pf-px-box', 'c-pf-px', ''); drawDetail(c, 'c-pf-px'); }
+
+  // market comparables
+  document.getElementById('pf-cmp-sub').textContent = `The ${comps.length} private ${c.sector} companies in the universe nearest to ${c.name} in current valuation that have an EV / Revenue multiple. EV / Revenue = current valuation ÷ revenue (equity value; cash and debt not netted). Click a company for its detail.`;
+  const cols = [
+    { l:'Company', cls:'co', f:x=>`${esc(x.name)}${x.mq ? `<span class="badge b-ls">M${x.mq}</span>` : ''}` },
+    { l:'Bucket', f:x=>esc(x.tier) },
+    { l:'Current valuation', r:1, f:x=>`${bn(x.cv)}<br><span class="flag">${esc(x.cvSrc||'')}</span>` },
+    { l:'Last round', r:1, f:x=>x.lrEv==null ? NA : `${bn(x.lrEv)}<br><span class="flag">${x.lrDate ? mon(x.lrDate.slice(0,7)) : 'n/d'}</span>` },
+    { l:'vs last round', r:1, m:'prem', f:x=>x.prem==null ? NA : pct(x.prem) },
+    { l:'Revenue', r:1, m:'rev', f:x=>revTxt(x.rev) },
+    { l:'Growth', r:1, m:'revg', f:x=>gTxt(x.revg) },
+    { l:'EV / Revenue', r:1, m:'evRev', f:x=>x.evRev==null ? NA : xFmt(x.evRev) },
+    { l:'EV / Run-rate', r:1, m:'evArr', f:x=>x.evArr==null ? NA : xFmt(x.evArr) },
+    { l:'Growth-adj.', r:1, m:'gAdj', f:x=>x.gAdj==null ? NA : x.gAdj.toFixed(2) },
+  ];
+  const mFmt = { prem:pct, rev:revTxt, revg:gTxt, evRev:xFmt, evArr:xFmt, gAdj:x=>x.toFixed(2) };
+  const medRow = (lab, m) => `<tr class="pf-med">${cols.map((k,i)=>`<td class="${k.r?'r num':''}">${i===0 ? lab : k.m && m[k.m]!=null ? mFmt[k.m](m[k.m]) : ''}</td>`).join('')}</tr>`;
+  const tc = document.getElementById('tbl-pf-cmp');
+  tc.querySelector('thead').innerHTML = '<tr>'+cols.map(k=>`<th class="${k.r?'r':''}">${k.l}</th>`).join('')+'</tr>';
+  tc.querySelector('tbody').innerHTML = [c, ...comps].map(x=>`<tr data-id="${x.id}" class="${x===c?'pf-me':''}" style="cursor:pointer">${cols.map(k=>`<td class="${k.cls||''}${k.r?' r num':''}">${k.f(x)}</td>`).join('')}</tr>`).join('')
+    + medRow('Comps median', cm) + medRow(`Sector median (${sectorAll.length} peers)`, sm);
+
+  const mx = [c, ...comps].filter(x=>x.evRev!=null);
+  document.getElementById('pf-mx-med').textContent = `Comps median ${cm.evRev==null ? '—' : xFmt(cm.evRev)}`;
+  document.getElementById('pf-mx-sub').textContent = c.evRev==null ? `${c.name} has no multiple yet (needs revenue and a current valuation); its comparables are shown.` : `${c.name} at ${xFmt(c.evRev)} against a comparables median of ${xFmt(cm.evRev)}: ${pct(c.evRev/cm.evRev-1)} ${c.evRev>cm.evRev ? 'premium' : 'discount'}.`;
+  if (!mx.length) emptyBox('pf-mx-box', 'c-pf-mx', 'No comparables with a multiple in this sector.');
+  else { emptyBox('pf-mx-box', 'c-pf-mx', '');
+    pfBars('c-pf-mx', mx.map(x=>({ name:x.name, v:x.evRev, me:x===c, tip:`<b>${esc(x.name)}</b><br>EV / Revenue ${xFmt(x.evRev)}<br>${bn(x.cv)} ÷ revenue ${revTxt(x.rev)}` })), cm.evRev, 'Comps median').$co = mx; }
+
+  // listed comparables (public-comps.js)
+  const pub = window.PUBCOMPS?.[c.id], pc = pub?.comps || [];
+  document.getElementById('pf-pub-panel').hidden = !pc.length;
+  const pm = { evs:med(pc,x=>x.evs), fps:med(pc,x=>x.fps), eveb:med(pc,x=>x.eveb), pe:med(pc,x=>x.pe), fpe:med(pc,x=>x.fpe), revg:med(pc,x=>x.revg), ch3:med(pc,x=>x.ch3), ch6:med(pc,x=>x.ch6) };
+  document.getElementById('pf-pub-sub').textContent = pc.length
+    ? `${pc.length} listed companies, largest first, as at the ${fDate(pub.asof)} close. Market cap and price are in the listing currency. ${c.name}'s row uses its current valuation (${c.cvSrc || 'n/a'}) and revenue (${c.revSrc || 'n/a'}) from this dashboard, so its multiple is equity value ÷ revenue. ${pub.note || ''} Source: ${pub.src}.`
+    : `Listed comparables have not been compiled for ${c.name} yet (public-comps.js).`;
+  const cur = x => x.ccy==='USD' ? '$' : x.ccy==='EUR' ? '€' : x.ccy==='GBP' ? '£' : x.ccy+' ';
+  const xm = v => v==null ? NA : xFmt(v), cp = v => v==null ? NA : `<span class="${v>=0?'up':'dn'}">${v>0?'+':''}${v.toFixed(1)}%</span>`;
+  const pcols = [
+    { l:'Company', cls:'co', f:x=>x.me ? `${esc(c.name)}<span class="badge b-ls">M${c.mq}</span>` : esc(x.name) },
+    { l:'Ticker', f:x=>x.me ? '<span class="flag">Private</span>' : esc(x.t) },
+    { l:'Mkt cap (bn)', r:1, f:x=>x.me ? bn(c.cv) : `${cur(x)}${x.mcap.toFixed(1)}` },
+    { l:'Last price', r:1, f:x=>x.me ? usd(c.bl) : `${cur(x)}${x.px.toFixed(2)}${x.pxDate ? `<br><span class="flag">${fDate(x.pxDate)}</span>` : ''}` },
+    { l:'EV / Sales (LTM)', r:1, m:'evs', f:x=>xm(x.me ? c.evRev : x.evs) },
+    { l:'P / Sales (fwd)', r:1, m:'fps', f:x=>x.me ? NA : xm(x.fps) },
+    { l:'EV / EBITDA', r:1, m:'eveb', f:x=>x.me ? NA : xm(x.eveb) },
+    { l:'P / E', r:1, m:'pe', f:x=>x.me ? NA : xm(x.pe) },
+    { l:'P / E (fwd)', r:1, m:'fpe', f:x=>x.me ? NA : xm(x.fpe) },
+    { l:'Revenue growth', r:1, m:'revg', f:x=>gTxt(x.me ? c.revg : x.revg) },
+    { l:'3m price chg', r:1, m:'ch3', f:x=>x.me ? NA : cp(x.ch3) },
+    { l:'6m price chg', r:1, m:'ch6', f:x=>x.me ? NA : cp(x.ch6) },
+  ];
+  const pFmt = { evs:xFmt, fps:xFmt, eveb:xFmt, pe:xFmt, fpe:xFmt, revg:gTxt, ch3:v=>(v>0?'+':'')+v.toFixed(1)+'%', ch6:v=>(v>0?'+':'')+v.toFixed(1)+'%' };
+  const tp = document.getElementById('tbl-pf-pub');
+  tp.querySelector('thead').innerHTML = pc.length ? '<tr>'+pcols.map(k=>`<th class="${k.r?'r':''}">${k.l}</th>`).join('')+'</tr>' : '';
+  tp.querySelector('tbody').innerHTML = !pc.length ? '' : [{ me:true }, ...pc].map(x=>`<tr class="${x.me?'pf-me':''}">${pcols.map(k=>`<td class="${k.cls||''}${k.r?' r num':''}">${k.f(x)}</td>`).join('')}</tr>`).join('')
+    + `<tr class="pf-med">${pcols.map((k,i)=>`<td class="${k.r?'r num':''}">${i===0 ? 'Listed median' : k.m && pm[k.m]!=null ? pFmt[k.m](pm[k.m]) : ''}</td>`).join('')}</tr>`;
+  if (pc.length) {
+    const it = [...(c.evRev!=null ? [{ name:c.name, v:c.evRev, me:true, tip:`<b>${esc(c.name)}</b><br>EV / Revenue ${xFmt(c.evRev)}<br>${bn(c.cv)} ÷ revenue ${revTxt(c.rev)}` }] : []),
+      ...pc.filter(x=>x.evs!=null).sort((a,b)=>b.evs-a.evs).map(x=>({ name:x.name, v:x.evs, tip:`<b>${esc(x.name)}</b> · ${esc(x.t)}<br>EV / Sales ${xFmt(x.evs)} (LTM)<br>EV ${cur(x)}${x.ev.toFixed(1)}bn` }))];
+    document.getElementById('pf-pmx-med').textContent = `Listed median ${xFmt(pm.evs)}`;
+    document.getElementById('pf-pmx-sub').textContent = c.evRev==null ? `Trailing EV / Sales of the listed comparables; ${c.name} has no multiple yet.`
+      : `${c.name} at ${xFmt(c.evRev)} against a listed median of ${xFmt(pm.evs)} (${(c.evRev/pm.evs).toFixed(1)}× the median). Trailing 12-month sales; read with the revenue-basis note above.`;
+    pfBars('c-pf-pmx', it, pm.evs, 'Listed median');
+  }
+
+  // rounds and shareholders
+  document.getElementById('pf-rounds').innerHTML = '<h4>Funding rounds</h4>' + (qr?.rounds?.length ? roundsTable([...qr.rounds].reverse()) : '<div class="empty">Funding history not yet compiled for this company.</div>')
+    + '<h4 style="margin-top:14px">Key shareholders</h4>' + (qr?.holders?.length ? holdersTable(qr.holders) : '<div class="empty">Shareholder information not yet compiled for this company.</div>')
+    + (c.pb ? `<p class="sub" style="margin-top:10px"><a href="https://my.pitchbook.com/profile/${esc(c.pb.pbid)}/company/profile" target="_blank" rel="noopener">PitchBook profile</a>${c.pb.invN ? ` · ${c.pb.invN} investors per PitchBook` : ''}</p>` : '');
+}
+
 // ── render ──
 // ── views: Analytics / Marquee list / Universe / Methodology / Allocation, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','universe','ipo','step','comps','book','moic','method','alloc'];
+const VIEWS = ['analytics','marquee','profile','universe','ipo','step','comps','book','moic','method','alloc'];
 const VAL_VIEWS = ['step','comps','book','moic'];   // pages grouped under the Valuations tab
 // The Allocation tab is greyed out and cannot be opened until it is ready; set ALLOC_READY to true (and enable its tab button) to open it.
 const ALLOC_READY = false;
 const OPEN_VIEWS = VIEWS.filter(v => ALLOC_READY || v !== 'alloc');
-let view = OPEN_VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'analytics';
+// The company profile keeps its company in the hash too: #profile/stripe.
+const hashView = () => { const [v, id] = location.hash.slice(1).split('/'); if (v === 'profile' && id) F.pid = id; return v; };
+let view = OPEN_VIEWS.includes(hashView()) ? hashView() : 'analytics';
 function setView(v) {
   view = OPEN_VIEWS.includes(v) ? v : 'analytics';
   for (const x of VIEWS) document.getElementById('view-'+x).hidden = x !== view;
@@ -2971,14 +3255,15 @@ function setView(v) {
   document.getElementById('tog-stale').hidden = view !== 'analytics';   // only the analytics statistics use it
   document.getElementById('tog-mq').hidden = view === 'marquee';
   document.getElementById('tog-grp').hidden = !['comps','moic'].includes(view);
-  document.querySelector('.filters').hidden = view === 'alloc';   // the allocation works on its own selection
-  if (location.hash.slice(1) !== view) history.replaceState(null, '', '#'+view);
+  document.querySelector('.filters').hidden = view === 'alloc' || view === 'profile';   // these pages work on their own selection
+  const h = view === 'profile' ? 'profile/'+pfCo().id : view;
+  if (location.hash.slice(1) !== h) history.replaceState(null, '', '#'+h);
   tipEl.style.opacity = 0;
   render();
 }
 document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('.tab-btn'); if (b) setView(b.dataset.view === 'step' && F.valLast ? F.valLast : b.dataset.view); });
 document.getElementById('val-nav').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) setView(b.dataset.view); });
-addEventListener('hashchange', () => setView(location.hash.slice(1)));
+addEventListener('hashchange', () => setView(hashView()));
 
 function render() {
   const rs = rows();
@@ -2989,6 +3274,7 @@ function render() {
   if (view === 'analytics') { drawKpis(rs); drawPrem(rs); drawSector(rs); drawLiq(rs); drawDisp(rs); drawMom(rs); drawCov(rs); }
   if (view === 'ipo') drawIpo(rs);
   if (view === 'marquee') drawMarquee(rs);
+  if (view === 'profile') drawProfile();
   if (view === 'alloc') drawAlloc();
   if (view === 'universe') drawTable(rs);
   if (view === 'comps' || view === 'moic') drawComps(rs);
