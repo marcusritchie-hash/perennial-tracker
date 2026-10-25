@@ -7,26 +7,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261023170308"></script>
-<script src="quant-rounds.js?v=20261023170308" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261023170308" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261023170308" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261023170308" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261023170308" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261023170308" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261023170308" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261023170308" onerror="window.STEP=null"></script>
-<script src="stepup-inputs.js?v=20261023170308" onerror="window.STEPUP=null"></script>
-<script src="augment-list.js?v=20261023170308" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261023170308" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261023170308" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261023170308" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261023170308" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261023170308" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261023170308" onerror="window.QREV={}"></script>
+<script src="quant-data.js?v=20261025174341"></script>
+<script src="quant-rounds.js?v=20261025174341" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261025174341" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261025174341" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261025174341" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261025174341" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261025174341" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261025174341" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261025174341" onerror="window.STEP=null"></script>
+<script src="stepup-inputs.js?v=20261025174341" onerror="window.STEPUP=null"></script>
+<script src="augment-list.js?v=20261025174341" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261025174341" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261025174341" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261025174341" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261025174341" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261025174341" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261025174341" onerror="window.QREV={}"></script>
 <script src="public-comps.js?v=20261023135221" onerror="window.PUBCOMPS={}"></script>
-<script src="method-config.js?v=20261023170308" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261023170308" onerror="window.SITE_UPDATED=null"></script>
+<script src="value-pool.js?v=20261023170308" onerror="window.VPOOL=null"></script>
+<script src="method-config.js?v=20261025174341" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261025174341" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -220,9 +221,8 @@
   #tbl-cmp-fwc td.rm { white-space: normal; width: 150px; min-width: 150px; max-width: 150px; line-height: 1.3; }   /* multiple, then the round used on a small second line */
   #tbl-cmp-ex td.note-cell { width: 190px; min-width: 190px; }
   #tbl-mq td.note-cell { width: 140px; min-width: 140px; }   /* Marquee and Watching fit a 1440px laptop */
-  #tbl-wl td.note-cell { width: 115px; min-width: 115px; }   /* one more column (#) than Marquee */
   #tbl-cmp-ex td.wrap { min-width: 72px; }
-  #tbl-mq td.wrap, #tbl-wl td.wrap { min-width: 64px; }
+  #tbl-mq td.wrap { min-width: 64px; }
   thead th { cursor: default; }
   tbody tr.sec-row td { background: var(--surface) !important; cursor: default; padding: 16px 10px 8px; border-bottom: 1px solid var(--brand);
     font-family: var(--serif); font-size: 15px; color: var(--brand); text-transform: uppercase; letter-spacing: .04em; }
@@ -372,6 +372,10 @@
     <button class="tab-btn" role="tab" data-view="method" type="button">Methodology</button>
     <button class="tab-btn" role="tab" data-view="alloc" type="button" disabled aria-disabled="true" title="Not ready yet">Allocation <span class="tab-soon">not ready</span></button>
   </nav>
+  <div class="subnav" id="an-nav" role="group" aria-label="Analytics pages" hidden>
+    <button class="chip" type="button" data-view="analytics">Overview</button>
+    <button class="chip" type="button" data-view="value">Sector Review</button>
+  </div>
   <div class="subnav" id="val-nav" role="group" aria-label="Valuation pages" hidden>
     <button class="chip" type="button" data-view="step">Marquee equity step-ups</button>
     <button class="chip" type="button" data-view="comps">Market comparables</button>
@@ -472,17 +476,10 @@
   <div class="view" id="view-marquee" role="tabpanel" hidden>
   <section>
     <div class="sec-hd">
-      <h2>Current Marquee list</h2>
+      <h2>Marquee and Watching companies</h2>
       <p id="mq-sub"></p>
     </div>
     <div class="tbl-wrap"><table id="tbl-mq"><thead></thead><tbody></tbody></table></div>
-  </section>
-  <section>
-    <div class="sec-hd">
-      <h2>Watching Companies</h2>
-      <p id="wl-sub"></p>
-    </div>
-    <div class="tbl-wrap"><table id="tbl-wl"><thead></thead><tbody></tbody></table></div>
   </section>
   </div>
 
@@ -656,7 +653,11 @@
   <section>
     <div class="sec-hd">
       <h2>Universe</h2>
-      <p>Companies grouped by sector and ranked by liquidity score, within the sector and across the whole universe. Click a company for its detail and price history.</p>
+      <p id="uni-sub">Companies ranked within the sector and across the whole universe. Choose what to rank by. Click a company for its detail and price history.</p>
+    </div>
+    <div class="edit-bar">
+      <label class="tog">Rank by <select id="uni-rank" aria-label="Rank the universe by"></select></label>
+      <label class="tog">Show <select id="uni-grp" aria-label="Group the universe"><option value="sector">Grouped by sector</option><option value="all">All companies together</option></select></label>
     </div>
     <div class="tbl-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
   </section>
@@ -966,6 +967,42 @@
     </div>
     <div class="grid4" id="bk-cases"></div>
     <p class="sub" style="margin-top:8px">Source: company announcements, PitchBook and public reporting; current valuation from secondary prices where available. Illustrative only, not holdings of the Fund.</p>
+  </section>
+  </div>
+
+  <div class="view" id="view-value" role="tabpanel" hidden>
+  <section>
+    <div class="sec-hd">
+      <h2>Sector Review</h2>
+      <p>A valuation read of the 103 tracker companies for the Marquee Fund: which sectors are cheap or dear on revenue multiples, which companies are the best value, and a first sleeve sized to the Fund's rules. Four lenses, each ranked across the companies that can be scored and averaged with equal weight: EV / Revenue against the sector median, growth-adjusted multiple against the sector, today's valuation against the last round, and the exit multiple the mandate's return would need against what recent IPOs priced at. Revenue and growth are PitchBook estimates unless the team has entered a reported figure, and some growth figures look very high (flagged above 300%); the exit test caps growth at 100% a year. Illustrative only: not a forecast, not a recommendation to invest, and not the Fund's holdings.</p>
+    </div>
+    <div class="panel" id="vs-rec"></div>
+    <div class="kpis" id="vs-kpis" style="grid-template-columns:repeat(4,1fr);margin-top:18px"></div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Sector valuation review</h2><p>The sector calls. The revenue multiples behind them are on <a href="#comps">Valuations → Market comparables</a>; here, each sector's growth-adjusted multiple is set against the all-sector median. It covers every private company in the dashboard with revenue, not only the tracker names. A sector needs at least <m-v k="rev.minPeers"></m-v> companies for a median. Call: Overweight where the sector's growth-adjusted multiple (or EV / Revenue where growth is missing) is 15% or more below the all-sector median, Underweight where it is 15% or more above, otherwise Neutral.</p></div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-vs-sec"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Suggested sleeve</h2><p>Equal-weighted from the top-ranked companies in each bucket, within the Fund's rules (5% reserve, 25% maximum position, 40% sector cap, cheque sizes by bucket). Change the Fund size or the split to see how many names fit.</p></div>
+    <div class="edit-bar">
+      <label class="tog">Fund size ($m) <input type="number" id="vs-fund" value="100" min="10" step="10" style="width:80px"></label>
+      <label class="tog">Late Growth share (%) <input type="number" id="vs-gshare" value="50" min="0" max="100" step="5" style="width:70px"></label>
+    </div>
+    <div class="sub" id="vs-size-note" style="margin:8px 0"></div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-vs-sleeve"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Best value, ranked</h2><p>Every tracker company with enough data, best value first. Value score is 0–100: the average of the lens ranks (100 = cheapest on that lens), so a company missing a lens is scored on the rest. "Risk" marks the Methodology tab's overlay (regulatory, geopolitical, binary or technical, transfer restrictions); these are a first read for the team to confirm. Watch companies are scored but are not eligible for the sleeve until the team places them in a bucket. Click a company for its detail.</p></div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-vs-rank"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd"><h2>Not scored</h2><p>Tracker companies left out of the ranking, and why. Nothing is guessed: they join the ranking as revenue, valuation and sector peers are added.</p></div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-vs-skip"><thead></thead><tbody></tbody></table></div>
   </section>
   </div>
 
@@ -1504,23 +1541,57 @@ const COLS = [
 const rowHtml = (cols, c) => `<tr data-id="${c.id}">`+cols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(c)}</td>`).join('')+'</tr>';
 // Column headers; a column with a definition (d) gets an ⓘ button that shows it on hover, focus or tap.
 const headHtml = cols => '<tr>'+cols.map(c=>`<th class="${c.r?'r':''}">${c.l}${c.d ? `<button class="info" type="button" data-def="${esc(c.d)}" aria-label="What is ${esc(c.l)}? ${esc(c.d)}">i</button>` : ''}</th>`).join('')+'</tr>';
+// What the Universe can be ranked by. dir: -1 = highest first, 1 = lowest first. Ranks cover the whole universe, so filters hide rows without re-ranking.
+const URANK = {
+  liq:  { l:'Liquidity score', dir:-1, v:c=>c.liq, fmt:c=>c.liq==null ? NA : c.liq.toFixed(1) },
+  cv:   { l:'Current valuation (highest)', dir:-1, v:c=>c.cv, fmt:c=>c.cv==null ? NA : bn(c.cv) },
+  lrEv: { l:'Last round valuation (highest)', dir:-1, v:c=>c.lrEv, fmt:c=>c.lrEv==null ? NA : bn(c.lrEv) },
+  evRev:{ l:'EV / Revenue (cheapest first)', dir:1, v:c=>c.evRev, fmt:c=>c.evRev==null ? NA : xFmt(c.evRev) },
+  revg: { l:'Revenue growth (highest)', dir:-1, v:c=>c.revg, fmt:c=>c.revg==null ? NA : Math.round(c.revg)+'%' },
+  rev:  { l:'Revenue (highest)', dir:-1, v:c=>c.rev, fmt:c=>c.rev==null ? NA : revTxt(c.rev) },
+  prem: { l:'Premium to last round (lowest first)', dir:1, v:c=>c.cv!=null && c.lrEv>0 ? c.cv/c.lrEv-1 : null, fmt:c=>c.cv!=null && c.lrEv>0 ? pct(c.cv/c.lrEv-1) : NA },
+  mom:  { l:'Price momentum (highest)', dir:-1, v:c=>c.mom, fmt:c=>c.mom==null ? NA : pct(c.mom) },
+  comp: { l:'Composite score', dir:-1, v:c=>c.ts?.comp, fmt:c=>c.ts?.comp==null ? NA : c.ts.comp.toFixed(0) },
+  va:   { l:'Value accretion score', dir:-1, v:c=>c.ts?.va, fmt:c=>c.ts?.va==null ? NA : c.ts.va.toFixed(0) },
+  dm:   { l:'Demand score', dir:-1, v:c=>c.ts?.dm, fmt:c=>c.ts?.dm==null ? NA : c.ts.dm.toFixed(0) },
+};
+F.urank = 'liq'; F.ugrp = 'sector';
+document.getElementById('uni-rank').innerHTML = Object.entries(URANK).map(([k, u]) => `<option value="${k}">${u.l}</option>`).join('');
+document.getElementById('uni-rank').onchange = e => { F.urank = e.target.value; render(); };
+document.getElementById('uni-grp').onchange = e => { F.ugrp = e.target.value; render(); };
 function drawTable(rs) {
-  document.querySelector('#tbl thead').innerHTML = headHtml(COLS);
-  const byRank = (a,b) => (a.srank??1e9) - (b.srank??1e9) || a.name.localeCompare(b.name);
+  const U = URANK[F.urank], key = c => { const v = U.v(c); return v==null || isNaN(v) ? null : v; };
+  // Rank the whole universe, and within each sector, on the chosen measure (companies without it are unranked).
+  const ranked = UNI.filter(c => key(c)!=null).sort((a, b) => U.dir * (key(b) - key(a)) * -1 || a.name.localeCompare(b.name)), bySec = {};
+  ranked.forEach((c, i) => { c.uRank = i + 1; bySec[c.sector] = (bySec[c.sector] || 0) + 1; c.uSRank = bySec[c.sector]; });
+  UNI.filter(c => key(c)==null).forEach(c => { c.uRank = null; c.uSRank = null; });
+  const cols = [...COLS];
+  const iS = cols.findIndex(k => k.l === 'Sector rank');
+  cols[iS] = { ...cols[iS], d:`Rank within the sector by ${U.l.toLowerCase()}. Ranks cover the whole universe, so filters hide rows without re-ranking.`, f:c => c.uSRank ?? NA };
+  cols[iS + 1] = { ...cols[iS + 1], d:`Rank across all companies by ${U.l.toLowerCase()}.`, f:c => c.uRank ?? NA };
+  cols.splice(iS + 2, 0, { d:`The measure the table is ranked by: ${U.l}.`, l:'Ranked on', r:1, f:U.fmt });
+  document.getElementById('uni-sub').textContent = F.ugrp === 'sector'
+    ? `Companies grouped by sector and ranked by ${U.l.toLowerCase()}, within the sector and across the whole universe. Click a company for its detail and price history.`
+    : `All companies together, ranked by ${U.l.toLowerCase()} across the whole universe. Click a company for its detail and price history.`;
+  document.getElementById('uni-rank').value = F.urank; document.getElementById('uni-grp').value = F.ugrp;
+  document.querySelector('#tbl thead').innerHTML = headHtml(cols);
+  const byRank = (a, b) => (a.uSRank ?? 1e9) - (b.uSRank ?? 1e9) || a.name.localeCompare(b.name), byAll = (a, b) => (a.uRank ?? 1e9) - (b.uRank ?? 1e9) || a.name.localeCompare(b.name);
   let h = '';
-  for (const s of SECTOR_ORDER) {
+  if (F.ugrp === 'all') h = [...rs].sort(byAll).map(c => rowHtml(cols, c)).join('');
+  else for (const s of SECTOR_ORDER) {
     const g = rs.filter(c=>c.sector===s).sort(byRank);
     if (!g.length) continue;
     const t = TIERS.filter(x=>x!=='Unassigned').map(x=>`${g.filter(c=>c.tier===x).length} ${x}`).join(', ');
-    h += `<tr class="sec-row"><td colspan="${COLS.length}">${esc(s)}<span>· ${g.length} ${g.length===1?'company':'companies'} · ${t}</span></td></tr>`;
-    h += g.map(c=>rowHtml(COLS, c)).join('');
+    h += `<tr class="sec-row"><td colspan="${cols.length}">${esc(s)}<span>· ${g.length} ${g.length===1?'company':'companies'} · ${t}</span></td></tr>`;
+    h += g.map(c=>rowHtml(cols, c)).join('');
   }
   document.querySelector('#tbl tbody').innerHTML = h;
 }
 
-// ── Marquee list, as in the workbook's "Current Marquee List" tab ──
+// ── Marquee list, as in the workbook's "Current Marquee List" tab, with the Watching companies joined on (List column) ──
 const MQ_COLS = [
-  { d:'Position on the Marquee Access Fund list.', l:'Marquee rank', r:1, f:c=>c.mq },
+  { d:'Marquee = on the Perennial Marquee Access Fund list; Watching = a company the team is watching that is not on the list yet.', l:'List', f:c=>c.mq ? 'Marquee' : 'Watching' },
+  { d:'Marquee rank for Marquee companies; position on the watching list for Watching companies.', l:'Rank / #', r:1, f:c=>c.mq ?? c.wl },
   { d:'Rank across all companies by liquidity score (1 = most liquid).', l:'Overall rank', r:1, f:c=>c.rank ?? NA },
   { d:DEF.company, l:'Company', cls:'co', f:c=>`${esc(c.name)}${c.listed?'<span class="badge b-ls">LISTED</span>':''}` },
   { l:'Sector', cls:'wrap', f:c=>esc(c.sector) },
@@ -1533,28 +1604,17 @@ const MQ_COLS = [
   { l:'Region', cls:'wrap', f:c=>esc(c.region) },
 ];
 function drawMarquee(rs) {
-  const m = rs.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq);
-  const all = UNI.filter(c=>c.mq);
+  // Marquee companies first in Marquee rank order, then the Watching-only companies in watching order. The "Marquee list only" filter does not apply here.
+  const m = rs.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq), w = rows(false).filter(c=>c.wl && !c.mq).sort((a,b)=>a.wl-b.wl), shown = [...m, ...w];
+  const all = UNI.filter(c=>c.mq), wAll = UNI.filter(c=>c.wl && !c.mq);
   const tiers = TIERS.filter(t=>t!=='Unassigned').map(t=>`${all.filter(c=>c.tier===t).length} ${t}`).join(' · ');
-  document.getElementById('mq-sub').textContent = `Prepared for Perennial Marquee Access Fund · ${all.length} Marquee companies · ${tiers} · ranked by Marquee rank · revenue multiple for ${all.filter(c=>c.evRev!=null).length} of ${all.length}`
-    + (m.length < all.length ? ` · ${m.length} shown with current filters` : '');
+  document.getElementById('mq-sub').textContent = `Prepared for Perennial Marquee Access Fund · ${all.length} Marquee companies (${tiers}) · ${wAll.length} more Watching, to consider · Marquee in rank order, then Watching · revenue multiple for ${[...all, ...wAll].filter(c=>c.evRev!=null).length} of ${all.length + wAll.length}`
+    + (shown.length < all.length + wAll.length ? ` · ${shown.length} shown with current filters` : '');
   document.querySelector('#tbl-mq thead').innerHTML = headHtml(MQ_COLS);
-  document.querySelector('#tbl-mq tbody').innerHTML = m.length ? m.map(c=>rowHtml(MQ_COLS, c)).join('')
-    : `<tr><td colspan="${MQ_COLS.length}" class="empty">No Marquee companies match the current filters.</td></tr>`;
-  // Watching companies: names the team is considering, whether or not they are on the Marquee list.
-  const w = rows(false).filter(c=>c.wl).sort((a,b)=>a.wl-b.wl), wAll = UNI.filter(c=>c.wl);
-  document.getElementById('wl-sub').textContent = `Companies we are watching and should consider · ${wAll.length} companies · ${wAll.filter(c=>c.mq).length} already on the Marquee list · revenue multiple for ${wAll.filter(c=>c.evRev!=null).length} of ${wAll.length}`
-    + (w.length < wAll.length ? ` · ${w.length} shown with current filters` : '');
-  document.querySelector('#tbl-wl thead').innerHTML = headHtml(WL_COLS);
-  document.querySelector('#tbl-wl tbody').innerHTML = w.length ? w.map(c=>rowHtml(WL_COLS, c)).join('')
-    : `<tr><td colspan="${WL_COLS.length}" class="empty">No watching companies match the current filters.</td></tr>`;
+  document.querySelector('#tbl-mq tbody').innerHTML = shown.length ? shown.map(c=>rowHtml(MQ_COLS, c)).join('')
+    : `<tr><td colspan="${MQ_COLS.length}" class="empty">No Marquee or Watching companies match the current filters.</td></tr>`;
 }
-const WL_COLS = [
-  { d:'Position on the watching list.', l:'#', r:1, f:c=>c.wl },
-  { d:'Marquee rank, where the company is already on the Marquee list.', l:'Marquee rank', r:1, f:c=>c.mq ?? NA },
-  ...MQ_COLS.slice(1),
-];
-for (const id of ['#tbl','#tbl-mq','#tbl-wl','#tbl-cmp-peer']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
+for (const id of ['#tbl','#tbl-mq','#tbl-cmp-peer']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
 
 // ── Comparables: secondary pricing by time since the round, MOIC from primary rounds, IPO exits and projected MOIC ──
 // MOIC is per share (price at a mark ÷ price paid); Valuation × is company-level (valuation ÷ an earlier post-money) and includes dilution.
@@ -3363,9 +3423,112 @@ function drawProfile() {
     + (c.pb ? `<p class="sub" style="margin-top:10px"><a href="https://my.pitchbook.com/profile/${esc(c.pb.pbid)}/company/profile" target="_blank" rel="noopener">PitchBook profile</a>${c.pb.invN ? ` · ${c.pb.invN} investors per PitchBook` : ''}</p>` : '');
 }
 
+// ── Value screen: the tracker companies ranked on four value lenses, with a sector review and a first sleeve ──
+const VS_ITEMS = window.VPOOL?.items || [];
+let ipoMedG = null;
+function vsModel(fund, gShare) {
+  const S0 = Object.fromEntries(AL_FIELDS.map(f => [f.k, f.d])), minP = M['rev.minPeers'], CAP = 100;
+  const gaBy = {}; for (const c of UNI) if (!c.listed && c.gAdj!=null) (gaBy[c.sector] ??= []).push(c.gAdj);
+  const gaMed = Object.fromEntries(Object.entries(gaBy).filter(([, v]) => v.length >= minP).map(([k, v]) => [k, median(v)]));
+  const ipoMed = median((window.IPOREV?.companies || []).map(r => { const x = EXITS.find(e => e.ticker === r.ticker); return x?.ipoValBn && r.fyRevenueM ? x.ipoValBn * 1000 / r.fyRevenueM : null; }).filter(v => v != null));
+  const bk = c => c.tier===XO ? 'X' : c.tier===LG ? 'G' : 'W';
+  const rows = [], skipped = [];
+  for (const it of VS_ITEMS) {
+    const c = it.id ? UNI.find(x => x.id === it.id) : null;
+    const why = !c ? 'Not in the dashboard universe yet' : c.listed ? 'Listed' : c.cv==null ? 'No current valuation' : !(c.rev>0) ? 'No revenue data yet'
+      : c.evRank?.n==null ? `Too few sector peers with revenue (${c.evRank?.of ?? 0} in ${c.sector})` : null;
+    if (why) { skipped.push({ it, c, why }); continue; }
+    const b = bk(c), B = BUCKETS[b==='X' ? 'X' : 'G'], yrs = b==='X' ? 1.5 : 3, need = c.cv * B.ret[0];
+    const m1 = c.evRev / c.evRank.med - 1;
+    const m2 = c.gAdj!=null && gaMed[c.sector] ? c.gAdj / gaMed[c.sector] - 1 : null;
+    const m3 = ['Secondary','Augment'].includes(c.cvSrc) && c.lrEv>0 ? c.cv / c.lrEv - 1 : null;
+    const fwd = c.revg!=null ? c.rev * Math.pow(1 + Math.min(c.revg, CAP)/100, yrs) : null;
+    const req = fwd>0 && ipoMed ? need * 1000 / fwd : null, m4 = req!=null ? req / ipoMed : null;
+    rows.push({ it, c, b, B, yrs, need, m: [m1, m2, m3, m4], req });
+  }
+  // Rank each lens across the scored companies: 100 = cheapest, 0 = dearest.
+  for (let k = 0; k < 4; k++) { const xs = rows.filter(r => r.m[k]!=null);
+    for (const r of xs) r['s'+k] = xs.length > 1 ? 100 * xs.filter(o => o.m[k] > r.m[k]).length / (xs.length - 1) : 50; }
+  for (const r of rows) { const ss = [0,1,2,3].map(k => r['s'+k]).filter(v => v!=null); r.n = ss.length; r.score = ss.reduce((a, v) => a + v, 0) / ss.length; }
+  rows.sort((a, b) => b.score - a.score);
+  // Sleeve: top-ranked companies in each bucket, equal weight, inside the cheque, position and sector rules.
+  const inv = fund * (1 - S0.reserve/100), posCap = inv * S0.maxPos/100, secCap = inv * S0.sectorCap/100, sleeve = [], used = {}, notes = [];
+  for (const b of ['G', 'X']) {
+    const k = BUCKETS[b].k, budget = inv * (b==='G' ? gShare : 100 - gShare) / 100, lo = S0[k.min], hi = Math.min(S0[k.max], posCap);
+    const n = Math.min(S0[k.nMax], Math.floor(budget / lo));
+    if (n < S0[k.nMin]) notes.push(`${BUCKETS[b].short}: $${Math.round(budget)}m fits ${n} names at the $${lo}m minimum cheque, below the mandate's ${S0[k.nMin]}–${S0[k.nMax]}`);
+    if (n < 1) continue;
+    const chq = Math.min(hi, budget / n), cands = rows.filter(r => r.b === b);
+    let got = 0;
+    for (const r of cands) { if (got >= n) break;
+      if ((used[r.c.sector] || 0) + chq > secCap) continue;
+      used[r.c.sector] = (used[r.c.sector] || 0) + chq; got++; sleeve.push({ ...r, chq }); }
+    if (got < n) notes.push(`${BUCKETS[b].short}: only ${got} of ${n} places filled, as the screen ran out of scored companies inside the sector cap`);
+  }
+  const minFund = (S0.gNmin * S0.gMin + S0.xNmin * S0.xMin) / (1 - S0.reserve/100);
+  // Sector review: every private company with revenue, not only the tracker names.
+  const secs = [...new Set(UNI.filter(c => !c.listed && c.evRev!=null).map(c => c.sector))].map(s => {
+    const xs = UNI.filter(c => !c.listed && c.evRev!=null && c.sector === s), ga = xs.filter(c => c.gAdj!=null);
+    return { s, n: xs.length, ev: median(xs.map(c => c.evRev)), g: median(xs.filter(c => c.revg!=null).map(c => c.revg)), ga: ga.length >= minP ? median(ga.map(c => c.gAdj)) : null,
+      pool: rows.filter(r => r.c.sector === s), thin: xs.length < minP }; });
+  const allEv = median(UNI.filter(c => !c.listed && c.evRev!=null).map(c => c.evRev)), allGa = median(UNI.filter(c => !c.listed && c.gAdj!=null).map(c => c.gAdj));
+  for (const x of secs) { x.rel = x.thin ? null : x.ga!=null && allGa ? x.ga / allGa - 1 : x.ev / allEv - 1;
+    x.call = x.thin ? 'Too few peers' : x.rel <= -.15 ? 'Overweight' : x.rel >= .15 ? 'Underweight' : 'Neutral'; }
+  secs.sort((a, b) => (a.rel ?? 9) - (b.rel ?? 9));
+  return { rows, skipped, sleeve, notes, secs, ipoMed, inv, minFund };
+}
+const vsLens = ['EV / Revenue vs sector', 'Growth-adjusted vs sector', 'Valuation vs last round', 'Exit multiple needed'];
+const vsBar = v => v==null ? NA : `<span title="${v.toFixed(0)} of 100"><span style="display:inline-block;vertical-align:middle;height:6px;width:${Math.round(v*.6)}px;background:var(--purple);border-radius:3px"></span> <b>${v.toFixed(0)}</b></span>`;
+const vsRel = v => v==null ? NA : `<span class="${v > .15 ? 'dn' : ''}">${pct(v)}</span>`;
+function vsLine(r) {
+  const c = r.c, p = [`${xFmt(c.evRev)} revenue vs sector median ${xFmt(c.evRank.med)} (${pct(r.m[0])})`];
+  if (c.revg!=null) p.push(`revenue growth ${Math.round(c.revg)}%${c.revg > 300 ? ' (PitchBook estimate, unverified)' : ''}`);
+  if (r.m[2]!=null) p.push(`${pct(r.m[2])} to the ${c.lrName || 'last round'}`);
+  if (r.req!=null) p.push(`a ${r.B.ret[0]}× needs a ${xFmt(r.req)} forward-revenue exit vs ${xFmt(ipoMedG)} at recent IPOs`);
+  return p.join(' · ');
+}
+function drawValue() {
+  const fund = Math.max(10, +document.getElementById('vs-fund').value || 100), gShare = Math.min(100, Math.max(0, +document.getElementById('vs-gshare').value || 0));
+  const V = vsModel(fund, gShare); ipoMedG = V.ipoMed;
+  const { rows, skipped, sleeve, notes, secs } = V, ow = secs.filter(x => x.call === 'Overweight'), uw = secs.filter(x => x.call === 'Underweight');
+  const flagTag = r => r.it.flags.length ? ` <span class="flag" title="${esc(r.it.flags.join(', '))}">risk</span>` : '';
+  const top = rows.filter(r => r.b !== 'W').slice(0, 5);
+  document.getElementById('vs-rec').innerHTML = `<h3>Recommendation</h3>
+    <p><b>Fund to consider: the Marquee Fund, built as a value-led sleeve of ${sleeve.length} names (${sleeve.filter(s => s.b==='G').length} Late Growth, ${sleeve.filter(s => s.b==='X').length} Crossover / Pre-IPO) at $${fund}m.</b> ${ow.length ? `The cheapest sectors on the review are ${ow.slice(0, 3).map(x => `${esc(x.s)} (${pct(x.rel)} vs all sectors)`).join(', ')}.` : 'No sector screens 15% or more cheaper than the rest.'}${uw.length ? ` The dearest are ${uw.slice(-3).reverse().map(x => `${esc(x.s)} (${pct(x.rel)})`).join(', ')}, where the Fund would be paying up for growth.` : ''}</p>
+    <p>The best-value names in the Fund's two buckets: ${top.map(r => `<b>${esc(r.c.name)}</b> (${r.b==='G' ? 'Late Growth' : 'Crossover'}, ${r.score.toFixed(0)}/100)`).join(', ') || 'none yet'}.</p>
+    <p class="sub">${notes.length ? `Sizing: ${notes.map(esc).join('; ')}. At the minimum cheques, meeting both mandate minimum company counts needs about $${Math.round(V.minFund)}m, so at $${fund}m the sleeve is a staged first close: hold the sized names and keep the rest of the ranked list as the pipeline.` : `Sizing: the sleeve meets the mandate's company counts at $${fund}m.`} Medians exclude listed companies. Recent-IPO median multiple used for the exit test: ${V.ipoMed==null ? 'n/a' : xFmt(V.ipoMed)} revenue.</p>`;
+  const wl = rows.filter(r => r.b === 'W').length;
+  document.getElementById('vs-kpis').innerHTML = [
+    [rows.length, 'tracker companies scored', `${skipped.length} not scored · ${VS_ITEMS.length} in the tracker`],
+    [rows.filter(r => r.m[0] < 0).length, 'cheaper than their sector median', 'EV / Revenue below the sector median'],
+    [rows.length ? Math.round(median(rows.map(r => r.score))) + '/100' : '—', 'median value score', `${rows.filter(r => r.b==='G').length} Late Growth · ${rows.filter(r => r.b==='X').length} Crossover · ${wl} Watch`],
+    [sleeve.length ? '$' + Math.round(sleeve.reduce((a, s) => a + s.chq, 0)) + 'm' : '—', 'placed in the sleeve', `of $${Math.round(V.inv)}m investable after the 5% reserve`],
+  ].map(([v, l, s]) => `<div class="card"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${s}</div></div>`).join('');
+  document.querySelector('#tbl-vs-sec thead').innerHTML = headHtml([{ l: 'Sector' }, { l: 'Companies with a multiple', r: 1 }, { d: 'EV / Revenue ÷ growth in %; lower = cheaper for the growth.', l: 'Median growth-adjusted', r: 1 },
+    { d: 'The sector median against the all-sector median on the same basis; negative = cheaper.', l: 'vs all sectors', r: 1 }, { l: 'Tracker names ranked', r: 1 }, { l: 'Best tracker name' }, { l: 'Call' }]);
+  document.querySelector('#tbl-vs-sec tbody').innerHTML = secs.map(x => `<tr><td class="co">${esc(x.s)}</td><td class="r num">${x.n}${x.thin ? ' <span class="flag">thin</span>' : ''}</td><td class="r num">${x.ga==null ? NA : x.ga.toFixed(2)}</td>`
+    + `<td class="r num">${x.rel==null ? NA : pct(x.rel)}</td><td class="r num">${x.pool.length}</td><td>${x.pool.length ? esc(x.pool[0].c.name) : NA}</td><td><b>${x.call}</b></td></tr>`).join('');
+  document.getElementById('vs-size-note').textContent = notes.join(' · ');
+  document.querySelector('#tbl-vs-sleeve thead').innerHTML = headHtml([{ l: '#', r: 1 }, { l: 'Company' }, { l: 'Bucket' }, { l: 'Sector' }, { l: 'Cheque ($m)', r: 1 }, { l: '% of Fund', r: 1 }, { l: 'Valuation', r: 1 },
+    { d: 'Exit value that returns the bucket\'s low-end target (Late Growth 3×, Crossover / Pre-IPO 1.5×) on today\'s valuation.', l: 'Exit for target', r: 1 }, { l: 'Value score', r: 1 }, { l: 'Why' }]);
+  document.querySelector('#tbl-vs-sleeve tbody').innerHTML = sleeve.length ? sleeve.map((r, i) => `<tr data-id="${esc(r.c.id)}"><td class="r num">${i + 1}</td><td class="co">${esc(r.c.name)}${flagTag(r)}</td><td>${r.b==='G' ? 'Late Growth' : 'Crossover / Pre-IPO'}</td><td>${esc(r.c.sector)}</td>`
+    + `<td class="r num">${r.chq.toFixed(1)}</td><td class="r num">${(r.chq / fund * 100).toFixed(1)}%</td><td class="r num">${bn(r.c.cv)}<br><span class="flag">${esc(r.c.cvSrc || '')}</span></td><td class="r num">${bn(r.need)}</td><td class="r">${vsBar(r.score)}</td><td class="wrap">${esc(vsLine(r))}</td></tr>`).join('')
+    : `<tr><td colspan="10" class="empty">No company fits at this Fund size.</td></tr>`;
+  document.querySelector('#tbl-vs-rank thead').innerHTML = headHtml([{ l: '#', r: 1 }, { l: 'Company' }, { l: 'Sector' }, { l: 'Bucket' }, { l: 'Valuation', r: 1 }, { l: 'EV / Revenue', r: 1 }, { l: vsLens[0], r: 1 }, { l: 'Growth', r: 1 },
+    { l: vsLens[1], r: 1 }, { l: vsLens[2], r: 1 }, { d: 'Forward-revenue multiple the exit would need for the bucket\'s low-end return, against the median recent IPO multiple. Above 100% means dearer than recent IPOs priced.', l: vsLens[3], r: 1 }, { l: 'Value score', r: 1 }]);
+  document.querySelector('#tbl-vs-rank tbody').innerHTML = rows.map((r, i) => `<tr data-id="${esc(r.c.id)}"><td class="r num">${i + 1}</td><td class="co">${esc(r.c.name)}${flagTag(r)}</td><td>${esc(r.c.sector)}</td><td>${r.b==='G' ? 'Late Growth' : r.b==='X' ? 'Crossover' : 'Watch'}</td>`
+    + `<td class="r num">${bn(r.c.cv)}<br><span class="flag">${esc(r.c.cvSrc || '')}</span></td><td class="r num">${xFmt(r.c.evRev)}</td><td class="r num">${vsRel(r.m[0])}</td><td class="r num">${r.c.revg==null ? NA : Math.round(r.c.revg) + '%'}</td><td class="r num">${vsRel(r.m[1])}</td><td class="r num">${vsRel(r.m[2])}</td>`
+    + `<td class="r num">${r.m[3]==null ? NA : Math.round(r.m[3] * 100) + '%'}</td><td class="r" title="${r.n} of 4 lenses">${vsBar(r.score)}${r.n < 4 ? ` <span class="flag">${r.n}/4</span>` : ''}</td></tr>`).join('');
+  document.querySelector('#tbl-vs-skip thead').innerHTML = headHtml([{ l: 'Company' }, { l: 'Why not scored' }]);
+  document.querySelector('#tbl-vs-skip tbody').innerHTML = skipped.map(s => `<tr${s.c ? ` data-id="${esc(s.c.id)}"` : ''}><td class="co">${esc(s.it.name)}${s.it.flags.length ? ` <span class="flag" title="${esc(s.it.flags.join(', '))}">risk</span>` : ''}</td><td>${esc(s.why)}</td></tr>`).join('');
+}
+for (const id of ['vs-fund', 'vs-gshare']) document.getElementById(id).addEventListener('change', () => render());
+for (const id of ['#tbl-vs-sleeve', '#tbl-vs-rank', '#tbl-vs-skip']) document.querySelector(id + ' tbody').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c => c.id === tr.dataset.id); if (co) openDetail(co); });
+
 // ── render ──
 // ── views: Analytics / Marquee list / Universe / Methodology / Allocation, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','profile','universe','ipo','step','comps','book','moic','method','alloc'];
+const VIEWS = ['analytics','marquee','profile','universe','ipo','step','comps','book','moic','value','method','alloc'];
+const AN_VIEWS = ['analytics','value'];   // pages grouped under the Analytics tab
 const VAL_VIEWS = ['step','comps','book','moic'];   // pages grouped under the Valuations tab
 // The Allocation tab is greyed out and cannot be opened until it is ready; set ALLOC_READY to true (and enable its tab button) to open it.
 const ALLOC_READY = false;
@@ -3376,20 +3539,23 @@ let view = OPEN_VIEWS.includes(hashView()) ? hashView() : 'analytics';
 function setView(v) {
   view = OPEN_VIEWS.includes(v) ? v : 'analytics';
   for (const x of VIEWS) document.getElementById('view-'+x).hidden = x !== view;
-  document.querySelectorAll('.tab-btn').forEach(b => b.setAttribute('aria-selected', b.dataset.view === view || (b.dataset.view === 'step' && VAL_VIEWS.includes(view))));
+  document.querySelectorAll('.tab-btn').forEach(b => b.setAttribute('aria-selected', b.dataset.view === view || (b.dataset.view === 'step' && VAL_VIEWS.includes(view)) || (b.dataset.view === 'analytics' && AN_VIEWS.includes(view))));
+  document.getElementById('an-nav').hidden = !AN_VIEWS.includes(view);
+  document.querySelectorAll('#an-nav .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view));
   document.getElementById('val-nav').hidden = !VAL_VIEWS.includes(view);
   document.querySelectorAll('#val-nav .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view));
   if (VAL_VIEWS.includes(view)) F.valLast = view;
   document.getElementById('tog-stale').hidden = view !== 'analytics';   // only the analytics statistics use it
   document.getElementById('tog-mq').hidden = view === 'marquee';
   document.getElementById('tog-grp').hidden = !['comps','moic'].includes(view);
-  document.querySelector('.filters').hidden = view === 'alloc' || view === 'profile';   // these pages work on their own selection
+  document.querySelector('.filters').hidden = view === 'alloc' || view === 'profile' || view === 'value';   // these pages work on their own selection
   const h = view === 'profile' ? 'profile/'+pfCo().id : view;
   if (location.hash.slice(1) !== h) history.replaceState(null, '', '#'+h);
   tipEl.style.opacity = 0;
   render();
 }
 document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('.tab-btn'); if (b) setView(b.dataset.view === 'step' && F.valLast ? F.valLast : b.dataset.view); });
+document.getElementById('an-nav').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) setView(b.dataset.view); });
 document.getElementById('val-nav').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) setView(b.dataset.view); });
 addEventListener('hashchange', () => setView(hashView()));
 
@@ -3408,6 +3574,7 @@ function render() {
   if (view === 'comps' || view === 'moic') drawComps(rs);
   if (view === 'book') drawBook();
   if (view === 'step') drawStep();
+  if (view === 'value') drawValue();
   if (view === 'method') drawMethod(rs);
   drawDraftBar();
 }
