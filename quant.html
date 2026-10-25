@@ -7,27 +7,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261025174341"></script>
-<script src="quant-rounds.js?v=20261025174341" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261025174341" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261025174341" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261025174341" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261025174341" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261025174341" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261025174341" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261025174341" onerror="window.STEP=null"></script>
-<script src="stepup-inputs.js?v=20261025174341" onerror="window.STEPUP=null"></script>
-<script src="augment-list.js?v=20261025174341" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261025174341" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261025174341" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261025174341" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261025174341" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261025174341" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261025174341" onerror="window.QREV={}"></script>
+<script src="quant-data.js?v=20261026080825"></script>
+<script src="quant-rounds.js?v=20261026080825" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261026080825" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261026080825" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261026080825" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261026080825" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261026080825" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261026080825" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261026080825" onerror="window.STEP=null"></script>
+<script src="stepup-inputs.js?v=20261026080825" onerror="window.STEPUP=null"></script>
+<script src="augment-list.js?v=20261026080825" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261026080825" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261026080825" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261026080825" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261026080825" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261026080825" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261026080825" onerror="window.QREV={}"></script>
 <script src="public-comps.js?v=20261023135221" onerror="window.PUBCOMPS={}"></script>
 <script src="value-pool.js?v=20261023170308" onerror="window.VPOOL=null"></script>
-<script src="method-config.js?v=20261025174341" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261025174341" onerror="window.SITE_UPDATED=null"></script>
+<script src="method-config.js?v=20261026080825" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261026080825" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -379,7 +379,7 @@
   <div class="subnav" id="val-nav" role="group" aria-label="Valuation pages" hidden>
     <button class="chip" type="button" data-view="step">Marquee equity step-ups</button>
     <button class="chip" type="button" data-view="comps">Market comparables</button>
-    <button class="chip" type="button" data-view="book">Our book</button>
+    <button class="chip" type="button" data-view="book">Marquee Watchlist</button>
     <button class="chip" type="button" data-view="moic">Investor Return Analysis</button>
   </div>
 
@@ -535,7 +535,7 @@
     <div class="grid2">
       <div class="panel">
         <h3>Entry-point multiples</h3>
-        <div class="sub">Current valuation ÷ the valuation at each of the last three priced rounds, as on the Our book page.</div>
+        <div class="sub">Current valuation ÷ the valuation at each of the last three priced rounds, as on the Marquee Watchlist page.</div>
         <div class="tbl-wrap"><table id="tbl-pf-entry"><thead></thead><tbody></tbody></table></div>
         <h4 style="margin-top:14px">Exit value needed from today</h4>
         <div class="sub">Exit valuation for each return multiple on today's valuation, and that ÷ the last round.</div>
@@ -715,7 +715,7 @@
   <div class="view" id="view-comps" role="tabpanel" hidden>
   <div class="sec-hd">
     <h2>Market comparables</h2>
-    <p>The whole universe: how every private company with a last round and a current valuation sits against its last round and against peers in the same sector or valuation band, and how its valuation has grown. Our own Marquee and Watching names are on the Our book tab; returns to an investor (MOIC) are on the Investor Return Analysis tab.</p>
+    <p>The whole universe: how every private company with a last round and a current valuation sits against its last round and against peers in the same sector or valuation band, and how its valuation has grown. Our own Marquee and Watching names are on the Marquee Watchlist tab; returns to an investor (MOIC) are on the Investor Return Analysis tab.</p>
   </div>
   <div class="kpis" id="cmp-kpis-eq"></div>
   <section>
@@ -771,12 +771,12 @@
       <div class="panel">
         <h3>Growth vs multiple</h3>
         <div class="sub" id="rm-chart-sub"></div>
-        <div class="legend"><span><i style="background:var(--purple);opacity:.35"></i>Universe</span><span><i style="background:var(--accent-pink)"></i>Our book (Marquee and Watching)</span></div>
+        <div class="legend"><span><i style="background:var(--purple);opacity:.35"></i>Universe</span><span><i style="background:var(--accent-pink)"></i>Marquee Watchlist (Marquee and Watching)</span></div>
         <div class="chart-box" id="rm-box" style="height:360px"><canvas id="c-rm" role="img" aria-label="EV to revenue against revenue growth, log scales"></canvas></div>
       </div>
     </div>
     <div class="panel" style="margin-top:18px">
-      <h3>Our book vs sector peers</h3>
+      <h3>Marquee Watchlist vs sector peers</h3>
       <div class="sub" id="rm-book-sub"></div>
       <div class="grid2" style="margin-bottom:18px">
         <div class="panel" style="box-shadow:none;border:1px solid var(--line-soft)">
@@ -936,8 +936,8 @@
 
   <div class="view" id="view-book" role="tabpanel" hidden>
   <div class="sec-hd">
-    <h2>Our book</h2>
-    <p>Our book only: the Marquee list and Watching companies. For the wider market see Market comparables. Built from published valuations and rounds only. Entry points are illustrative: where each company stands against its earlier rounds, and what an exit would need to be. These are not our purchase prices or holdings.</p>
+    <h2>Marquee Watchlist</h2>
+    <p>Marquee Watchlist only: the Marquee list and Watching companies. For the wider market see Market comparables. Built from published valuations and rounds only. Entry points are illustrative: where each company stands against its earlier rounds, and what an exit would need to be. These are not our purchase prices or holdings.</p>
   </div>
   <div class="kpis" id="bk-kpis" style="grid-template-columns:repeat(4,1fr)"></div>
     <div class="panel" style="box-shadow:none;border:1px solid var(--line-soft);margin-top:18px"><h3>Equity return since each earlier round</h3><div class="sub">Current valuation ÷ the post-money valuation at the last round, the previous round and the round before, on a log scale. Dashed line = 1× (today equals that round). Most movement since the last round first.</div>
@@ -2314,8 +2314,8 @@ function drawRevenue(rs) {
   document.getElementById('rm-kpis').innerHTML = [
     [set.length, 'companies with a revenue multiple', `${rs.filter(c=>c.rev>0).length} with revenue in this filter · ${S ? S.rep : 0} reported, the rest PitchBook estimates`],
     [S ? rmX(S.med) : '—', 'median EV / Revenue', S ? `IQR ${rmX(S.q1)} to ${rmX(S.q3)} · n=${S.n}` : 'No companies in this filter'],
-    [B ? rmX(B.med) : '—', 'median, our book', B ? `Marquee and Watching · n=${B.n}` : ''],
-    [B && U ? pct(B.med / U.med - 1) : '—', 'our book vs the whole universe', U ? `universe median ${rmX(U.med)} · n=${U.n}` : ''],
+    [B ? rmX(B.med) : '—', 'median, Marquee Watchlist', B ? `Marquee and Watching · n=${B.n}` : ''],
+    [B && U ? pct(B.med / U.med - 1) : '—', 'Marquee Watchlist vs the whole universe', U ? `universe median ${rmX(U.med)} · n=${U.n}` : ''],
   ].map(([v, l, s]) => `<div class="card"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${s}</div></div>`).join('');
 
   // Sector and bucket medians.
@@ -2335,8 +2335,8 @@ function drawRevenue(rs) {
     o.scales.x = { type:'logarithmic', min:1, max:1000, grid:{ color:line }, border:{ color:css('--line') }, ticks:{ callback:v=>[1,10,100,1000].includes(v) ? v+'%' : '' }, title:{ display:true, text:'Revenue growth (PitchBook estimate)' } };
     o.scales.y = { type:'logarithmic', grid:{ color:line }, border:{ color:css('--line') }, ticks:{ callback:v=>[0.5,1,2,5,10,20,50,100,200,500].includes(v) ? v+'×' : '' }, title:{ display:true, text:'EV / Revenue' } };
     const mkds = (xs, label, color, r) => ({ label, data:xs.map(c=>({ x:Math.min(c.revg, 1000), y:c.evRev, c })), backgroundColor:color, borderColor:css('--surface'), borderWidth:1, pointRadius:r, pointHoverRadius:r+2 });
-    const ch = mk('c-rm', { type:'scatter', data:{ datasets:[ mkds(pts.filter(c=>!inBook(c)), 'Universe', alpha(css('--purple'), .35), 3.5), mkds(pts.filter(inBook), 'Our book', css('--accent-pink'), 6) ] }, options:o },
-      dp => { const c = dp.raw.c; return `<b>${esc(c.name)}</b>${inBook(c) ? ' <span class="flag">our book</span>' : ''}<br>${rmX(c.evRev)} EV / Revenue · growth ${Math.round(c.revg)}%<br>${bn(c.cv)} ÷ ${revTxt(c.rev)}<br><span class="flag">${esc(revSrcTxt(c))}</span>`; });
+    const ch = mk('c-rm', { type:'scatter', data:{ datasets:[ mkds(pts.filter(c=>!inBook(c)), 'Universe', alpha(css('--purple'), .35), 3.5), mkds(pts.filter(inBook), 'Marquee Watchlist', css('--accent-pink'), 6) ] }, options:o },
+      dp => { const c = dp.raw.c; return `<b>${esc(c.name)}</b>${inBook(c) ? ' <span class="flag">Marquee Watchlist</span>' : ''}<br>${rmX(c.evRev)} EV / Revenue · growth ${Math.round(c.revg)}%<br>${bn(c.cv)} ÷ ${revTxt(c.rev)}<br><span class="flag">${esc(revSrcTxt(c))}</span>`; });
     ch.canvas.onclick = e => { const p = ch.getElementsAtEventForMode(e, 'nearest', { intersect:true }, false)[0]; if (p) openDetail(ch.data.datasets[p.datasetIndex].data[p.index].c); };
   }
 
@@ -3369,7 +3369,7 @@ function drawProfile() {
   const IR = (window.IPOREV?.companies || []).map(r => { const x = EXITS.find(e=>e.ticker===r.ticker); return x?.ipoValBn && r.fyRevenueM ? { name:x.name, t:x.ticker, date:x.ipoDate, val:x.ipoValBn, rev:r.fyRevenueM, fy:r.fyLabel, g:r.fyPriorM ? r.fyRevenueM/r.fyPriorM - 1 : null, m:x.ipoValBn*1000/r.fyRevenueM } : null; }).filter(Boolean).sort((a,b)=>b.m-a.m);
   const ipoMed = IR.length ? median(IR.map(r=>r.m)) : null, atIpo = ipoMed!=null && c.rev>0 ? c.rev*ipoMed/1000 : null;
   const xx = v => v==null ? '—' : v.toFixed(v >= 10 ? 0 : 1) + '×';
-  document.getElementById('pf-vm-sub').textContent = `Multiples on ${c.name}'s own valuation history and against recent IPOs. Entry points are the last three priced rounds as on the Our book page (earlier tenders are skipped; the latest valuation counts even when it is a tender); the step-up uses the last two priced marks, as on the Valuations page. Forward figures are growth-implied: next year's revenue = latest × (1 + PitchBook growth), not a forecast.`;
+  document.getElementById('pf-vm-sub').textContent = `Multiples on ${c.name}'s own valuation history and against recent IPOs. Entry points are the last three priced rounds as on the Marquee Watchlist page (earlier tenders are skipped; the latest valuation counts even when it is a tender); the step-up uses the last two priced marks, as on the Valuations page. Forward figures are growth-implied: next year's revenue = latest × (1 + PitchBook growth), not a forecast.`;
   document.getElementById('pf-vm-kpis').innerHTML = [
     [xx(bd.lr?.x), 'Current ÷ last round', bd.lr ? `${esc(bd.lr.name)} · ${fMon(bd.lr.date)} · ${bnx(bd.lr.val)}` : 'no priced primary round'],
     [xx(bd.pr?.x), 'Current ÷ prior round', bd.pr ? `${esc(bd.pr.name)} · ${fMon(bd.pr.date)} · ${bnx(bd.pr.val)}` : 'no prior round'],
