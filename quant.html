@@ -7,27 +7,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261026080825"></script>
-<script src="quant-rounds.js?v=20261026080825" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261026080825" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261026080825" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261026080825" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261026080825" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261026080825" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261026080825" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261026080825" onerror="window.STEP=null"></script>
-<script src="stepup-inputs.js?v=20261026080825" onerror="window.STEPUP=null"></script>
-<script src="augment-list.js?v=20261026080825" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261026080825" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261026080825" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261026080825" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261026080825" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261026080825" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261026080825" onerror="window.QREV={}"></script>
+<script src="quant-data.js?v=20261026141040"></script>
+<script src="quant-rounds.js?v=20261026141040" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261026141040" onerror="window.QRX=null"></script>
+<script src="tier-overrides.js?v=20261026141040" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261026141040" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261026141040" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261026141040" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261026141040" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261026141040" onerror="window.STEP=null"></script>
+<script src="stepup-inputs.js?v=20261026141040" onerror="window.STEPUP=null"></script>
+<script src="augment-list.js?v=20261026141040" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261026141040" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261026141040" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261026141040" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261026141040" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261026141040" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261026141040" onerror="window.QREV={}"></script>
 <script src="public-comps.js?v=20261023135221" onerror="window.PUBCOMPS={}"></script>
+<script src="secondary-rounds.js?v=20261023170308" onerror="window.SECR=null"></script>
 <script src="value-pool.js?v=20261023170308" onerror="window.VPOOL=null"></script>
-<script src="method-config.js?v=20261026080825" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261026080825" onerror="window.SITE_UPDATED=null"></script>
+<script src="method-config.js?v=20261026141040" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261026141040" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -375,6 +376,7 @@
   <div class="subnav" id="an-nav" role="group" aria-label="Analytics pages" hidden>
     <button class="chip" type="button" data-view="analytics">Overview</button>
     <button class="chip" type="button" data-view="value">Sector Review</button>
+    <button class="chip" type="button" data-view="secround">Primary vs Secondary</button>
   </div>
   <div class="subnav" id="val-nav" role="group" aria-label="Valuation pages" hidden>
     <button class="chip" type="button" data-view="step">Marquee equity step-ups</button>
@@ -1003,6 +1005,30 @@
   <section>
     <div class="sec-hd"><h2>Not scored</h2><p>Tracker companies left out of the ranking, and why. Nothing is guessed: they join the ranking as revenue, valuation and sector peers are added.</p></div>
     <div class="tbl-wrap" style="max-height:none"><table id="tbl-vs-skip"><thead></thead><tbody></tbody></table></div>
+  </section>
+  </div>
+
+  <div class="view" id="view-secround" role="tabpanel" hidden>
+  <section>
+    <div class="sec-hd">
+      <h2>Primary vs Secondary</h2>
+      <p id="sr-intro"></p>
+    </div>
+    <div class="kpis" id="sr-kpis" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="panel" id="sr-read" style="margin-top:18px"></div>
+    <div class="panel" style="margin-top:18px">
+      <h3>Primary step-up vs secondary move</h3>
+      <div class="sub" id="sr-chart-sub"></div>
+      <div class="legend"><span><i style="background:var(--ink2)"></i>Aligned (within ±10%)</span><span><i style="background:var(--accent-pink)"></i>Secondary ahead</span><span><i style="background:var(--purple)"></i>Primary ahead</span></div>
+      <div class="chart-box" id="sr-box" style="height:440px"><canvas id="c-sr" role="img" aria-label="Primary price step-up against secondary price move for each round, log scales"></canvas></div>
+    </div>
+  </section>
+  <section>
+    <div class="sec-hd"><h2>Round by round</h2><p>For each primary round after the first: how far the primary price stepped up, how far the secondary price moved over the same stretch, and what that says. Click a company for its detail.</p></div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-sr"><thead></thead><tbody></tbody></table></div>
+  </section>
+  <section>
+    <div class="sec-hd"><h2>Coverage</h2><p id="sr-cov"></p></div>
   </section>
   </div>
 
@@ -3525,10 +3551,60 @@ function drawValue() {
 for (const id of ['vs-fund', 'vs-gshare']) document.getElementById(id).addEventListener('change', () => render());
 for (const id of ['#tbl-vs-sleeve', '#tbl-vs-rank', '#tbl-vs-skip']) document.querySelector(id + ' tbody').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c => c.id === tr.dataset.id); if (co) openDetail(co); });
 
+// ── Primary vs Secondary: how the secondary price moved against each primary round (secondary-rounds.js: Augment price charts, Forge price history as a cross-check) ──
+const SR_BAND = 0.10;   // within +/-10% of the primary step-up counts as aligned
+function drawSecRound() {
+  const D = window.SECR, rowsAll = D?.rows || [];
+  const v = x => !x ? null : x.flag ? 'No usable mark' : Math.abs(x.gap) <= SR_BAND ? 'Aligned' : x.gap > 0 ? 'Secondary ahead' : 'Primary ahead';
+  const okRows = rowsAll.filter(r => r.aug && !r.aug.flag), n = okRows.length, ok = okRows.map(r => r.aug);
+  const cnt = k => ok.filter(x => v(x) === k).length, pc = k => n ? Math.round(100 * cnt(k) / n) + '%' : '—';
+  const cos = new Set(rowsAll.map(r => r.id)), clean = new Set(okRows.map(r => r.id));
+  const both = rowsAll.filter(r => r.aug && !r.aug.flag && r.forge && !r.forge.flag), agree = both.filter(r => v(r.aug) === v(r.forge)).length;
+  document.getElementById('sr-intro').textContent = `Did the secondary market run ahead of the next primary round, and did the round then confirm it? For each round, the primary price step-up (pre-money ÷ the previous round's post-money) is set against how far the Augment secondary price moved since the previous round. Within ±${Math.round(SR_BAND*100)}% is aligned. Secondary ahead means the round priced below where the secondary was heading (a value gap in the new investors' favour); primary ahead means the round priced above it. Forge's price history is shown as a cross-check. Clarity would not open for this account. Indicative, not a forecast.`;
+  const med = xs => xs.length ? median(xs) : null, leads = ok.filter(x => x.lead > 0);
+  document.getElementById('sr-kpis').innerHTML = [
+    [n, 'rounds with a usable mark', `${clean.size} companies · ${rowsAll.filter(r => r.aug).length - n} more rounds had no usable Augment mark`],
+    [pc('Aligned'), 'aligned', `secondary within ±${Math.round(SR_BAND*100)}% of the primary step-up · ${cnt('Aligned')} of ${n}`],
+    [pc('Secondary ahead'), 'secondary ahead', `round priced below the secondary · ${cnt('Secondary ahead')} of ${n}`],
+    [pc('Primary ahead'), 'primary ahead', `round priced above the secondary · ${cnt('Primary ahead')} of ${n}`],
+  ].map(([x, l, s2]) => `<div class="card"><div class="kpi-val">${x}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${s2}</div></div>`).join('');
+  const after = ok.filter(x => x.rerate != null), ahead = ok.filter(x => x.gap > SR_BAND), behind = ok.filter(x => x.gap < -SR_BAND);
+  document.getElementById('sr-read').innerHTML = `<h3>What it shows</h3>
+    <p>${n ? `Across ${n} rounds the secondary price was aligned with the primary step-up ${pc('Aligned')} of the time, ran ahead of it ${pc('Secondary ahead')} and lagged it ${pc('Primary ahead')}. Median gap ${pct(med(ok.map(x => x.gap)), 0)} (positive = secondary ahead): ${med(ok.map(x => x.gap)) < -SR_BAND ? 'rounds have typically priced above where the secondary had got to, so primary investors paid up for the round' : med(ok.map(x => x.gap)) > SR_BAND ? 'rounds have typically priced below the secondary, a value gap in the new investors\' favour' : 'rounds have typically been priced close to where the secondary had got to'}.` : 'No round has a usable mark yet.'}
+    ${after.length ? ` In the 30 days after a round the secondary re-rated by a median ${pct(med(after.map(x => x.rerate)), 1)} (${after.length} rounds)${med(after.map(x => x.rerate)) > SR_BAND / 2 ? ', so the round moved the secondary up: not all of it was priced in beforehand' : ''}.` : ''}
+    ${leads.length ? ` Before ${leads.length} of the ${n} rounds the secondary had already settled within 10% of the price the round later set, for a median ${Math.round(med(leads.map(x => x.lead)))} days.` : ''}
+    ${both.length ? ` Forge agrees with Augment's read on ${agree} of the ${both.length} rounds both can score.` : ''}</p>
+    <p class="sub">Dilution is not removed (a primary step-up is read on pre-money value). The chart prices are indicative, not executed trades. Augment's chart is read off the page and is matched to the dashboard's own Augment prices to within about 5%. A round with no change in the secondary between the two marks, or a gap above 300%, is shown as "No usable mark" and left out of the percentages.</p>`;
+  // Scatter: each round is a dot. x = how many times the primary price stepped up, y = how many times the secondary moved over the same stretch; the diagonal is perfect alignment.
+  document.getElementById('sr-chart-sub').textContent = `${n} rounds · x: primary price step-up, y: secondary price move since the previous round (×, log scales) · on the diagonal the secondary and the round agree; above it the secondary ran ahead, below it the round priced above the secondary. Click a dot for the company.`;
+  emptyBox('sr-box', 'c-sr', n ? '' : 'No round has a usable secondary mark yet.');
+  if (n && view === 'secround') {
+    const o = baseOpts(), line = css('--line-soft'), ax = t => ({ type:'logarithmic', min:.5, max:20, grid:{ color:line }, border:{ color:css('--line') }, ticks:{ callback:v => [.5,1,2,5,10,20].includes(v) ? v + '×' : '' }, title:{ display:true, text:t } });
+    o.scales.x = ax('Primary price step-up (pre-money ÷ previous post-money)'); o.scales.y = ax('Secondary price move since the previous round');
+    o.plugins = { ...o.plugins, legend:{ display:false } };
+    const ds = (k, color) => ({ label:k, data:okRows.filter(r => v(r.aug) === k).map(r => ({ x:Math.min(Math.max(1 + r.step, .5), 20), y:Math.min(Math.max(1 + r.aug.run, .5), 20), r })), backgroundColor:alpha(color, .85), borderColor:css('--surface'), borderWidth:1, pointRadius:5, pointHoverRadius:7 });
+    const ln = (f, dash) => ({ type:'line', data:[{ x:.5, y:.5 * f }, { x:20, y:20 * f }], borderColor:css('--ink2'), borderWidth:f === 1 ? 1.5 : 1, borderDash:dash, pointRadius:0, fill:false });
+    const ch = mk('c-sr', { type:'scatter', data:{ datasets:[ ln(1 / (1 + SR_BAND), [4, 4]), ln(1 + SR_BAND, [4, 4]), ln(1, []), ds('Aligned', css('--ink2')), ds('Secondary ahead', css('--accent-pink')), ds('Primary ahead', css('--purple')) ] }, options:o },
+      dp => { const r = dp.raw.r; if (!r) return ''; const c = UNI.find(x => x.id === r.id); return `<b>${esc(c ? c.name : r.id)}</b> · ${esc(r.round)}, ${fDate(r.date)}<br>Primary step-up ${pct(r.step, 0)} · secondary ${pct(r.aug.run, 0)}<br>Gap ${pct(r.aug.gap, 0)} · <b>${v(r.aug)}</b>`; });
+    ch.canvas.onclick = e => { const p = ch.getElementsAtEventForMode(e, 'nearest', { intersect:true }, false)[0]; const r = p && ch.data.datasets[p.datasetIndex].data[p.index]?.r; const c = r && UNI.find(x => x.id === r.id); if (c) openDetail(c); };
+  }
+  document.querySelector('#tbl-sr thead').innerHTML = headHtml([{ l: 'Company' }, { l: 'Round' }, { l: 'Date' }, { d: 'Pre-money valuation of the round ÷ the previous round\'s post-money, minus 1: the primary price step-up.', l: 'Primary step-up', r: 1 },
+    { d: 'Augment price 3 days before the round ÷ its price 14 days after the previous round, minus 1.', l: 'Secondary move', r: 1 }, { d: '(1 + secondary move) ÷ (1 + primary step-up) minus 1. Positive: the secondary ran ahead of the round.', l: 'Gap', r: 1 },
+    { l: 'Read' }, { d: 'Augment price 30 days after the round ÷ its price 3 days before, minus 1.', l: 'Re-rate after 30 days', r: 1 }, { d: 'Days up to the round that the secondary was already within 10% of the price the primary later set.', l: 'Lead (days)', r: 1 },
+    { d: 'Gap and read on Forge\'s price history, where Forge prices the company.', l: 'Forge cross-check' }]);
+  const colour = k => k === 'Aligned' ? '' : k === 'Secondary ahead' ? ' style="color:var(--accent-pink)"' : k === 'Primary ahead' ? ' style="color:var(--purple)"' : ' class="na"';
+  document.querySelector('#tbl-sr tbody').innerHTML = [...rowsAll].sort((a, b) => b.date.localeCompare(a.date)).map(r => { const c = UNI.find(x => x.id === r.id), a = r.aug, f = r.forge, k = v(a);
+    return `<tr${c ? ` data-id="${esc(c.id)}"` : ''}><td class="co">${esc(c ? c.name : r.id)}</td><td>${esc(r.round)}</td><td>${fDate(r.date)}</td><td class="r num">${pct(r.step, 0)}</td><td class="r num">${a ? pct(a.run, 0) : NA}</td><td class="r num">${a && !a.flag ? pct(a.gap, 0) : NA}</td>`
+      + `<td${colour(k)}>${k ? `<b>${k}</b>` : NA}${a?.flag ? ` <span class="flag" title="${a.flag === 'stale' ? 'The secondary price did not change between the two marks' : 'Gap above 300%: not like for like (placeholder price or an unusual round)'}">${a.flag}</span>` : ''}</td><td class="r num">${a?.rerate==null ? NA : pct(a.rerate, 1)}</td><td class="r num">${!a || a.flag || !a.lead ? NA : a.lead}</td>`
+      + `<td>${f && !f.flag ? `${pct(f.gap, 0)} · ${v(f)}` : f ? '<span class="na">no usable mark</span>' : NA}</td></tr>`; }).join('');
+  document.getElementById('sr-cov').textContent = `${cos.size} companies with two or more researched equity rounds: ${new Set(rowsAll.filter(r => r.aug).map(r => r.id)).size} have an Augment price chart that overlaps their rounds (Helsing is not on Augment), and ${new Set(rowsAll.filter(r => r.forge).map(r => r.id)).size} also have Forge history for the cross-check. Augment's chart starts when the company first traded there (Mistral, Cognition, Mercor, Higgsfield and Moonshot start in 2024 or later), so earlier rounds show no mark. Clarity could not be read.`;
+}
+document.querySelector('#tbl-sr tbody').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c => c.id === tr.dataset.id); if (co) openDetail(co); });
+
 // ── render ──
 // ── views: Analytics / Marquee list / Universe / Methodology / Allocation, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','profile','universe','ipo','step','comps','book','moic','value','method','alloc'];
-const AN_VIEWS = ['analytics','value'];   // pages grouped under the Analytics tab
+const VIEWS = ['analytics','marquee','profile','universe','ipo','step','comps','book','moic','value','secround','method','alloc'];
+const AN_VIEWS = ['analytics','value','secround'];   // pages grouped under the Analytics tab
 const VAL_VIEWS = ['step','comps','book','moic'];   // pages grouped under the Valuations tab
 // The Allocation tab is greyed out and cannot be opened until it is ready; set ALLOC_READY to true (and enable its tab button) to open it.
 const ALLOC_READY = false;
@@ -3548,7 +3624,7 @@ function setView(v) {
   document.getElementById('tog-stale').hidden = view !== 'analytics';   // only the analytics statistics use it
   document.getElementById('tog-mq').hidden = view === 'marquee';
   document.getElementById('tog-grp').hidden = !['comps','moic'].includes(view);
-  document.querySelector('.filters').hidden = view === 'alloc' || view === 'profile' || view === 'value';   // these pages work on their own selection
+  document.querySelector('.filters').hidden = view === 'alloc' || view === 'profile' || view === 'value' || view === 'secround';   // these pages work on their own selection
   const h = view === 'profile' ? 'profile/'+pfCo().id : view;
   if (location.hash.slice(1) !== h) history.replaceState(null, '', '#'+h);
   tipEl.style.opacity = 0;
@@ -3575,6 +3651,7 @@ function render() {
   if (view === 'book') drawBook();
   if (view === 'step') drawStep();
   if (view === 'value') drawValue();
+  if (view === 'secround') drawSecRound();
   if (view === 'method') drawMethod(rs);
   drawDraftBar();
 }
