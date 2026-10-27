@@ -7,28 +7,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261026162442"></script>
-<script src="quant-rounds.js?v=20261026162442" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261026162442" onerror="window.QRX=null"></script>
-<script src="tier-overrides.js?v=20261026162442" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261026162442" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261026162442" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261026162442" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261026162442" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261026162442" onerror="window.STEP=null"></script>
-<script src="stepup-inputs.js?v=20261026162442" onerror="window.STEPUP=null"></script>
-<script src="augment-list.js?v=20261026162442" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261026162442" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261026162442" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261026162442" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261026162442" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261026162442" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261026162442" onerror="window.QREV={}"></script>
+<script src="quant-data.js?v=20261027135242"></script>
+<script src="quant-rounds.js?v=20261027135242" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261027135242" onerror="window.QRX=null"></script>
+<script src="rounds-pitchbook-auto.js?v=20261027135242" onerror="window.QRX2=null"></script>
+<script src="tier-overrides.js?v=20261027135242" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261027135242" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261027135242" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261027135242" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261027135242" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261027135242" onerror="window.STEP=null"></script>
+<script src="stepup-inputs.js?v=20261027135242" onerror="window.STEPUP=null"></script>
+<script src="augment-list.js?v=20261027135242" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261027135242" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261027135242" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261027135242" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261027135242" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261027135242" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261027135242" onerror="window.QREV={}"></script>
 <script src="public-comps.js?v=20261023135221" onerror="window.PUBCOMPS={}"></script>
 <script src="secondary-rounds.js?v=20261023170308" onerror="window.SECR=null"></script>
 <script src="value-pool.js?v=20261023170308" onerror="window.VPOOL=null"></script>
-<script src="method-config.js?v=20261026162442" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261026162442" onerror="window.SITE_UPDATED=null"></script>
+<script src="method-config.js?v=20261027135242" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261027135242" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -1166,6 +1167,15 @@ if (window.PB_UNIVERSE) UNI.push(...window.PB_UNIVERSE);
 // Rounds from PitchBook deal histories (rounds-pitchbook.js) join the researched rounds; one already researched for the same date and name wins.
 for (const [id, q] of Object.entries(window.QRX || {})) { window.QR ??= {}; const t = window.QR[id] ??= { researched:q.researched, splits:'', rounds:[], holders:[], shares:null };
   for (const r of q.rounds) if (!t.rounds.some(x => x.date === r.date && x.name === r.name)) t.rounds.push(r);
+  t.rounds.sort((a, b) => a.date.localeCompare(b.date)); }
+// Rounds pulled from PitchBook's deals data by .claude/work (rounds-pitchbook-auto.js). Hand-researched and hand-entered rounds win: a pulled round is
+// skipped when the company already has a round within 20 days of it.
+for (const [id, q] of Object.entries(window.QRX2 || {})) { window.QR ??= {}; const t = window.QR[id] ??= { researched:q.researched, splits:'', rounds:[], holders:[], shares:null };
+  if (q.filings?.length) (window.QRF ??= {})[id] = q.filings;   // IPO, reverse merger, SPAC and PIPE deals PitchBook holds for the company
+  for (const r of q.rounds) if (!t.rounds.some(x => Math.abs(new Date(x.date) - new Date(r.date)) <= 20 * 864e5)) t.rounds.push(r);
+  // PitchBook only lists completed deals, so a workbook last round newer than every round on file (an announced round, say) is kept as the latest round.
+  const w = UNI.find(c => c.id === id), newest = t.rounds.reduce((m, r) => r.date > m ? r.date : m, '');
+  if (w?.lrDate && w.lrEv > 0 && w.lrDate > newest && new Date(w.lrDate) - new Date(newest) > 20 * 864e5) t.rounds.push({ date:w.lrDate, name:w.lrName || 'Last round', type:'Equity', post:w.lrEv, leads:[], basis:'Workbook', note:'Last round held in the workbook; newer than the completed deals PitchBook lists.', src:[] });
   t.rounds.sort((a, b) => a.date.localeCompare(b.date)); }
 // Untouched copy of each company's stored data, for the master Excel export (the page derives values in place).
 for (const c of UNI) c.base = JSON.parse(JSON.stringify(c));
@@ -2509,6 +2519,7 @@ function drawIpo(rs) {
     { d:'Public S-1 registration statement first filed on SEC EDGAR.', l:'S-1 filed', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['S-1'] ? fDate(e['S-1'].first) : NA; } },
     { d:'Date of the most recent prospectus amendment (S-1/A) on SEC EDGAR.', l:'S-1/A', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['S-1/A'] ? fDate(e['S-1/A'].last) : NA; } },
     { d:'Date the filing was made, announced or reported, where it went (SEC, SEBI or HKEX) and the sources (ipo-news.js). Filings with the SEC or SEBI here have two or more independent sources; Hong Kong entries marked "reported" are press reports the company has not confirmed.', l:'Filing reported', cls:'wrap', f:c=>c.news ? `${fDate(c.news.filed)} · ${esc(c.news.venue)}<br><span class="sub">${c.news.src.map(s=>`<a href="${esc(s.u)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(s.n)}</a>`).join(' · ')}</span>` : c.ipo.pbOnly ? '<span class="sub">PitchBook: In IPO Registration<br>(exchange and regulator not stated)</span>' : NA },
+    { d:'IPO, reverse merger, SPAC and PIPE deals PitchBook holds for the company, with status and date. Pulled company by company, so blank means not pulled yet, not none.', l:'PitchBook IPO deals', cls:'wrap', f:c=>{ const fl = window.QRF?.[c.id]; return fl?.length ? fl.map(f=>`${esc(f.kind)} · ${esc(f.status)}${f.date ? ' · ' + fDate(f.date) : ''}`).join('<br>') : NA; } },
     { d:'Listing year the company has stated, where it has given one.', l:'Target listing', f:c=>c.ipo.target ? esc(c.ipo.target) : NA },
     { d:'Most recent valuation, from the latest round or secondary pricing, in US$ billions.', l:'Recent valuation', r:1, f:c=>bn(c.ipo.val) },
     { d:DEF.curVal, l:'Current valuation', r:1, f:c=>c.cv==null ? NA : bn(c.cv) + cvTag(c) },
@@ -2603,6 +2614,7 @@ function openDetail(c) {
   ];
   let h = c.note ? `<p class="note">${esc(c.note)}</p>` : '';
   if (c.pb?.desc) h += `<p class="note">${esc(c.pb.desc)}</p>`;
+  if (window.QRF?.[c.id]?.length) h += `<p class="note"><b>IPO-related deals (PitchBook):</b> ${window.QRF[c.id].map(f => [esc(f.kind), esc(f.status), f.date ? fDate(f.date) : null, f.exchange ? esc(f.exchange) + (f.ticker ? ' ' + esc(f.ticker) : '') : null, f.postBn ? bnx(f.postBn) : null].filter(Boolean).join(' · ')).join('; ')}</p>`;
   if (c.pb?.inv?.length) h += `<p class="note"><b>Investors (${c.pb.invN} per PitchBook; first ${c.pb.inv.length} alphabetically):</b> ${esc(c.pb.inv.join(', '))}${c.pb.invN>c.pb.inv.length ? ', …' : ''} · <a href="https://my.pitchbook.com/profile/${esc(c.pb.pbid)}/company/profile" target="_blank" rel="noopener">PitchBook profile</a></p>`;
   else if (c.pb) h += `<p class="note"><a href="https://my.pitchbook.com/profile/${esc(c.pb.pbid)}/company/profile" target="_blank" rel="noopener">PitchBook profile</a></p>`;
   h += '<div class="facts">' + facts.map(([l,v,s])=>`<div class="fact"><div class="l">${l}</div><div class="v">${v}</div><div class="l">${s}</div></div>`).join('') + '</div>';
