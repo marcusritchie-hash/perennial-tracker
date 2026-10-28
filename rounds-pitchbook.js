@@ -1,6 +1,7 @@
 // Funding rounds added from PitchBook deal histories (screenshots of the Deals tab provided by the team, 22 Oct 2026). Merged into the researched
 // rounds (quant-rounds.js) when the page loads; a round already researched for the same date and name is kept as it is.
 // Only rounds with a post-money valuation that adds up (pre-money + amount = post-money) are recorded. Amount in US$, post in US$ bn.
+// One entry (bedrockrobotics, 26 Oct 2026) comes from the team's news digest, not PitchBook, and is marked Reported.
 // Not recorded: rounds with no valuation shown, and any figure that could not be read with confidence. Source: PitchBook (login required).
 window.QRX = {
   "neuralink": { "researched": "2026-10-22", "rounds": [
@@ -26,5 +27,11 @@ window.QRX = {
     { "date": "2026-04-01", "name": "Series E", "type": "Equity", "amount": 2000000000, "post": 20.00, "leads": [], "basis": "Estimated", "note": "Pre-money $18.00bn. PitchBook marks amount and post-money as estimated.", "src": ["https://my.pitchbook.com/profile/529062-76/company/deals"] },
     { "date": "2026-06-29", "name": "Series F", "type": "Equity", "amount": 3500000000, "post": 35.00, "leads": [], "basis": "Estimated", "note": "Pre-money $31.50bn. PitchBook marks amount and post-money as estimated.", "src": ["https://my.pitchbook.com/profile/529062-76/company/deals"] },
     { "date": "2026-10-06", "name": "Series G", "type": "Equity", "amount": null, "post": 50.00, "leads": [], "basis": "Estimated", "note": "Amount and pre-money not shown. PitchBook marks the post-money as estimated. PitchBook also lists an IPO entry dated 26 Mar 2026 ($5.00bn) and an undated Later Stage VC entry of $5.00m, neither recorded as a round.", "src": ["https://my.pitchbook.com/profile/529062-76/company/deals"] }
+  ] },
+  "bedrockrobotics": { "researched": "2026-10-27", "rounds": [
+    { "date": "2026-10-26", "name": "Series C", "type": "Equity", "amount": 600000000, "post": 4.10, "leads": ["CapitalG", "Emergence Capital"], "basis": "Reported", "note": "Pre-money $3.50bn. From the team's news digest of 26 Oct 2026 (not PitchBook); no link supplied. Autonomous construction and utility robotics.", "src": [] }
+  ] },
+  "polymarket": { "researched": "2026-10-28", "rounds": [
+    { "date": "2026-09-01", "name": "Later Stage VC (Sept 2026)", "type": "Equity", "amount": 1000000000, "post": 21.00, "leads": ["1789 Capital"], "basis": "PitchBook", "note": "Pre-money $20.00bn. PitchBook marks the amount as estimated; post-money actual. No series label given.", "src": ["https://my.pitchbook.com/profile/436089-07/company/deals#deal-341434-63T"] }
   ] }
 };

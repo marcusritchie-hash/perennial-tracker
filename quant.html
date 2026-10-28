@@ -7,29 +7,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="quant-data.js?v=20261028103854"></script>
-<script src="quant-rounds.js?v=20261028103854" onerror="window.QR=null"></script>
-<script src="rounds-pitchbook.js?v=20261028103854" onerror="window.QRX=null"></script>
-<script src="rounds-pitchbook-auto.js?v=20261028103854" onerror="window.QRX2=null"></script>
-<script src="tier-overrides.js?v=20261028103854" onerror="window.TIER_OVR={}"></script>
-<script src="ipo-status.js?v=20261028103854" onerror="window.IPO={}"></script>
-<script src="ipo-exits.js?v=20261028103854" onerror="window.EXITS=null"></script>
-<script src="radar-exits.js?v=20261028103854" onerror="window.RADAR=null"></script>
-<script src="valuation-checks.js?v=20261028103854" onerror="window.VAL_CHECK=null"></script>
-<script src="step-set.js?v=20261028103854" onerror="window.STEP=null"></script>
-<script src="stepup-inputs.js?v=20261028103854" onerror="window.STEPUP=null"></script>
-<script src="augment-list.js?v=20261028103854" onerror="window.AUGMENT=null"></script>
-<script src="ipo-revenue.js?v=20261028103854" onerror="window.IPOREV=null"></script>
-<script src="edgar-filings.js?v=20261028103854" onerror="window.EDGAR={}"></script>
-<script src="ipo-news.js?v=20261028103854" onerror="window.IPO_NEWS={}"></script>
-<script src="pitchbook-universe.js?v=20261028103854" onerror="window.PB_UNIVERSE=[]"></script>
-<script src="pitchbook-data.js?v=20261028103854" onerror="window.PB={}"></script>
-<script src="quarterly-revenue.js?v=20261028103854" onerror="window.QREV={}"></script>
+<script src="quant-data.js?v=20261028152908"></script>
+<script src="quant-rounds.js?v=20261028152908" onerror="window.QR=null"></script>
+<script src="rounds-pitchbook.js?v=20261028152908" onerror="window.QRX=null"></script>
+<script src="rounds-pitchbook-auto.js?v=20261028152908" onerror="window.QRX2=null"></script>
+<script src="tier-overrides.js?v=20261028152908" onerror="window.TIER_OVR={}"></script>
+<script src="ipo-status.js?v=20261028152908" onerror="window.IPO={}"></script>
+<script src="ipo-exits.js?v=20261028152908" onerror="window.EXITS=null"></script>
+<script src="radar-exits.js?v=20261028152908" onerror="window.RADAR=null"></script>
+<script src="valuation-checks.js?v=20261028152908" onerror="window.VAL_CHECK=null"></script>
+<script src="step-set.js?v=20261028152908" onerror="window.STEP=null"></script>
+<script src="stepup-inputs.js?v=20261028152908" onerror="window.STEPUP=null"></script>
+<script src="augment-list.js?v=20261028152908" onerror="window.AUGMENT=null"></script>
+<script src="ipo-revenue.js?v=20261028152908" onerror="window.IPOREV=null"></script>
+<script src="edgar-filings.js?v=20261028152908" onerror="window.EDGAR={}"></script>
+<script src="ipo-news.js?v=20261028152908" onerror="window.IPO_NEWS={}"></script>
+<script src="pitchbook-universe.js?v=20261028152908" onerror="window.PB_UNIVERSE=[]"></script>
+<script src="pitchbook-data.js?v=20261028152908" onerror="window.PB={}"></script>
+<script src="quarterly-revenue.js?v=20261028152908" onerror="window.QREV={}"></script>
 <script src="public-comps.js?v=20261023135221" onerror="window.PUBCOMPS={}"></script>
 <script src="secondary-rounds.js?v=20261023170308" onerror="window.SECR=null"></script>
 <script src="value-pool.js?v=20261023170308" onerror="window.VPOOL=null"></script>
-<script src="method-config.js?v=20261028103854" onerror="window.METHOD={}"></script>
-<script src="site-updated.js?v=20261028103854" onerror="window.SITE_UPDATED=null"></script>
+<script src="method-config.js?v=20261028152908" onerror="window.METHOD={}"></script>
+<script src="site-updated.js?v=20261028152908" onerror="window.SITE_UPDATED=null"></script>
 <style>
   :root {
     --purple: #702082;
@@ -156,12 +156,14 @@
   .sv .ex-b1 { fill: var(--purple); } .sv .ex-b2 { fill: color-mix(in srgb, var(--purple) 72%, #000); }
   .sv .ex-med { stroke: var(--accent-blue); stroke-width: 3; } .sv .ex-box { fill: var(--surface); stroke: var(--accent-blue); stroke-width: 2; }
   .sv text.ex-w { fill: #fff; font-weight: 700; } .sv text.ex-mt { font-weight: 700; }
+  th .havg { font-weight:700; opacity:1; margin-top:3px; }
+  th .hsub { display:block; font-weight:400; font-size:10.5px; opacity:.85; text-transform:none; letter-spacing:0; margin-top:1px; }
   .su-flag { display: inline-block; margin: 2px 0; padding: 1px 7px; border-radius: 5px; font-size: 11.5px; font-weight: 700; line-height: 1.35; white-space: normal; color: var(--ink);
     background: color-mix(in srgb, var(--accent-pink) 22%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent-pink) 55%, var(--surface)); }
   #tbl-su td.wrap { min-width: 260px; }
   #tbl-ipo-done thead th.grp-h { text-align: center; background: color-mix(in srgb, var(--purple) 80%, #000); border-left: 1px solid rgba(255,255,255,.35); border-right: 1px solid rgba(255,255,255,.35); cursor: default; }
   #tbl-ipo-done thead tr.grp th { padding: 6px 10px; }
-  #tbl-su tr.su-ovr td.co { box-shadow: inset 3px 0 0 var(--accent-pink); }
+  #tbl-su tr.su-ovr td.co, #tbl-dd tr.su-ovr td.co { box-shadow: inset 3px 0 0 var(--accent-pink); }
   .su-edit { margin-top: 14px; } .su-edit summary { cursor: pointer; font-weight: 700; color: var(--purple); padding: 6px 0; }
   .su-edit .sub { margin: 4px 0 10px; } .su-edit code { background: var(--accent-light-purple); padding: 0 5px; border-radius: 4px; }
   .sv-row { cursor: pointer; } .sv-row:hover .sv-co, .sv-row:focus .sv-co { fill: var(--brand); font-weight: 700; } .sv-row:focus { outline: none; }
@@ -209,20 +211,23 @@
   /* table */
   .tbl-wrap { overflow-x: auto; background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); max-height: 640px; overflow-y: auto; }
   table { border-collapse: collapse; width: 100%; font-size: 12px; }
-  thead th { position: sticky; top: 0; background: var(--purple); color: #fff; font-weight: 700; text-align: left; padding: 9px 10px; white-space: normal; vertical-align: bottom; line-height: 1.25; cursor: pointer; user-select: none; }
+  thead th { position: sticky; top: 0; background: var(--purple); color: #fff; font-weight: 700; text-align: left; padding: 8px 6px; white-space: normal; overflow-wrap: break-word; hyphens: manual; vertical-align: bottom; line-height: 1.25; cursor: pointer; user-select: none; }
   thead th.r, td.r { text-align: right; }
   thead th[aria-sort="ascending"]::after { content: " ▲"; font-size: 9px; }
   thead th[aria-sort="descending"]::after { content: " ▼"; font-size: 9px; }
-  tbody td { padding: 7px 10px; border-bottom: 1px solid var(--line-soft); white-space: nowrap; color: var(--ink2); }
+  tbody td { padding: 6px 6px; border-bottom: 1px solid var(--line-soft); white-space: normal; overflow-wrap: break-word; vertical-align: top; color: var(--ink2); }
+  tbody td.r, tbody td.num { white-space: nowrap; }   /* figures stay on one line; text wraps so tables stay narrow */
   tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--bg) 55%, var(--surface)); }
   tbody tr { cursor: pointer; }
   tbody tr:hover td { background: color-mix(in srgb, var(--accent-light-purple) 35%, var(--surface)); }
   td.co { font-weight: 600; color: var(--ink); }
-  td.note-cell { white-space: normal; width: 250px; min-width: 250px; color: var(--muted); }   /* wraps, so tables stay narrow */
+  td.note-cell { white-space: normal; width: 170px; min-width: 170px; color: var(--muted); }   /* wraps, so tables stay narrow */
   td.wrap { white-space: normal; min-width: 90px; }
   #tbl-cmp-fwc td.rm { white-space: normal; width: 150px; min-width: 150px; max-width: 150px; line-height: 1.3; }   /* multiple, then the round used on a small second line */
   #tbl-cmp-ex td.note-cell { width: 190px; min-width: 190px; }
-  #tbl-mq td.note-cell { width: 140px; min-width: 140px; }   /* Marquee and Watching fit a 1440px laptop */
+  #tbl-mq td.note-cell { width: 220px; min-width: 220px; max-width: 220px; }
+  #tbl-mq td.trunc { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #tbl-mq td.trunc span { display: block; overflow: hidden; text-overflow: ellipsis; }   /* Marquee and Watching fit a 1440px laptop */
   #tbl-cmp-ex td.wrap { min-width: 72px; }
   #tbl-mq td.wrap { min-width: 64px; }
   thead th { cursor: default; }
@@ -384,6 +389,7 @@
     <button class="chip" type="button" data-view="comps">Market comparables</button>
     <button class="chip" type="button" data-view="book">Marquee Watchlist</button>
     <button class="chip" type="button" data-view="moic">Investor Return Analysis</button>
+    <button class="chip" type="button" data-view="dd">DD checks</button>
   </div>
 
   <div class="draft-bar" id="draft-bar" role="status" hidden>
@@ -429,19 +435,6 @@
 
   <section>
     <div class="sec-hd">
-      <h2>Secondary pricing vs last round</h2>
-      <p>Implied valuation from the average secondary price across Clarity, Augment and Forge, multiplied by shares outstanding, compared with the post-money valuation of the last primary round.</p>
-    </div>
-    <div class="panel">
-      <h3>Premium / discount to last round, by company</h3>
-      <div class="sub" id="prem-sub"></div>
-      <div class="legend"><span><i style="background:var(--pos)"></i>Above last round</span><span><i style="background:var(--neg)"></i>Below last round</span><span><i style="background:var(--pos);opacity:.3"></i>Faded: round older than 18 months or undated</span></div>
-      <div class="chart-box" id="prem-box"><canvas id="c-prem" role="img" aria-label="Premium or discount to last round by company"></canvas></div>
-    </div>
-  </section>
-
-  <section>
-    <div class="sec-hd">
       <h2>Venue dispersion</h2>
       <p>How far each venue's price sits from the company's average secondary price. A wide spread signals a thin or fragmented market.</p>
     </div>
@@ -467,6 +460,19 @@
   </section>
 
   <section>
+    <div class="sec-hd">
+      <h2>Secondary pricing vs last round</h2>
+      <p>Implied valuation from the average secondary price across Clarity, Augment and Forge, multiplied by shares outstanding, compared with the post-money valuation of the last primary round.</p>
+    </div>
+    <div class="panel">
+      <h3>Premium / discount to last round, by company</h3>
+      <div class="sub" id="prem-sub"></div>
+      <div class="legend"><span><i style="background:var(--pos)"></i>Above last round</span><span><i style="background:var(--neg)"></i>Below last round</span><span><i style="background:var(--pos);opacity:.3"></i>Faded: round older than 18 months or undated</span></div>
+      <div class="chart-box" id="prem-box"><canvas id="c-prem" role="img" aria-label="Premium or discount to last round by company"></canvas></div>
+    </div>
+  </section>
+
+  <section>
     <div class="sec-hd"><h2>Data coverage</h2><p>Share of companies in the current filter with each data point. Statistics above use only the companies that have the inputs they need.</p></div>
     <div class="panel"><div class="cov" id="cov"></div></div>
   </section>
@@ -488,6 +494,10 @@
     <div class="sec-hd">
       <h2>Marquee and Watching companies</h2>
       <p id="mq-sub"></p>
+    </div>
+    <div class="edit-bar">
+      <label class="tog">Rank by <select id="mq-rank" aria-label="Rank the Marquee list by"></select></label>
+      <label class="tog">Show <select id="mq-grp" aria-label="Group the Marquee list"><option value="mq">In Marquee rank order</option><option value="sector">Grouped by sector</option><option value="all">All companies together</option></select></label>
     </div>
     <div class="tbl-wrap"><table id="tbl-mq"><thead></thead><tbody></tbody></table></div>
   </section>
@@ -673,6 +683,22 @@
   </section>
   </div>
 
+  <div class="view" id="view-dd" role="tabpanel" hidden>
+  <section>
+    <div class="sec-hd">
+      <h2>DD checks</h2>
+      <p>Due-diligence checks on the valuation step-ups: where a value or date has been overridden instead of taking the PitchBook figure, and where PitchBook marks a valuation as an estimate. These are the marks to verify before the step-up figures are relied on. They feed the Step-up at each stage section on Marquee equity step-ups.</p>
+    </div>
+    <div class="kpis" id="dd-kpis" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="tbl-wrap" style="max-height:none;margin-top:12px"><table id="tbl-dd"><thead></thead><tbody></tbody></table></div>
+    <details class="su-edit" id="su-edit" open>
+      <summary>Edit the inputs (value and date overrides)</summary>
+      <p class="sub">One row per company and mark, as on the Inputs sheet. Type a value override ($M) or a date override to replace the PitchBook figure; the charts, tiles and table recalculate straight away. Edits stay in this browser. To keep a change, make it on the Inputs sheet of step_up_analysis.xlsx and run <code>.claude/work/import-stepup.ps1</code>, or edit stepup-inputs.js. <button class="chip" type="button" id="su-reset">Reset edits</button></p>
+      <div class="tbl-wrap" style="max-height:none"><table id="tbl-su-in"><thead></thead><tbody></tbody></table></div>
+    </details>
+  </section>
+  </div>
+
   <div class="view" id="view-step" role="tabpanel" hidden>
   <div class="sec-hd">
     <h2>Equity valuation stepping up between the last two rounds</h2>
@@ -698,11 +724,6 @@
     </div>
     <p class="sub" id="su-foot" style="margin-top:8px"></p>
     <div class="tbl-wrap" style="max-height:none;margin-top:12px"><table id="tbl-su"><thead></thead><tbody></tbody></table></div>
-    <details class="su-edit" id="su-edit">
-      <summary>Edit the inputs</summary>
-      <p class="sub">One row per company and mark, as on the Inputs sheet. Type a value override ($M) or a date override to replace the PitchBook figure; the charts, tiles and table recalculate straight away. Edits stay in this browser. To keep a change, make it on the Inputs sheet of step_up_analysis.xlsx and run <code>.claude/work/import-stepup.ps1</code>, or edit stepup-inputs.js. <button class="chip" type="button" id="su-reset">Reset edits</button></p>
-      <div class="tbl-wrap" style="max-height:none"><table id="tbl-su-in"><thead></thead><tbody></tbody></table></div>
-    </details>
   </section>
 
   <section>
@@ -964,19 +985,27 @@
 
   <section>
     <div class="sec-hd">
-      <h2>What an exit needs to be</h2>
-      <p>Entry at today's valuation. For a 1.5×, 2× and 3× return, the exit value needed, and beneath it that value ÷ the last-round valuation. <span class="dn">Red</span> where the step is bigger than the median recent exit achieved over its last round (<span id="bk-rx-med"></span>, from the recent exits table on the Investor Return Analysis tab). The last column uses the low end of the company's bucket target (Late Growth 3×, Crossover / Pre-IPO 1.5×).</p>
-    </div>
-    <div class="tbl-wrap" style="max-height:none"><table id="tbl-bk-exit"><thead></thead><tbody></tbody></table></div>
-  </section>
-
-  <section>
-    <div class="sec-hd">
       <h2>Case studies</h2>
       <p>The four largest companies in the book with three or more priced rounds: post-money valuation at the last three rounds and today.</p>
     </div>
     <div class="grid4" id="bk-cases"></div>
     <p class="sub" style="margin-top:8px">Source: company announcements, PitchBook and public reporting; current valuation from secondary prices where available. Illustrative only, not holdings of the Fund.</p>
+  </section>
+
+  <section>
+    <div class="sec-hd">
+      <h2>What you have to believe</h2>
+      <p>Revenue the company needs to earn for today's valuation to be worth a given multiple of forward revenue, and how many times today's revenue that is. The lower the multiple you are willing to pay, the more growth you are relying on. Today's valuation stands in for enterprise value (cash is not netted). Where no revenue is held, only the revenue needed is shown.</p>
+    </div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-bk-bel"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="sec-hd">
+      <h2>What an exit needs to be</h2>
+      <p>Entry at today's valuation. For a 1.5×, 2× and 3× return, the exit value needed, and beneath it that value ÷ the last-round valuation. <span class="dn">Red</span> where the step is bigger than the median recent exit achieved over its last round (<span id="bk-rx-med"></span>, from the recent exits table on the Investor Return Analysis tab). The last column uses the low end of the company's bucket target (Late Growth 3×, Crossover / Pre-IPO 1.5×).</p>
+    </div>
+    <div class="tbl-wrap" style="max-height:none"><table id="tbl-bk-exit"><thead></thead><tbody></tbody></table></div>
   </section>
   </div>
 
@@ -1030,6 +1059,12 @@
       <div class="legend"><span><i style="background:var(--ink2)"></i>Aligned (within ±10%)</span><span><i style="background:var(--accent-pink)"></i>Secondary more expensive</span><span><i style="background:var(--purple)"></i>Primary more expensive</span></div>
       <div class="chart-box" id="sr-box" style="height:440px"><canvas id="c-sr" role="img" aria-label="Primary price step-up against secondary price move for each round, log scales"></canvas></div>
     </div>
+  </section>
+  <section>
+    <div class="sec-hd"><h2>Compare companies</h2><p>Pick up to six companies. For each round, the purple bar is how far the round priced above the previous round and the pink bar is how far the Augment secondary price moved over the same stretch. Where the bars match, the secondary had already priced the round in. A taller purple bar means the round priced above the secondary. Same scale on every chart.</p></div>
+    <div class="chips" id="sr-pick" style="margin-bottom:14px"></div>
+    <div class="legend" style="margin-bottom:10px"><span><i style="background:var(--purple)"></i>Round price vs last round</span><span><i style="background:var(--accent-pink)"></i>Secondary price vs last round (same period)</span></div>
+    <div id="sr-cmp" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:18px"></div>
   </section>
   <section>
     <div class="sec-hd"><h2>Round by round</h2><p>For each primary round after the first: how long since the last round, how many times higher the round priced, how many times higher the secondary got over the same stretch, and what that says. Click a company for its detail.</p></div>
@@ -1186,6 +1221,9 @@ for (const [id, q] of Object.entries(window.QRX2 || {})) { window.QR ??= {}; con
   const w = UNI.find(c => c.id === id), newest = t.rounds.reduce((m, r) => r.date > m ? r.date : m, '');
   if (w?.lrDate && w.lrEv > 0 && w.lrDate > newest && new Date(w.lrDate) - new Date(newest) > 20 * 864e5) t.rounds.push({ date:w.lrDate, name:w.lrName || 'Last round', type:'Equity', post:w.lrEv, leads:[], basis:'Workbook', note:'Last round held in the workbook; newer than the completed deals PitchBook lists.', src:[] });
   t.rounds.sort((a, b) => a.date.localeCompare(b.date)); }
+// Sector names follow the Fund's eight-sector list. The workbook and the PitchBook files still say "AI Infrastructure", so the new name is applied here and survives a refresh.
+const SECTOR_NAME = { 'AI Infrastructure':'AI Infrastructure & Energy' };
+for (const c of [...UNI, ...(window.EXITS?.companies || [])]) if (SECTOR_NAME[c.sector]) c.sector = SECTOR_NAME[c.sector];
 // Untouched copy of each company's stored data, for the master Excel export (the page derives values in place).
 for (const c of UNI) c.base = JSON.parse(JSON.stringify(c));
 // Each venue has a colour and a marker shape, so identity never rests on colour alone.
@@ -1251,7 +1289,7 @@ const alpha = (hex, a) => { const h=hex.replace('#',''); const n=parseInt(h.leng
 const pct = (x, d=0) => x==null ? '—' : (x>0?'+':'') + (x*100).toFixed(d) + '%';
 const bn = x => x==null ? '—' : x>=1000 ? '$'+(x/1000).toFixed(2)+'T' : x>=10 ? '$'+x.toFixed(0)+'bn' : x>=1 ? '$'+x.toFixed(1)+'bn' : '$'+Math.round(x*1000)+'m';   // under $1bn in millions
 const usd = x => x==null ? '—' : '$'+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fDate = d => d ? new Date(d+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}) : '—';
+const fDate = d => d ? new Date(d+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}).replace(/ /g, ' ') : '—';
 const fMon = d => new Date(d+'T00:00:00').toLocaleDateString('en-AU',{month:'short',year:'numeric'});
 const esc = s => String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cleanName = n => n.replace(/\s*\((?:private|EU roots)\)\s*$/i,'');
@@ -1264,7 +1302,9 @@ const augRow = c => { const n = augNorm(c.name); return AUG.get(n) || AUG.get(au
 const CV_TIP = { 'Secondary':'Average secondary price across venues × shares outstanding', 'PitchBook est.':'PitchBook\'s valuation estimate (no secondary valuation or other reported valuation)', 'Reported':'Most recent reported valuation from the workbook (no secondary price or share count)' };
 const cvTag = c => c.cvSrc ? ` <span class="flag" title="${esc(CV_TIP[c.cvSrc])}">${c.cvSrc==='PitchBook est.' ? 'PB est.' : c.cvSrc}</span>` : '';
 const PB_PRIMARY = ['Later Stage VC','Early Stage VC','PE Growth/Expansion','Seed Round','Corporate'];   // PitchBook valuation deal types that are a primary round
-const IPO_SHORT = { 'S-1 publicly filed':'S-1 public', 'Confidentially filed':'Confidential filing', 'In registration (PitchBook)':'In registration', 'Reported':'Plans reported' };
+const IPO_SHORT = { 'S-1 publicly filed':'S-1 public', 'Confidentially filed':'Confidential filing', 'In registration (PitchBook)':'In registration', 'Reported':'Plans reported', 'New reported IPO':'New reported IPO' };
+// Revenue the team holds from a filing, where it is newer than PitchBook's estimate (US$m). The master workbook's revenue input wins if it has one.
+const REV_OV = { anth:{ v:46200, date:'2026-06-30', src:'Anthropic S-1: Q2 2026 revenue annualised' } };
 const IPO_PB = 'In registration (PitchBook)';   // PitchBook shows the company in IPO registration; shown in the pipeline, but not used for buckets or scores
 const ipoMon = c => c.ipo.updated ? fMon(c.ipo.updated+'-01') : '—';
 for (const c of UNI) {
@@ -1274,6 +1314,7 @@ for (const c of UNI) {
   c.news = window.IPO_NEWS?.[c.id] || null;
   if (c.news && !c.ipo) c.ipo = { status:c.news.status || 'Confidentially filed', updated:c.news.filed.slice(0,7), val:null };
   else if (c.news?.setDate && c.ipo) c.ipo = { ...c.ipo, updated:c.news.filed.slice(0,7) };
+  if (c.news?.public && c.ipo && c.ipo.status !== 'S-1 publicly filed') c.ipo = { ...c.ipo, status:'S-1 publicly filed', updated:c.news.public.slice(0,7) };
   // SEC EDGAR (edgar-filings.js): a registration filing in the last 12 months with no final prospectus yet adds a company to the pipeline,
   // or moves a "Reported" company up. Public S-1 beats a confidential draft.
   const ed = window.EDGAR?.[c.id];
@@ -1337,6 +1378,8 @@ for (const c of UNI) {
   if (vc?.src==='Augment') c.cvSrc = 'Augment';
   // Revenue (US$m): a figure the team entered (revOv, from the master Excel) wins over PitchBook's. Revenue data is patchy, so a
   // company without it gets no multiple and no rank; it is never scored down. Growth is PitchBook's, % a year.
+  const ro = REV_OV[c.id];
+  if (c.revOv == null && ro) { c.revOv = ro.v; c.revOvDate = ro.date; c.revOvSrc = ro.src; }
   c.rev = c.revOv ?? c.pb?.rev ?? null;
   c.revSrc = c.revOv!=null ? 'Reported' : c.rev!=null ? 'PitchBook est.' : null;
   c.revDate = c.revOv!=null ? c.revOvDate || null : c.rev!=null ? window.PB_ASOF || null : null;
@@ -1585,7 +1628,7 @@ const COLS = [
 ];
 const rowHtml = (cols, c) => `<tr data-id="${c.id}">`+cols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(c)}</td>`).join('')+'</tr>';
 // Column headers; a column with a definition (d) gets an ⓘ button that shows it on hover, focus or tap.
-const headHtml = cols => '<tr>'+cols.map(c=>`<th class="${c.r?'r':''}">${c.l}${c.d ? `<button class="info" type="button" data-def="${esc(c.d)}" aria-label="What is ${esc(c.l)}? ${esc(c.d)}">i</button>` : ''}</th>`).join('')+'</tr>';
+const headHtml = cols => '<tr>'+cols.map(c=>`<th class="${c.r?'r':''}">${c.l}${c.s ? `<span class="hsub">${c.s}</span>` : ''}${c.a ? `<span class="hsub havg">${c.a}</span>` : ''}${c.d ? `<button class="info" type="button" data-def="${esc(c.d)}" aria-label="What is ${esc(c.l)}? ${esc(c.d)}">i</button>` : ''}</th>`).join('')+'</tr>';
 // What the Universe can be ranked by. dir: -1 = highest first, 1 = lowest first. Ranks cover the whole universe, so filters hide rows without re-ranking.
 const URANK = {
   liq:  { l:'Liquidity score', dir:-1, v:c=>c.liq, fmt:c=>c.liq==null ? NA : c.liq.toFixed(1) },
@@ -1604,12 +1647,17 @@ F.urank = 'liq'; F.ugrp = 'sector';
 document.getElementById('uni-rank').innerHTML = Object.entries(URANK).map(([k, u]) => `<option value="${k}">${u.l}</option>`).join('');
 document.getElementById('uni-rank').onchange = e => { F.urank = e.target.value; render(); };
 document.getElementById('uni-grp').onchange = e => { F.ugrp = e.target.value; render(); };
+// Rank the whole universe, and within each sector, on a measure (companies without it are unranked). Ranks are written to the fields named.
+const rankKey = U => c => { const v = U.v(c); return v==null || isNaN(v) ? null : v; };
+function rankUniverse(U, rf, sf) {
+  const key = rankKey(U), bySec = {};
+  UNI.filter(c => key(c)!=null).sort((a, b) => U.dir * (key(b) - key(a)) * -1 || a.name.localeCompare(b.name))
+    .forEach((c, i) => { c[rf] = i + 1; bySec[c.sector] = (bySec[c.sector] || 0) + 1; c[sf] = bySec[c.sector]; });
+  UNI.filter(c => key(c)==null).forEach(c => { c[rf] = null; c[sf] = null; });
+}
 function drawTable(rs) {
-  const U = URANK[F.urank], key = c => { const v = U.v(c); return v==null || isNaN(v) ? null : v; };
-  // Rank the whole universe, and within each sector, on the chosen measure (companies without it are unranked).
-  const ranked = UNI.filter(c => key(c)!=null).sort((a, b) => U.dir * (key(b) - key(a)) * -1 || a.name.localeCompare(b.name)), bySec = {};
-  ranked.forEach((c, i) => { c.uRank = i + 1; bySec[c.sector] = (bySec[c.sector] || 0) + 1; c.uSRank = bySec[c.sector]; });
-  UNI.filter(c => key(c)==null).forEach(c => { c.uRank = null; c.uSRank = null; });
+  const U = URANK[F.urank], key = rankKey(U);
+  rankUniverse(U, 'uRank', 'uSRank');
   const cols = [...COLS];
   const iS = cols.findIndex(k => k.l === 'Sector rank');
   cols[iS] = { ...cols[iS], d:`Rank within the sector by ${U.l.toLowerCase()}. Ranks cover the whole universe, so filters hide rows without re-ranking.`, f:c => c.uSRank ?? NA };
@@ -1645,21 +1693,47 @@ const MQ_COLS = [
   { d:'Rank within the sector by liquidity score (1 = most liquid). Ranks cover the whole universe, so filters hide rows without re-ranking.', l:'Sector rank', r:1, f:c=>c.srank ?? NA },
   ...COLS.filter(k=>['Last round EV','Current valuation'].includes(k.l)),
   { d:DEF.evRev, l:'EV / Rev', r:1, f:evRevCell },
-  ...COLS.filter(k=>['Clarity','Augment','Forge','IPO status','Note'].includes(k.l)),
+  ...COLS.filter(k=>['Clarity','Augment','Forge','IPO status'].includes(k.l)),
   { l:'Region', cls:'wrap', f:c=>esc(c.region) },
+  { d:'Perennial analyst note. Cut off to one line: hover for the full note, or click the company.', l:'Note', cls:'note-cell trunc', f:c=>`<span title="${esc(c.note||'')}">${esc(c.note||'')}</span>` },
 ];
+F.mrank = 'liq'; F.mgrp = 'mq';
+document.getElementById('mq-rank').innerHTML = Object.entries(URANK).map(([k, u]) => `<option value="${k}">${u.l}</option>`).join('');
+document.getElementById('mq-rank').onchange = e => { F.mrank = e.target.value; render(); };
+document.getElementById('mq-grp').onchange = e => { F.mgrp = e.target.value; render(); };
 function drawMarquee(rs) {
-  // Marquee companies first in Marquee rank order, then the Watching-only companies in watching order. The "Marquee list only" filter does not apply here.
-  const m = rs.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq), w = rows(false).filter(c=>c.wl && !c.mq).sort((a,b)=>a.wl-b.wl), shown = [...m, ...w];
+  // Default order: Marquee companies in Marquee rank order, then the Watching-only companies in watching order. The "Marquee list only" filter does not apply here.
+  const U = URANK[F.mrank];
+  rankUniverse(U, 'mRank', 'mSRank');
+  const cols = [...MQ_COLS];
+  const iS = cols.findIndex(k => k.l === 'Sector rank'), iO = cols.findIndex(k => k.l === 'Overall rank');
+  cols[iS] = { ...cols[iS], d:`Rank within the sector by ${U.l.toLowerCase()}. Ranks cover the whole universe, so filters hide rows without re-ranking.`, f:c => c.mSRank ?? NA };
+  cols[iO] = { ...cols[iO], d:`Rank across all companies in the universe by ${U.l.toLowerCase()}.`, f:c => c.mRank ?? NA };
+  if (F.mrank !== 'liq') cols.splice(iS + 1, 0, { d:`The measure the table is ranked by: ${U.l}.`, l:'Ranked on', r:1, f:U.fmt });
+  const m = rs.filter(c=>c.mq).sort((a,b)=>a.mq-b.mq), w = rows(false).filter(c=>c.wl && !c.mq).sort((a,b)=>a.wl-b.wl);
+  let shown = [...m, ...w];
   const all = UNI.filter(c=>c.mq), wAll = UNI.filter(c=>c.wl && !c.mq);
   const tiers = TIERS.filter(t=>t!=='Unassigned').map(t=>`${all.filter(c=>c.tier===t).length} ${t}`).join(' · ');
-  document.getElementById('mq-sub').textContent = `Prepared for Perennial Marquee Access Fund · ${all.length} Marquee companies (${tiers}) · ${wAll.length} more Watching, to consider · Marquee in rank order, then Watching · revenue multiple for ${[...all, ...wAll].filter(c=>c.evRev!=null).length} of ${all.length + wAll.length}`
-    + (shown.length < all.length + wAll.length ? ` · ${shown.length} shown with current filters` : '');
-  document.querySelector('#tbl-mq thead').innerHTML = headHtml(MQ_COLS);
-  document.querySelector('#tbl-mq tbody').innerHTML = shown.length ? shown.map(c=>rowHtml(MQ_COLS, c)).join('')
-    : `<tr><td colspan="${MQ_COLS.length}" class="empty">No Marquee or Watching companies match the current filters.</td></tr>`;
+  const byR = (a, b) => (a.mRank ?? 1e9) - (b.mRank ?? 1e9) || a.name.localeCompare(b.name), bySR = (a, b) => (a.mSRank ?? 1e9) - (b.mSRank ?? 1e9) || a.name.localeCompare(b.name);
+  const how = F.mgrp === 'sector' ? `Companies grouped by sector and ranked by ${U.l.toLowerCase()}, within the sector and across the whole universe`
+    : F.mgrp === 'all' ? `All companies together, ranked by ${U.l.toLowerCase()} across the whole universe` : 'Marquee in rank order, then Watching';
+  document.getElementById('mq-rank').value = F.mrank; document.getElementById('mq-grp').value = F.mgrp;
+  document.getElementById('mq-sub').textContent = `Prepared for Perennial Marquee Access Fund · ${all.length} Marquee companies (${tiers}) · ${wAll.length} more Watching, to consider · ${how} · revenue multiple for ${[...all, ...wAll].filter(c=>c.evRev!=null).length} of ${all.length + wAll.length}`
+    + (shown.length < all.length + wAll.length ? ` · ${shown.length} shown with current filters` : '') + ' · Click a company for its detail and price history.';
+  document.querySelector('#tbl-mq thead').innerHTML = headHtml(cols);
+  let h = '';
+  if (!shown.length) h = `<tr><td colspan="${cols.length}" class="empty">No Marquee or Watching companies match the current filters.</td></tr>`;
+  else if (F.mgrp === 'mq') h = shown.map(c=>rowHtml(cols, c)).join('');
+  else if (F.mgrp === 'all') h = shown.sort(byR).map(c=>rowHtml(cols, c)).join('');
+  else for (const sec of SECTOR_ORDER) {
+    const g = shown.filter(c=>c.sector===sec).sort(bySR);
+    if (!g.length) continue;
+    h += `<tr class="sec-row"><td colspan="${cols.length}">${esc(sec)}<span>· ${g.length} ${g.length===1?'company':'companies'} · ${g.filter(c=>c.mq).length} Marquee, ${g.filter(c=>!c.mq).length} Watching</span></td></tr>`;
+    h += g.map(c=>rowHtml(cols, c)).join('');
+  }
+  document.querySelector('#tbl-mq tbody').innerHTML = h;
 }
-for (const id of ['#tbl','#tbl-mq','#tbl-cmp-peer']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
+for (const id of ['#tbl','#tbl-mq','#tbl-cmp-peer','#tbl-bk-bel']) document.querySelector(id+' tbody').addEventListener('click', e=>{ const tr=e.target.closest('tr[data-id]'); const co = tr && UNI.find(c=>c.id===tr.dataset.id); if (co) openDetail(co); });
 
 // ── Comparables: secondary pricing by time since the round, MOIC from primary rounds, IPO exits and projected MOIC ──
 // MOIC is per share (price at a mark ÷ price paid); Valuation × is company-level (valuation ÷ an earlier post-money) and includes dilution.
@@ -1768,8 +1842,8 @@ function cmpKpis(rs, ents, exs) {
 }
 
 // A summary table: one row per group, one column per measure, each cell the median (n) or the cell function's output.
-function mxTable(id, items, cols) {
-  document.querySelector(`#${id} thead`).innerHTML = headHtml([{ l:grpLabel() }, ...cols]);
+function mxTable(id, items, cols, grpSub) {
+  document.querySelector(`#${id} thead`).innerHTML = headHtml([{ l:grpLabel(), ...(grpSub ? { s:'group the companies are in' } : {}) }, ...cols]);
   document.querySelector(`#${id} tbody`).innerHTML = items.length ? groupsOf(items).map(([g, xs], i) =>
     `<tr class="${i?'':'all'}"><td>${esc(g)}</td>${cols.map(k=>`<td class="r num">${k.cell(xs)}</td>`).join('')}</tr>`).join('')
     : `<tr><td colspan="${cols.length+1}" class="empty">Nothing in this filter.</td></tr>`;
@@ -1948,22 +2022,22 @@ function drawJourney(rs, kpiHtml) {
   document.querySelector('#tbl-jr-tot tbody').innerHTML = tot.length ? tot.map(t=>rowHtml(tcols, t)).join('') : `<tr><td colspan="${tcols.length}" class="empty">No companies in this filter.</td></tr>`;
 
   // Step-ups between rounds, from the end backwards.
-  document.querySelector('#tbl-jr-step thead').innerHTML = headHtml([{ l:'Step' }, { l:'Companies', r:1 }, { d:'Median price per share at the later point ÷ at the earlier point.', l:'Price step-up', r:1 }, { d:'Median post-money (or IPO valuation) at the later point ÷ at the earlier point.', l:'Valuation step-up', r:1 }, { d:'Median months between the two points.', l:'Months between', r:1 }, { d:'Share of steps where the price per share fell.', l:'Price fell', r:1 }]);
+  document.querySelector('#tbl-jr-step thead').innerHTML = headHtml([{ l:'Step', s:'which two points are compared' }, { l:'Companies', s:'how many companies (n)', r:1 }, { d:'Median price per share at the later point ÷ at the earlier point.', l:'Price step-up', s:'price per share, later ÷ earlier', r:1 }, { d:'Median post-money (or IPO valuation) at the later point ÷ at the earlier point.', l:'Valuation step-up', s:'post-money, later ÷ earlier', r:1 }, { d:'Median months between the two points.', l:'Months between', s:'time between the two points', r:1 }, { d:'Share of steps where the price per share fell.', l:'Price fell', s:'share of steps where the price dropped', r:1 }]);
   const stepRow = (set, k, ipo) => { const ss = stepsAt(set, k); if (!ss.length) return '';
     return `<tr><td>${jrLabel(k, ipo)}</td><td class="r num">${ss.length}</td><td class="r num">${medCell(ss.map(s=>s.pxUp), mx)}</td><td class="r num">${medCell(ss.map(s=>s.valUp).filter(x=>x!=null), mx)}</td><td class="r num">${medCell(ss.map(s=>s.mo), v=>v.toFixed(0))}</td><td class="r num">${shareBelow(ss.map(s=>s.pxUp), 1)}</td></tr>`; };
   const hdr = t => `<tr class="sec-row"><td colspan="6">${t}</td></tr>`;
   document.querySelector('#tbl-jr-step tbody').innerHTML = (ipos.length || priv.length)
     ? (ipos.length ? hdr(`Companies that have IPO'd <span>· ${ipos.length} companies · private rounds up to the IPO price</span>`) + [0,1,2,3].map(k=>stepRow(ipos, k, true)).join('') : '')
       + (priv.length ? hdr(`Companies still private <span>· ${priv.length} companies with a price per share and a secondary mark · up to today's average secondary price</span>`) + [0,1,2,3].map(k=>stepRow(priv, k, false)).join('') : '')
-    : '<tr><td colspan="5" class="empty">No companies in this filter.</td></tr>';
+    : '<tr><td colspan="6" class="empty">No companies in this filter.</td></tr>';
 
   // Entry at each stage, to the IPO price.
   document.getElementById('jr-entry-sub').textContent = `${ipos.length} IPOs · median with the number of IPOs (n)`;
   mxTable('tbl-jr-entry', ipos, [
-    ...[0,1,2,3].map(k => ({ d:`IPO price ÷ the price per share in the ${k===0 ? 'last private round' : ['','2nd-last','3rd-last','4th-last'][k]+' round'}.`, l:k===0 ? 'Bought at last round' : `Bought at ${['','2nd-last','3rd-last','4th-last'][k]} round`,
+    ...[0,1,2,3].map(k => ({ d:`IPO price ÷ the price per share in the ${k===0 ? 'last private round' : ['','2nd-last','3rd-last','4th-last'][k]+' round'}.`, l:k===0 ? 'Bought at last round' : `Bought at ${['','2nd-last','3rd-last','4th-last'][k]} round`, s:`IPO price ÷ price paid ${k===0 ? 'at the last private round' : ['','two','three','four'][k]+' rounds back'}`,
       cell:xs=>medCell(xs.map(j=>j.pts[j.pts.length-1-k] ? j.end.px/j.pts[j.pts.length-1-k].pps : null).filter(x=>x!=null), mx) })),
-    { d:'Median months from the last private round to the IPO.', l:'Last round → IPO (months)', cell:xs=>medCell(xs.map(j=>monthsBetween(j.pts[j.pts.length-1].date, j.end.date)), v=>v.toFixed(0)) },
-  ]);
+    { d:'Median months from the last private round to the IPO.', l:'Last round → IPO (months)', s:'median months from last private round to IPO', cell:xs=>medCell(xs.map(j=>monthsBetween(j.pts[j.pts.length-1].date, j.end.date)), v=>v.toFixed(0)) },
+  ], true);
 
   // Secondary prices before the IPO.
   const sj = ipos.filter(j=>j.sec);
@@ -2023,11 +2097,11 @@ function caseWithNow(c) {
 function drawRadar() {
   const old = r => r.last?.date && monthsYM(r.last.date, r.exit.date) >= 36;
   const cols = [
-    { l:'Company', cls:'co', f:r=>`${esc(r.name)}` },
-    { d:'How the company exited: IPO date or the buyer and date of the sale, and the exit value.', l:'Exit', f:r=>`${r.kind==='IPO' ? 'IPO' : esc(r.exit.label)} · ${mon(r.exit.date)}<br><span class="flag">${r.exit.implied ? bnx(r.exit.val)+' implied' : bnx(r.exit.val)}</span>` },
-    { d:'Exit value ÷ the post-money valuation of the primary round before the last round.', l:'Last growth round', r:1, f:r=>rxCell(r, r.growth) },
-    { d:'Exit value ÷ the post-money valuation of the final primary round before the exit.', l:'Last round', r:1, f:r=>rxCell(r, r.last) },
-    { d:'Exit value ÷ the implied value at the last tender or reported trade before the exit. TBC: pending order book data.', l:'Secondary print', r:1, f:r=>rxCell(r, r.sec) },
+    { l:'Company', s:'company that listed or was sold', cls:'co', f:r=>`${esc(r.name)}` },
+    { d:'How the company exited: IPO date or the buyer and date of the sale, and the exit value.', l:'Exit', s:'how and when, and at what value', f:r=>`${r.kind==='IPO' ? 'IPO' : esc(r.exit.label)} · ${mon(r.exit.date)}<br><span class="flag">${r.exit.implied ? bnx(r.exit.val)+' implied' : bnx(r.exit.val)}</span>` },
+    { d:'Exit value ÷ the post-money valuation of the primary round before the last round.', l:'Last growth round', s:'exit value ÷ valuation at the round before the last', r:1, f:r=>rxCell(r, r.growth) },
+    { d:'Exit value ÷ the post-money valuation of the final primary round before the exit.', l:'Last round', s:'exit value ÷ valuation at the final round before exit', r:1, f:r=>rxCell(r, r.last) },
+    { d:'Exit value ÷ the implied value at the last tender or reported trade before the exit. TBC: pending order book data.', l:'Secondary print', s:'exit value ÷ last tender or trade before exit', r:1, f:r=>rxCell(r, r.sec) },
   ];
   document.querySelector('#tbl-rx thead').innerHTML = headHtml(cols);
   const med = f => { const xs = RADAR.exits.map(f).filter(x=>x!=null); return xs.length ? `${mx1(median(xs))} <span class="flag">(${xs.length})</span>` : NA; };
@@ -2087,12 +2161,12 @@ function drawBook() {
 
   const tag = c => `${c.mq ? `<span class="badge b-ls">M${c.mq}</span>` : ''}${c.wl ? `<span class="badge b-ls">W${c.wl}</span>` : ''}`;
   const cols = [
-    { d:'M = Marquee rank, W = watching position.', l:'Company', cls:'co', f:d=>`${esc(d.c.name)}${tag(d.c)}` }, { d:DEF.tier, l:'Bucket', cls:'wrap', f:d=>esc(d.c.tier) },
-    { d:DEF.curVal, l:'Current valuation', r:1, f:d=>d.cv==null ? NA : `${bnx(d.cv)}<br><span class="flag">${esc(d.src||'')}</span>` },
-    { d:'A reported round in talks that has not closed, and that valuation ÷ the last round. Shown beside the current valuation, not used in the equity returns.', l:'Round in talks', r:1, f:d=>d.talks ? `${bnx(d.talks.val)}<br><span class="flag">${d.talks.x==null ? '' : d.talks.x.toFixed(1)+'× last round · '}${mon(d.talks.date.slice(0,7))}</span>` : NA },
-    { d:'Equity return: current valuation ÷ the post-money valuation of the last priced round. How far the company\'s equity value has grown since then, before dilution.', l:'Since last round', r:1, f:d=>bkCell(d.lr) },
-    { d:'Equity return: current valuation ÷ the post-money valuation of the priced round before the last.', l:'Since previous round', r:1, f:d=>bkCell(d.pr) },
-    { d:'Equity return: current valuation ÷ the post-money valuation of the priced round before the previous one.', l:'Since the round before', r:1, f:d=>bkCell(d.p2) },
+    { d:'M = Marquee rank, W = watching position.', l:'Company', s:'M = Marquee rank, W = watching', cls:'co', f:d=>`${esc(d.c.name)}${tag(d.c)}` }, { d:DEF.tier, l:'Bucket', s:'investment bucket', cls:'wrap', f:d=>esc(d.c.tier) },
+    { d:DEF.curVal, l:'Current valuation', s:'what the company is worth today', r:1, f:d=>d.cv==null ? NA : `${bnx(d.cv)}<br><span class="flag">${esc(d.src||'')}</span>` },
+    { d:'A reported round in talks that has not closed, and that valuation ÷ the last round. Shown beside the current valuation, not used in the equity returns.', l:'Round in talks', s:'reported round not yet closed', r:1, f:d=>d.talks ? `${bnx(d.talks.val)}<br><span class="flag">${d.talks.x==null ? '' : d.talks.x.toFixed(1)+'× last round · '}${mon(d.talks.date.slice(0,7))}</span>` : NA },
+    { d:'Equity return: current valuation ÷ the post-money valuation of the last priced round. How far the company\'s equity value has grown since then, before dilution.', l:'Since last round', s:'current valuation ÷ last-round valuation', r:1, f:d=>bkCell(d.lr) },
+    { d:'Equity return: current valuation ÷ the post-money valuation of the priced round before the last.', l:'Since previous round', s:'current valuation ÷ the round before the last', r:1, f:d=>bkCell(d.pr) },
+    { d:'Equity return: current valuation ÷ the post-money valuation of the priced round before the previous one.', l:'Since the round before', s:'current valuation ÷ the round before that', r:1, f:d=>bkCell(d.p2) },
   ];
   document.querySelector('#tbl-bk thead').innerHTML = headHtml(cols);
   const old = d => d.lr && d.lr.mo >= 36;
@@ -2101,15 +2175,36 @@ function drawBook() {
     : `<tr><td colspan="${cols.length}" class="empty">No Marquee or Watching companies match the current filters.</td></tr>`;
 
   const ecols = [
-    { l:'Company', cls:'co', f:d=>`${esc(d.c.name)}${tag(d.c)}` }, { l:'Entry: today\'s valuation', r:1, f:d=>d.cv==null ? NA : bnx(d.cv) },
-    ...BOOK_NEEDS.map(m => ({ d:`Exit value for a ${m}× return from today's valuation, and that value ÷ the last-round valuation.`, l:`${m}× needs`, r:1, f:d => { if (d.cv==null) return NA; const need = d.cv*m, xl = d.lr ? need/d.lr.val : null;
+    { l:'Company', s:'M = Marquee rank, W = watching', cls:'co', f:d=>`${esc(d.c.name)}${tag(d.c)}` }, { l:'Entry: today\'s valuation', s:'price paid if bought today', r:1, f:d=>d.cv==null ? NA : bnx(d.cv) },
+    ...BOOK_NEEDS.map(m => ({ d:`Exit value for a ${m}× return from today's valuation, and that value ÷ the last-round valuation.`, l:`${m}× needs`, s:`exit value for a ${m}× return`, r:1, f:d => { if (d.cv==null) return NA; const need = d.cv*m, xl = d.lr ? need/d.lr.val : null;
       return `${bnx(need)}<br><span class="${xl==null ? 'flag' : rxMed && xl > rxMed ? 'dn' : 'flag'}">${xl==null ? 'n/d' : xl.toFixed(1)+'× last round'}</span>`; } })),
-    { d:'The low end of the bucket\'s return target (Late Growth 3×, Crossover / Pre-IPO 1.5×), the exit value it needs, and that ÷ the last round.', l:'Bucket target', r:1, f:d => { const B = BUCKETS[bucketOf(d.c)] || BUCKETS.G, m = B.ret[0]; if (d.cv==null) return NA; const need = d.cv*m, xl = d.lr ? need/d.lr.val : null;
+    { d:'The low end of the bucket\'s return target (Late Growth 3×, Crossover / Pre-IPO 1.5×), the exit value it needs, and that ÷ the last round.', l:'Bucket target', s:'exit value for the bucket\'s low-end target', r:1, f:d => { const B = BUCKETS[bucketOf(d.c)] || BUCKETS.G, m = B.ret[0]; if (d.cv==null) return NA; const need = d.cv*m, xl = d.lr ? need/d.lr.val : null;
       return `${m}× → ${bnx(need)}<br><span class="${xl==null ? 'flag' : rxMed && xl > rxMed ? 'dn' : 'flag'}">${xl==null ? 'n/d' : xl.toFixed(1)+'× last round'}</span>`; } },
+    // The IPO value we assume (ipo-news.js, IPO_ASSUME), tested the same way for every company that has one.
+    { d:'The IPO equity value the team assumes (low to high, US$bn), where one is set. An assumption, not a company disclosure.', l:'Assumed IPO value', s:'IPO value the team assumes', r:1, f:d => { const a = window.IPO_ASSUME?.[d.c.id]; return a ? `${bnx(a.lo)} to ${bnx(a.hi)}<br><span class="flag" title="${esc(a.src||'')}">${d.lr ? (a.lo/d.lr.val).toFixed(1)+'× to '+(a.hi/d.lr.val).toFixed(1)+'× last round' : ''}</span>` : NA; } },
+    { d:'Return if bought at today\'s valuation and exited at the assumed IPO value, against the bucket target (green = clears it at the top of the range, red = misses it even at the top). Before fees, dilution at the IPO and lock-ups.', l:'Return at the IPO', s:'IPO value ÷ today\'s valuation', r:1, f:d => { const a = window.IPO_ASSUME?.[d.c.id]; if (!a || d.cv==null) return NA; const B = BUCKETS[bucketOf(d.c)] || BUCKETS.G, m = B.ret[0], lo = a.lo/d.cv, hi = a.hi/d.cv;
+      return `<span class="${hi >= m ? 'up' : 'dn'}">${lo.toFixed(2)}× to ${hi.toFixed(2)}×</span><br><span class="flag">${lo >= m ? 'clears' : hi >= m ? 'clears at the top only' : 'misses'} ${m}×</span>`; } },
+    { d:'The highest entry valuation that still returns the bucket target at the low and at the high end of the assumed IPO value: the price at which the trade stops working.', l:'Highest entry for the target', s:'most you can pay and still hit the target', r:1, f:d => { const a = window.IPO_ASSUME?.[d.c.id]; if (!a) return NA; const B = BUCKETS[bucketOf(d.c)] || BUCKETS.G, m = B.ret[0];
+      return `${bnx(a.lo/m)} to ${bnx(a.hi/m)}<br><span class="flag">today ${d.cv==null ? 'n/d' : bnx(d.cv)}</span>`; } },
+    { d:'The assumed IPO read as the next primary step against how far the secondary has run since the last round. Gap = (1 + secondary run) ÷ (1 + primary step) − 1. Negative = the IPO would be more expensive than the secondary.', l:'IPO vs secondary', s:'IPO step vs how far the secondary has run', r:1, f:d => { const a = window.IPO_ASSUME?.[d.c.id]; if (!a || d.cv==null || !d.lr) return NA; const run = d.cv/d.lr.val, g = x => run/(x/d.lr.val) - 1;
+      return `${pct(g(a.lo))} to ${pct(g(a.hi))}<br><span class="flag">${g(a.hi) < -.1 ? 'IPO more expensive' : 'aligned'}</span>`; } },
   ];
   document.querySelector('#tbl-bk-exit thead').innerHTML = headHtml(ecols);
   document.querySelector('#tbl-bk-exit tbody').innerHTML = D.length ? D.map(d => `<tr data-id="${d.c.id}">${ecols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(d)}</td>`).join('')}</tr>`).join('')
     : `<tr><td colspan="${ecols.length}" class="empty">No Marquee or Watching companies match the current filters.</td></tr>`;
+
+  // What you have to believe: revenue needed to hold today's valuation at a forward multiple (US$m; valuations are US$bn).
+  const bcols = [
+    { l:'Company', s:'M = Marquee rank, W = watching', cls:'co', f:d=>`${esc(d.c.name)}${tag(d.c)}` },
+    { d:DEF.curVal, l:'Current valuation', s:'what the company is worth today', r:1, f:d=>d.cv==null ? NA : bnx(d.cv) },
+    { d:'Revenue held for the company, and where it comes from.', l:'Revenue now', s:'latest revenue held and its source', r:1, f:d=>d.c.rev==null ? NA : `${revTxt(d.c.rev)}<br><span class="flag">${esc(d.c.revSrc||'')}</span>` },
+    { d:'Current valuation ÷ revenue now.', l:'Valuation ÷ revenue', s:'today\'s valuation ÷ revenue now', r:1, f:d=>d.c.evRev==null ? NA : xFmt(d.c.evRev) },
+    ...[15, 10, 8].map(m => ({ d:`Revenue needed for today's valuation to be ${m}× forward revenue, and that ÷ revenue now.`, l:`At ${m}× forward`, s:`revenue needed for ${m}× forward sales`, r:1, f:d => { if (d.cv==null) return NA; const need = d.cv*1000/m;
+      return `${revTxt(need)}<br><span class="flag">${d.c.rev ? (need/d.c.rev).toFixed(1)+'× revenue now' : 'no revenue held'}</span>`; } })),
+  ];
+  document.querySelector('#tbl-bk-bel thead').innerHTML = headHtml(bcols);
+  document.querySelector('#tbl-bk-bel tbody').innerHTML = D.length ? D.map(d => `<tr data-id="${d.c.id}">${bcols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(d)}</td>`).join('')}</tr>`).join('')
+    : `<tr><td colspan="${bcols.length}" class="empty">No Marquee or Watching companies match the current filters.</td></tr>`;
 
   // Bar chart of the table below, on the companies that have a last round.
   const vLine = { id:'vLine', afterDatasetsDraw(chart) { const v = chart.options.vline; if (v == null) return; const x = chart.scales.x.getPixelForValue(v), a = chart.chartArea; if (!(x >= a.left && x <= a.right)) return; const ctx = chart.ctx; ctx.save(); ctx.strokeStyle = css('--ink2'); ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(x, a.top); ctx.lineTo(x, a.bottom); ctx.stroke(); ctx.restore(); } };
@@ -2118,9 +2213,9 @@ function drawBook() {
   if (bl.length && view === 'book') {
     const ink = css('--ink'), line = css('--line-soft'), logAx = (min, fmt) => ({ type:'logarithmic', min, position:'top', grid:{ color:line }, border:{ color:css('--line') }, ticks:{ callback:v => [.5,1,2,3,5,10,20,50,100].includes(v) ? fmt(v) : '' } });
     const a = [...bl].sort((p, q) => q.lr.x - p.lr.x), na = a.map(d => d.c.name);
-    document.getElementById('bk-box1').style.height = (a.length * 38 + 70) + 'px';
+    document.getElementById('bk-box1').style.height = (a.length * 29 + 60) + 'px';
     const o1 = baseOpts(); o1.indexAxis = 'y'; o1.vline = 1; o1.scales.x = logAx(.5, v => v + '×'); o1.scales.y.ticks = { autoSkip:false, color:ink };
-    const ser = (k, op) => ({ data:a.map(d => d[k]?.x ?? null), backgroundColor:alpha(css('--purple'), op), borderRadius:2, borderSkipped:'start', barThickness:8 });
+    const ser = (k, op) => ({ data:a.map(d => d[k]?.x ?? null), backgroundColor:alpha(css('--purple'), op), borderRadius:2, borderSkipped:'start', barThickness:7, categoryPercentage:1, barPercentage:1 });
     mk('c-bk1', { type:'bar', plugins:[vLine], data:{ labels:na, datasets:[ser('lr', 1), ser('pr', .55), ser('p2', .25)] }, options:o1 },
       dp => { const d = a[dp.dataIndex], p = d[['lr','pr','p2'][dp.datasetIndex]]; return p ? `<b>${esc(d.c.name)}</b><br>${mx1(p.x).replace(/<[^>]+>/g, '')} since the ${mon(p.date.slice(0,7))} round<br>${bnx(p.val)} then · ${bnx(d.cv)} now` : `<b>${esc(d.c.name)}</b><br>No earlier round`; });
   }
@@ -2254,11 +2349,27 @@ function drawStepUp() {
     { d:'Pre-IPO mark ÷ Late Growth entry, and the months between them.', l:'Late Growth to Pre-IPO', r:1, f:c => res(c.s1, c.m1) },
     { d:'Exit value ÷ Pre-IPO mark, and the months between them.', l:'Pre-IPO to exit', r:1, f:c => res(c.s2, c.m2) },
     { d:'Exit value ÷ Late Growth entry, and the total months.', l:'Late Growth to exit', r:1, f:c => res(c.s3, c.m3) },
-    { d:'Where an override replaces the PitchBook value or date, with the reason.', l:'Overrides and flags', cls:'wrap', f:c => suFlags(c) },
   ];
   document.querySelector('#tbl-su thead').innerHTML = headHtml(cols);
   document.querySelector('#tbl-su tbody').innerHTML = cs.map(c => `<tr class="${[c.e, c.p, c.x].some(r => r.valOvr != null || r.dateOvr) ? 'su-ovr' : ''}">${cols.map(k => `<td class="${k.r ? 'r num' : ''} ${k.cls || ''}">${k.f(c)}</td>`).join('')}</tr>`).join('');
-
+}
+// DD checks: the overrides and flags behind the step-up figures, and the editor for the overrides (the Inputs sheet).
+function drawDD() {
+  const cs = suCompanies(), marks = cs.flatMap(c => [c.e, c.p, c.x]);
+  const nV = marks.filter(r => r.valOvr != null).length, nD = marks.filter(r => r.dateOvr).length, nE = marks.filter(r => r.valOvr == null && !r.dateOvr && r.status === 'Estimated').length;
+  const flagged = cs.filter(c => [c.e, c.p, c.x].some(r => r.valOvr != null || r.dateOvr || r.status === 'Estimated'));
+  document.getElementById('dd-kpis').innerHTML = [
+    [nV, 'value overrides', 'PitchBook valuation replaced'], [nD, 'date overrides', 'PitchBook deal date replaced'], [nE, 'estimated valuations', 'PitchBook marks the value as an estimate'], [`${flagged.length} of ${cs.length}`, 'companies with a flag', 'to verify first'],
+  ].map(([v, l, t]) => `<div class="card"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${t}</div></div>`).join('');
+  const cols = [
+    { l:'Company', cls:'co', f:c => `${esc(c.name)}<br><span class="flag">${c.kind}</span>` },
+    { d:'Late Growth to Pre-IPO and Pre-IPO to exit step-ups, as currently calculated with the overrides.', l:'Step-ups', r:1, f:c => `${mx(c.s1)} · ${mx(c.s2)}` },
+    { d:'Where an override replaces the PitchBook value or date, with the reason, or PitchBook marks the valuation as an estimate.', l:'Overrides and flags', cls:'wrap', f:c => suFlags(c) },
+  ];
+  const rank = c => [c.e, c.p, c.x].some(r => r.valOvr != null || r.dateOvr) ? 0 : [c.e, c.p, c.x].some(r => r.status === 'Estimated') ? 1 : 2;
+  document.querySelector('#tbl-dd thead').innerHTML = headHtml(cols);
+  document.querySelector('#tbl-dd tbody').innerHTML = cs.length ? [...cs].sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name)).map(c => `<tr class="${rank(c) === 0 ? 'su-ovr' : ''}">${cols.map(k => `<td class="${k.r ? 'r num' : ''} ${k.cls || ''}">${k.f(c)}</td>`).join('')}</tr>`).join('')
+    : `<tr><td colspan="${cols.length}" class="empty">No step-up inputs loaded.</td></tr>`;
   // Editor: the Inputs sheet, one row per company and mark. Redrawn on a change, except while an input has the focus.
   const ed = [
     { l:'Company', cls:'co', f:r => esc(r.co) }, { l:'Mark', f:r => SU_MARKS.find(m => m[0] === r.mark)[1] }, { d:'PitchBook deal ID.', l:'Deal ID', f:r => esc(r.dealId || '') },
@@ -2268,15 +2379,15 @@ function drawStepUp() {
     { l:'Date used', f:r => fDate(r.dateUsed) }, { l:'Value used ($M)', r:1, f:r => Math.round(r.valUsed).toLocaleString('en-AU') },
     { l:'Note', cls:'note-cell', f:r => esc(r.note || '') },
   ];
-  const all = cs.flatMap(c => [c.e, c.p, c.x]);
+  const all = marks;
   if (!document.querySelector('#tbl-su-in input:focus')) {
     document.querySelector('#tbl-su-in thead').innerHTML = headHtml(ed);
     document.querySelector('#tbl-su-in tbody').innerHTML = all.map(r => `<tr>${ed.map(k => `<td class="${k.r ? 'r num' : ''} ${k.cls || ''}">${k.f(r)}</td>`).join('')}</tr>`).join('');
   }
 }
 document.getElementById('tbl-su-in').addEventListener('change', e => { const i = e.target.closest('.su-in'); if (!i) return;
-  (SU_EDIT[i.dataset.k] ??= {})[i.dataset.f] = i.dataset.f === 'val' ? (i.value === '' ? '' : +i.value) : i.value; drawStepUp(); });
-document.getElementById('su-reset').addEventListener('click', () => { for (const k of Object.keys(SU_EDIT)) delete SU_EDIT[k]; drawStepUp(); });
+  (SU_EDIT[i.dataset.k] ??= {})[i.dataset.f] = i.dataset.f === 'val' ? (i.value === '' ? '' : +i.value) : i.value; drawStepUp(); drawDD(); });
+document.getElementById('su-reset').addEventListener('click', () => { for (const k of Object.keys(SU_EDIT)) delete SU_EDIT[k]; drawStepUp(); drawDD(); });
 
 const stLink = (r) => (r.src||[]).slice(0, 2).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">${i ? '2' : 'source'}</a>`).join(' ');
 const stRound = r => !r ? NA : `${esc(r.name)}${r.hollow ? ' <span class="flag">(tender / secondary)</span>' : ''}<br><span class="flag">${fDate(r.date)} · ${bnx(r.val)}${r.basis ? ' · ' + esc(r.basis) : ''}</span><br>${r.src?.length ? stLink(r) : `<span class="flag">${esc(r.from==='research' ? 'researched' : r.from)}</span>`}`;
@@ -2298,10 +2409,13 @@ function drawStep() {
 
   // Not shown.
   const slide = id => STEP.slide?.[id];
+  const mean = xs => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null, paces = shown.filter(r => r.gap > 0 && r.x > 0).map(r => Math.pow(r.x, 1/r.gap) - 1);
+  const aX = mean(shown.map(r => r.x)), aG = mean(shown.map(r => r.gap)), aP = mean(paces);
   const cols = [
     { l:'Company', cls:'co', f:r=>`${esc(r.c.name)}<br><span class="flag">${esc(r.bucket)}</span>` }, { d:'The round before the last priced round.', l:'Prior round', cls:'wrap', f:r=>stRound(r.prior) },
     { d:'The most recent priced round (a tender or secondary sale shows as hollow on the chart).', l:'Last round', cls:'wrap', f:r=>stRound(r.last) },
-    { d:'Valuation step-up: last ÷ prior post-money equity valuation (company-level, before dilution; not MOIC).', l:'Valuation step-up', r:1, f:r=>stX(r.x) }, { d:'Months between the two rounds.', l:'Time between rounds', r:1, f:r=>Math.round(r.gap)+'m' },
+    { d:'Valuation step-up: last ÷ prior post-money equity valuation (company-level, before dilution; not MOIC).', l:'Valuation step-up', s:'last round ÷ prior round', a:aX==null ? '' : `average ${stX(aX)}`, r:1, f:r=>stX(r.x) }, { d:'Months between the two rounds.', l:'Months between rounds', s:'prior to last', a:aG==null ? '' : `average ${aG.toFixed(0)}m`, r:1, f:r=>Math.round(r.gap)+'m' },
+    { d:'The step-up compounded per month: step-up ^ (1 ÷ months) − 1. Lets fast and slow companies be compared.', l:'Monthly growth rate', s:'step-up compounded per month', a:aP==null ? '' : `average ${(aP*100).toFixed(1)}% a month`, r:1, f:r=>r.gap > 0 && r.x > 0 ? `${((Math.pow(r.x, 1/r.gap) - 1)*100).toFixed(1)}% a month` : NA },
   ];
   document.querySelector('#tbl-st thead').innerHTML = headHtml(cols);
   document.querySelector('#tbl-st tbody').innerHTML = shown.length ? [...shown].sort((a,b)=>b.last.val - a.last.val).map(r => `<tr data-id="${r.c.id}">${cols.map(k=>`<td class="${k.r?'r num':''} ${k.cls||''}">${k.f(r)}</td>`).join('')}</tr>`).join('')
@@ -2515,7 +2629,7 @@ function drawComps(rs) {
 
 // ── coverage ──
 // ── IPO pipeline: companies with a filing or reported IPO plans, furthest along first ──
-const IPO_ORDER = { 'S-1 publicly filed':0, 'Confidentially filed':1, [IPO_PB]:2, 'Reported':3 };
+const IPO_ORDER = { 'S-1 publicly filed':0, 'Confidentially filed':1, [IPO_PB]:2, 'Reported':3, 'New reported IPO':4 };
 function drawIpo(rs) {
   const d = rs.filter(c=>c.ipo).sort((a,b)=>(IPO_ORDER[a.ipo.status]??9)-(IPO_ORDER[b.ipo.status]??9) || (b.ipo.updated||'').localeCompare(a.ipo.updated||'') || a.name.localeCompare(b.name));
   const filed = d.filter(c=>/filed/.test(c.ipo.status)).length, inReg = d.filter(c=>c.ipo.pbOnly).length;
@@ -2527,7 +2641,7 @@ function drawIpo(rs) {
     { d:`Confidential draft registration (DRS) first submitted, from SEC EDGAR (as of ${window.EDGAR_ASOF||'n/a'}). The SEC only releases drafts alongside the public S-1, so a confidential filer shows "Not public" until then.`, l:'Confidential (DRS)', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['DRS'] ? fDate(e['DRS'].first)+(e['DRS/A']?` <span class="sub">+${e['DRS/A'].n} amend.</span>`:'') : (c.ipo.status==='Confidentially filed' ? '<span class="sub">Not public</span>' : NA); } },
     { d:'Public S-1 registration statement first filed on SEC EDGAR.', l:'S-1 filed', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['S-1'] ? fDate(e['S-1'].first) : NA; } },
     { d:'Date of the most recent prospectus amendment (S-1/A) on SEC EDGAR.', l:'S-1/A', f:c=>{ const e=(window.EDGAR||{})[c.id]; return e&&e['S-1/A'] ? fDate(e['S-1/A'].last) : NA; } },
-    { d:'Date the filing was made, announced or reported, where it went (SEC, SEBI or HKEX) and the sources (ipo-news.js). Filings with the SEC or SEBI here have two or more independent sources; Hong Kong entries marked "reported" are press reports the company has not confirmed.', l:'Filing reported', cls:'wrap', f:c=>c.news ? `${fDate(c.news.filed)} · ${esc(c.news.venue)}<br><span class="sub">${c.news.src.map(s=>`<a href="${esc(s.u)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(s.n)}</a>`).join(' · ')}</span>` : c.ipo.pbOnly ? '<span class="sub">PitchBook: In IPO Registration<br>(exchange and regulator not stated)</span>' : NA },
+    { d:'Date the filing was made, announced or reported, where it went (SEC, SEBI or HKEX) and the sources (ipo-news.js). Filings with the SEC or SEBI here have two or more independent sources; Hong Kong entries marked "reported" are press reports the company has not confirmed.', l:'Filing reported', cls:'wrap', f:c=>c.news ? `${fDate(c.news.filed)} · ${esc(c.news.venue)}<br><span class="sub">${c.news.src.map(s=>s.u ? `<a href="${esc(s.u)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(s.n)}</a>` : esc(s.n)).join(' · ')}</span>` : c.ipo.pbOnly ? '<span class="sub">PitchBook: In IPO Registration<br>(exchange and regulator not stated)</span>' : NA },
     { d:'IPO, reverse merger, SPAC and PIPE deals PitchBook holds for the company, with status and date. Pulled company by company, so blank means not pulled yet, not none.', l:'PitchBook IPO deals', cls:'wrap', f:c=>{ const fl = window.QRF?.[c.id]; return fl?.length ? fl.map(f=>`${esc(f.kind)} · ${esc(f.status)}${f.date ? ' · ' + fDate(f.date) : ''}`).join('<br>') : NA; } },
     { d:'Listing year the company has stated, where it has given one.', l:'Target listing', f:c=>c.ipo.target ? esc(c.ipo.target) : NA },
     { d:'Most recent valuation, from the latest round or secondary pricing, in US$ billions.', l:'Recent valuation', r:1, f:c=>bn(c.ipo.val) },
@@ -3572,8 +3686,9 @@ function drawValue() {
 for (const id of ['vs-fund', 'vs-gshare']) document.getElementById(id).addEventListener('change', () => render());
 for (const id of ['#tbl-vs-sleeve', '#tbl-vs-rank', '#tbl-vs-skip']) document.querySelector(id + ' tbody').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c => c.id === tr.dataset.id); if (co) openDetail(co); });
 
-// ── Primary vs Secondary: how the secondary price moved against each primary round (secondary-rounds.js: Augment price charts, Forge price history as a cross-check) ──
+// ── Primary vs Secondary: how the secondary price moved against each primary round (secondary-rounds.js: Augment price charts) ──
 const SR_BAND = 0.10;
+let SR_SEL = ['baseten', 'databricks', 'anduril', 'fluidstack'];
 const srX = x => (1 + x).toFixed(1) + '×', srDays = r => r.prev ? Math.round((new Date(r.date) - new Date(r.prev)) / 864e5) : null;   // within +/-10% of the primary step-up counts as aligned
 function drawSecRound() {
   const D = window.SECR, rowsAll = D?.rows || [];
@@ -3581,8 +3696,7 @@ function drawSecRound() {
   const okRows = rowsAll.filter(r => r.aug && !r.aug.flag), n = okRows.length, ok = okRows.map(r => r.aug);
   const cnt = k => ok.filter(x => v(x) === k).length, pc = k => n ? Math.round(100 * cnt(k) / n) + '%' : '—';
   const cos = new Set(rowsAll.map(r => r.id)), clean = new Set(okRows.map(r => r.id));
-  const both = rowsAll.filter(r => r.aug && !r.aug.flag && r.forge && !r.forge.flag), agree = both.filter(r => v(r.aug) === v(r.forge)).length;
-  document.getElementById('sr-intro').textContent = `When a company raises a new primary round, had the secondary market already moved to that price? For each round we compare two things over the same stretch, from the previous round to this one: how many times higher the round priced than the last round, and how many times higher the Augment secondary price got. Within ±${Math.round(SR_BAND*100)}% of each other is aligned. Secondary more expensive: the secondary had run further than the round priced (the round looks cheap). Primary more expensive: the round priced above where the secondary had got to. Forge is shown as a cross-check. Indicative, not a forecast.`;
+  document.getElementById('sr-intro').textContent = `When a company raises a new primary round, had the secondary market already moved to that price? For each round we compare two things over the same stretch, from the previous round to this one: how many times higher the round priced than the last round, and how many times higher the Augment secondary price got. Within ±${Math.round(SR_BAND*100)}% of each other is aligned. Secondary more expensive: the secondary had run further than the round priced (the round looks cheap). Primary more expensive: the round priced above where the secondary had got to. Indicative, not a forecast.`;
   const med = xs => xs.length ? median(xs) : null, leads = ok.filter(x => x.lead > 0);
   document.getElementById('sr-kpis').innerHTML = [
     [n, 'rounds with a usable mark', `${clean.size} companies · ${rowsAll.filter(r => r.aug).length - n} more rounds had no usable Augment mark`],
@@ -3594,8 +3708,7 @@ function drawSecRound() {
   document.getElementById('sr-read').innerHTML = `<h3>What it shows</h3>
     <p>${n ? `Across ${n} rounds the secondary and the round were aligned ${pc('Aligned')} of the time, the secondary was more expensive ${pc('Secondary more expensive')} of the time and the primary round was more expensive ${pc('Primary more expensive')} of the time. Median gap ${pct(med(ok.map(x => x.gap)), 0)} (positive = secondary more expensive): ${med(ok.map(x => x.gap)) < -SR_BAND ? 'rounds have typically priced above where the secondary had got to, so primary investors paid up for the round' : med(ok.map(x => x.gap)) > SR_BAND ? 'rounds have typically priced below the secondary, a value gap in the new investors\' favour' : 'rounds have typically been priced close to where the secondary had got to'}.` : 'No round has a usable mark yet.'}
     ${after.length ? ` In the 30 days after a round the secondary re-rated by a median ${pct(med(after.map(x => x.rerate)), 1)} (${after.length} rounds)${med(after.map(x => x.rerate)) > SR_BAND / 2 ? ', so the round moved the secondary up: not all of it was priced in beforehand' : ''}.` : ''}
-    ${leads.length ? ` Before ${leads.length} of the ${n} rounds the secondary had already settled within 10% of the price the round later set, for a median ${Math.round(med(leads.map(x => x.lead)))} days.` : ''}
-    ${both.length ? ` Forge agrees with Augment's read on ${agree} of the ${both.length} rounds both can score.` : ''}</p>
+    ${leads.length ? ` Before ${leads.length} of the ${n} rounds the secondary had already settled within 10% of the price the round later set, for a median ${Math.round(med(leads.map(x => x.lead)))} days.` : ''}</p>
     <p class="sub">Dilution is not removed (a primary step-up is read on pre-money value). The chart prices are indicative, not executed trades. Augment's chart is read off the page and is matched to the dashboard's own Augment prices to within about 5%. A round with no change in the secondary between the two marks, or a gap above 300%, is shown as "No usable mark" and left out of the percentages.</p>`;
   // Scatter: each round is a dot. x = how many times the primary price stepped up, y = how many times the secondary moved over the same stretch; the diagonal is perfect alignment.
   document.getElementById('sr-chart-sub').textContent = `${n} rounds · x: how many times higher the round priced than the last round, y: how many times higher the secondary got over the same stretch (log scales) · on the diagonal the secondary and the round agree; above it the secondary ran ahead, below it the round priced above the secondary. Click a dot for the company.`;
@@ -3610,27 +3723,51 @@ function drawSecRound() {
       dp => { const r = dp.raw.r; if (!r) return ''; const c = UNI.find(x => x.id === r.id); return `<b>${esc(c ? c.name : r.id)}</b> · ${esc(r.round)}, ${fDate(r.date)}<br>${srDays(r)} days since the last round<br>Round priced ${srX(r.step)} the last round · secondary ${srX(r.aug.run)}<br>Secondary vs round ${pct(r.aug.gap, 0)} · <b>${v(r.aug)}</b>`; });
     ch.canvas.onclick = e => { const p = ch.getElementsAtEventForMode(e, 'nearest', { intersect:true }, false)[0]; const r = p && ch.data.datasets[p.datasetIndex].data[p.index]?.r; const c = r && UNI.find(x => x.id === r.id); if (c) openDetail(c); };
   }
+  // Compare companies: grouped bars per round, one chart per company on a shared scale
+  const pickIds = [...new Set(okRows.map(r => r.id))].sort((a, b) => (UNI.find(c => c.id === a)?.name || a).localeCompare(UNI.find(c => c.id === b)?.name || b));
+  SR_SEL = SR_SEL.filter(id => pickIds.includes(id));
+  const nm = id => cleanName(UNI.find(c => c.id === id)?.name || id);
+  document.getElementById('sr-pick').innerHTML = pickIds.map(id => `<button type="button" class="chip${SR_SEL.includes(id) ? ' on' : ''}" data-co="${esc(id)}">${esc(nm(id))}</button>`).join('');
+  const cmp = document.getElementById('sr-cmp');
+  Object.keys(charts).filter(k => k.startsWith('c-src-')).forEach(k => { charts[k].destroy(); delete charts[k]; });
+  const sel = SR_SEL.map(id => ({ id, rs: okRows.filter(r => r.id === id).sort((a, b) => a.date.localeCompare(b.date)) })).filter(x => x.rs.length);
+  cmp.innerHTML = sel.length ? sel.map(x => { const g = med(x.rs.map(r => r.aug.gap));
+    return `<div class="panel"><h3>${esc(nm(x.id))}</h3><div class="sub">${x.rs.length} round${x.rs.length > 1 ? 's' : ''} · median ${pct(g, 0)} secondary vs round · ${g < -SR_BAND ? 'rounds priced above the secondary' : g > SR_BAND ? 'rounds priced below the secondary' : 'rounds close to the secondary'}</div><div class="chart-box" style="height:260px"><canvas id="c-src-${esc(x.id)}" role="img" aria-label="${esc(nm(x.id))}: round price vs secondary price for each round"></canvas></div></div>`; }).join('') : '<div class="panel"><div class="sub">Pick a company above.</div></div>';
+  if (view === 'secround' && sel.length) {
+    const top = Math.ceil(Math.max(...sel.flatMap(x => x.rs.flatMap(r => [r.step, r.aug.run])), .1) * 1.1 / .25) * .25;
+    const lab = { id:'srLab', afterDatasetsDraw(ch) { const c = ch.ctx; c.save(); c.font = '600 10px ' + getComputedStyle(document.body).fontFamily; c.fillStyle = css('--ink2'); c.textAlign = 'center';
+      ch.data.datasets.forEach((d, i) => ch.getDatasetMeta(i).data.forEach((b, j) => { const y = d.data[j]; if (y != null) c.fillText(Math.round(y * 100) + '%', b.x, b.y - 4); })); c.restore(); } };
+    sel.forEach(x => {
+      const o = baseOpts();
+      o.scales.y = { min:0, max:top, grid:{ color:css('--line-soft') }, border:{ color:css('--line') }, ticks:{ callback:v => Math.round(v * 100) + '%' } };
+      o.scales.x = { grid:{ display:false }, border:{ color:css('--line') } };
+      o.layout = { padding:{ top:14 } };
+      mk('c-src-' + x.id, { type:'bar', plugins:[lab], data:{ labels:x.rs.map(r => [r.round.replace(/ \(.*$/, ''), fMon(r.date)]), datasets:[
+        { label:'Round', data:x.rs.map(r => r.step), backgroundColor:css('--purple'), borderRadius:3 },
+        { label:'Secondary', data:x.rs.map(r => r.aug.run), backgroundColor:css('--accent-pink'), borderRadius:3 } ] }, options:o },
+        dp => { const r = x.rs[dp.dataIndex]; return `<b>${esc(nm(x.id))}</b> · ${esc(r.round)}, ${fDate(r.date)}<br>${srDays(r)} days since the last round<br>Round priced ${srX(r.step)} the last round · secondary ${srX(r.aug.run)}<br>Secondary vs round ${pct(r.aug.gap, 0)} · <b>${v(r.aug)}</b>`; });
+    });
+  }
   document.querySelector('#tbl-sr thead').innerHTML = headHtml([{ l: 'Company' }, { l: 'Round' }, { l: 'Date' },
     { d: 'Days from the previous round to this one: how long the secondary market had to move before the new primary price was set.', l: 'Days since last round', r: 1 },
     { d: 'How many times higher the new round\'s pre-money valuation was than the previous round\'s post-money valuation. 3.0× means the round priced at three times the last round.', l: 'Round price vs last round', r: 1 },
     { d: 'How many times higher the Augment secondary price was just before this round (3 days) than just after the previous round (14 days). Same stretch of time as the column to the left.', l: 'Secondary price vs last round', r: 1 },
     { d: 'Secondary move compared with the round price, as a %. Positive: the secondary had run further than the round priced (the round looks cheap against the secondary). Negative: the round priced above where the secondary had got to.', l: 'Secondary vs round', r: 1 },
-    { l: 'Read' }, { d: 'Augment price 30 days after the round ÷ its price 3 days before, minus 1.', l: 'Secondary 30 days after', r: 1 }, { d: 'Days up to the round that the secondary was already within 10% of the price the primary later set.', l: 'Secondary already there for (days)', r: 1 },
-    { d: 'Gap and read on Forge\'s price history, where Forge prices the company.', l: 'Forge cross-check' }]);
+    { l: 'Read' }, { d: 'Augment price 30 days after the round ÷ its price 3 days before, minus 1.', l: 'Secondary 30 days after', r: 1 }, { d: 'Days up to the round that the secondary was already within 10% of the price the primary later set.', l: 'Secondary already there for (days)', r: 1 }]);
   const colour = k => k === 'Aligned' ? '' : k === 'Secondary more expensive' ? ' style="color:var(--accent-pink)"' : k === 'Primary more expensive' ? ' style="color:var(--purple)"' : ' class="na"';
-  document.querySelector('#tbl-sr tbody').innerHTML = [...rowsAll].sort((a, b) => b.date.localeCompare(a.date)).map(r => { const c = UNI.find(x => x.id === r.id), a = r.aug, f = r.forge, k = v(a);
+  document.querySelector('#tbl-sr tbody').innerHTML = [...rowsAll].sort((a, b) => b.date.localeCompare(a.date)).map(r => { const c = UNI.find(x => x.id === r.id), a = r.aug, k = v(a);
     return `<tr${c ? ` data-id="${esc(c.id)}"` : ''}><td class="co">${esc(c ? c.name : r.id)}</td><td>${esc(r.round)}</td><td>${fDate(r.date)}</td><td class="r num">${srDays(r) ?? NA}</td><td class="r num">${srX(r.step)}</td><td class="r num">${a ? srX(a.run) : NA}</td><td class="r num">${a && !a.flag ? pct(a.gap, 0) : NA}</td>`
-      + `<td${colour(k)}>${k ? `<b>${k}</b>` : NA}${a?.flag ? ` <span class="flag" title="${a.flag === 'stale' ? 'The secondary price did not change between the two marks' : 'Gap above 300%: not like for like (placeholder price or an unusual round)'}">${a.flag}</span>` : ''}</td><td class="r num">${a?.rerate==null ? NA : pct(a.rerate, 1)}</td><td class="r num">${!a || a.flag || !a.lead ? NA : a.lead}</td>`
-      + `<td>${f && !f.flag ? `${pct(f.gap, 0)} · ${v(f)}` : f ? '<span class="na">no usable mark</span>' : NA}</td></tr>`; }).join('');
-  document.getElementById('sr-cov').textContent = `${cos.size} companies with two or more researched equity rounds: ${new Set(rowsAll.filter(r => r.aug).map(r => r.id)).size} have an Augment price chart that overlaps their rounds (Helsing is not on Augment), and ${new Set(rowsAll.filter(r => r.forge).map(r => r.id)).size} also have Forge history for the cross-check. Augment's chart starts when the company first traded there (Mistral, Cognition, Mercor, Higgsfield and Moonshot start in 2024 or later), so earlier rounds show no mark. Clarity could not be read.`;
+      + `<td${colour(k)}>${k ? `<b>${k}</b>` : NA}${a?.flag ? ` <span class="flag" title="${a.flag === 'stale' ? 'The secondary price did not change between the two marks' : 'Gap above 300%: not like for like (placeholder price or an unusual round)'}">${a.flag}</span>` : ''}</td><td class="r num">${a?.rerate==null ? NA : pct(a.rerate, 1)}</td><td class="r num">${!a || a.flag || !a.lead ? NA : a.lead}</td></tr>`; }).join('');
+  document.getElementById('sr-cov').textContent = `${cos.size} companies with two or more researched equity rounds: ${new Set(rowsAll.filter(r => r.aug).map(r => r.id)).size} have an Augment price chart that overlaps their rounds (Helsing is not on Augment). Augment's chart starts when the company first traded there (Mistral, Cognition, Mercor, Higgsfield and Moonshot start in 2024 or later), so earlier rounds show no mark. Clarity could not be read.`;
 }
+document.getElementById('sr-pick').addEventListener('click', e => { const b = e.target.closest('[data-co]'); if (!b) return; const id = b.dataset.co; if (SR_SEL.includes(id)) SR_SEL = SR_SEL.filter(x => x !== id); else if (SR_SEL.length < 6) SR_SEL.push(id); drawSecRound(); });
 document.querySelector('#tbl-sr tbody').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); const co = tr && UNI.find(c => c.id === tr.dataset.id); if (co) openDetail(co); });
 
 // ── render ──
 // ── views: Analytics / Marquee list / Universe / Methodology / Allocation, selected by the tabs and kept in the URL hash ──
-const VIEWS = ['analytics','marquee','profile','universe','ipo','step','comps','book','moic','value','secround','method','alloc'];
+const VIEWS = ['analytics','marquee','profile','universe','ipo','step','comps','book','moic','value','secround','dd','method','alloc'];
 const AN_VIEWS = ['analytics','value','secround'];   // pages grouped under the Analytics tab
-const VAL_VIEWS = ['step','comps','book','moic'];   // pages grouped under the Valuations tab
+const VAL_VIEWS = ['step','comps','book','moic','dd'];   // pages grouped under the Valuations tab
 // The Allocation tab is greyed out and cannot be opened until it is ready; set ALLOC_READY to true (and enable its tab button) to open it.
 const ALLOC_READY = false;
 const OPEN_VIEWS = VIEWS.filter(v => ALLOC_READY || v !== 'alloc');
@@ -3675,6 +3812,7 @@ function render() {
   if (view === 'comps' || view === 'moic') drawComps(rs);
   if (view === 'book') drawBook();
   if (view === 'step') drawStep();
+  if (view === 'dd') drawDD();
   if (view === 'value') drawValue();
   if (view === 'secround') drawSecRound();
   if (view === 'method') drawMethod(rs);

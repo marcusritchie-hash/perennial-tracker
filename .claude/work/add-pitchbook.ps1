@@ -61,7 +61,7 @@ $regionOf = @{ 'USA' = 'North America'; 'Canada' = 'North America'; 'Mexico' = '
 function RegionOf($country) { if ($regionOf.ContainsKey($country)) { $regionOf[$country] } else { 'Europe' } }   # Europe also holds Israel, the Gulf, Turkey and Africa (as the existing universe does for Israel and Nigeria)
 function SectorOf($ind, $spaces) {
   if ($ind -match 'Aerospace and Defense') { return 'Space & Defence' }
-  if ($ind -match 'Semiconductors|Systems and Information Management') { return 'AI Infrastructure' }
+  if ($ind -match 'Semiconductors|Systems and Information Management') { return 'AI Infrastructure & Energy' }
   if ($ind -match 'Health|Drug|Biotech|Therapeutic|Diagnostic|Clinics|Medical|Discovery Tools|Pharma') { return 'Healthcare & Life Sciences' }
   if ($ind -match 'Financial|Brokerage|Bank|Insurance|Consumer Finance|Asset Management|Private Equity|Payment|Capital Markets') { return 'Fintech & Payments' }
   if ($spaces -match 'Robotic|Autonomous|Humanoid|Drone|Self-Driving' -or $ind -match 'Machinery') { return 'Robotics & Autonomy' }
